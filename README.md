@@ -1,2 +1,3 @@
-# squids
-Synthetic dataset generator for Computer vision tasks
+# SquiDS
+
+The synthetic dataset generator for Computer vision tasks
