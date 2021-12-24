@@ -4,7 +4,7 @@ A module for manipulating images.
 
 from __future__ import annotations
 
-import numpy as np
+from random import randint, choice
 
 import PIL.Image
 import PIL.ImageDraw
@@ -51,10 +51,10 @@ def create_synthetic_image(
     # Creates synthetic image od appropriate capacity
     shapes = []
 
-    n = np.random.randint(1, image_capacity + 1)
+    n = randint(1, image_capacity)
     for _ in range(n):
         # Picks a random shape.
-        shape = np.random.choice([Rectangle, Triangle])
+        shape = choice([Rectangle, Triangle])
 
         # Picks a random shape color.
         if image_palette in [Palette.COLOR, Palette.GRAY]:
@@ -64,14 +64,15 @@ def create_synthetic_image(
                 color = BLACK_COLOR
             else:
                 color = WHITE_COLOR
-
         min_object_size = int(min(image_width, image_height) * 0.1)
         max_object_size = int(min(image_width, image_height) * 0.5)
-        w, h = np.random.randint(min_object_size, max_object_size, size=2)
+
+        w = randint(min_object_size, max_object_size)
+        h = randint(min_object_size, max_object_size)
 
         # Generates the first coordinates of a binding box.
-        x = np.random.randint(0, image_width - w)
-        y = np.random.randint(0, image_height - h)
+        x = randint(0, image_width - w)
+        y = randint(0, image_height - h)
 
         # Creates a binding box.
         bbox = BBox(Point(x, y), w, h)

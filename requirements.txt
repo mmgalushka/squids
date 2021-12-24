@@ -10,5 +10,6 @@ pre-commit
 tensorflow
 PyYAML
 Pillow
-tqdm
+numpy
 pandas
+tqdm

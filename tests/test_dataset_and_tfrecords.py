@@ -7,7 +7,7 @@ import os
 import tempfile
 
 from squids.image import Palette, Background
-from squids.dataset import create_csv_dataset, DataFormat
+from squids.dataset import create_csv_dataset
 from squids.tfrecords import create_tfrecords
 
 
@@ -33,9 +33,7 @@ def test_csv_dataset():
         assert len(os.listdir(tmp_dataset_dir + "/images")) == 100
 
         # Transforms CSV dataset to the TFRecords
-        create_tfrecords(
-            tmp_dataset_dir, DataFormat.CSV, ["rectangle", "triangle"]
-        )
+        create_tfrecords(tmp_dataset_dir, ["rectangle", "triangle"])
 
         tmp_tfrecords_dir = tmp_dataset_dir + "-tfrecords"
         assert set(os.listdir(tmp_tfrecords_dir)) == set(

@@ -13,12 +13,9 @@ from PIL import Image
 
 import tensorflow as tf
 
-from .dataset import DataFormat
-
 
 def create_tfrecords(
     dataset_dir: str,
-    dataset_format: DataFormat,
     dataset_categories: list,
     tfrecords_dir: str = None,
     tfrecords_size: int = 256,
@@ -47,7 +44,8 @@ def create_tfrecords(
     #               (full_dataset_categories)
     # }
 
-    if dataset_format == DataFormat.CSV:
+    # if dataset_format == DataFormat.CSV:
+    if True:
         _csv_to_tfrecords(
             input_dir,
             output_dir,

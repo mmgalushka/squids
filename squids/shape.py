@@ -2,7 +2,8 @@
 A module for handling a shape on an image.
 """
 
-import numpy as np
+from abc import ABC, abstractmethod
+from random import randint
 
 from .point import Point
 from .polygon import Polygon
@@ -10,7 +11,7 @@ from .bbox import BBox
 from .color import Color
 
 
-class Shape:
+class Shape(ABC):
     """A base shape to define geometrical figure.
 
     Args:
@@ -37,6 +38,10 @@ class Shape:
     def __str__(self):
         return f"(BBox{str(self.bbox)}, Polygon{str(self.polygon)})"
 
+    @abstractmethod
+    def get_area(self) -> float:
+        return
+
 
 class Rectangle(Shape):
     """A rectangle shape."""
@@ -52,12 +57,15 @@ class Rectangle(Shape):
         )
         super().__init__(polygon, bbox, color, "rectangle")
 
+    def get_area(self) -> float:
+        return self.bbox.width * self.bbox.height
+
 
 class Triangle(Shape):
     """A triangle shape."""
 
     def __init__(self, bbox: BBox, color: Color):
-        shift = np.random.randint(1, bbox.width)
+        shift = randint(1, bbox.width)
         polygon = Polygon(
             [
                 Point(bbox.anchor.x + shift, bbox.anchor.y),
@@ -66,3 +74,6 @@ class Triangle(Shape):
             ]
         )
         super().__init__(polygon, bbox, color, "triangle")
+
+    def get_area(self) -> float:
+        return (self.bbox.width * self.bbox.height) / 2.0

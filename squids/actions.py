@@ -9,7 +9,12 @@ from .image import (
     Palette,
     Background,
 )
-from .dataset import DATASET_DIR, DATASET_SIZE, DataFormat, create_csv_dataset
+from .dataset import (
+    DATASET_DIR,
+    DATASET_SIZE,
+    create_csv_dataset,
+    create_coco_dataset,
+)
 from .tfrecords import create_tfrecords
 
 
@@ -18,17 +23,30 @@ def generate(subparsers):
     cmd = "generate"
 
     def run(args):
-        print(f"\nGenerate dataset in '{args.output}'...")
-        create_csv_dataset(
-            dataset_dir=args.output,
-            dataset_size=args.size,
-            image_width=args.image_width,
-            image_height=args.image_height,
-            image_palette=args.image_palette,
-            image_background=args.image_background,
-            image_capacity=args.image_capacity,
-            verbose=args.verbose,
-        )
+        if args.coco:
+            print(f"\nGenerate COCO dataset in '{args.output}'...")
+            create_coco_dataset(
+                dataset_dir=args.output,
+                dataset_size=args.size,
+                image_width=args.image_width,
+                image_height=args.image_height,
+                image_palette=args.image_palette,
+                image_background=args.image_background,
+                image_capacity=args.image_capacity,
+                verbose=args.verbose,
+            )
+        else:
+            print(f"\nGenerate CSV dataset in '{args.output}'...")
+            create_csv_dataset(
+                dataset_dir=args.output,
+                dataset_size=args.size,
+                image_width=args.image_width,
+                image_height=args.image_height,
+                image_palette=args.image_palette,
+                image_background=args.image_background,
+                image_capacity=args.image_capacity,
+                verbose=args.verbose,
+            )
 
     # ---------------------------------
     # Sets "generate" command options
@@ -46,14 +64,6 @@ def generate(subparsers):
         help=f'an output directory (default="{DATASET_DIR}")',
     )
     parser.add_argument(
-        "-f",
-        "--format",
-        choices=DataFormat.values(),
-        type=str,
-        default=DataFormat.default(),
-        help=f'a dataset format (default="{DataFormat.default()}")',
-    )
-    parser.add_argument(
         "-s",
         "--size",
         metavar="NUMBER",
@@ -61,13 +71,18 @@ def generate(subparsers):
         default=DATASET_SIZE,
         help=f"a number of generated data samples (default={DATASET_SIZE})",
     )
+    parser.add_argument(
+        "--coco",
+        dest="coco",
+        action="store_true",
+        help="a flag to generate dataset using the COCO format.",
+    )
 
     # --- image options ---------------
     parser.add_argument(
         "--image-width",
         metavar="PIXELS",
         type=int,
-        nargs=1,
         default=IMAGE_WIDTH,
         help=f"a generated image width (default={IMAGE_WIDTH})",
     )
@@ -75,7 +90,6 @@ def generate(subparsers):
         "--image-height",
         metavar="PIXELS",
         type=int,
-        nargs=1,
         default=IMAGE_HEIGHT,
         help=f"a generated image height (default={IMAGE_HEIGHT})",
     )
@@ -121,7 +135,6 @@ def transform(subparsers):
         )
         create_tfrecords(
             dataset_dir=args.input,
-            dataset_format=args.format,
             dataset_categories=["rectangle", "triangle"],
             tfrecords_dir=args.output,
             tfrecords_size=args.size,
@@ -144,14 +157,6 @@ def transform(subparsers):
         type=str,
         default=DATASET_DIR,
         help=f'an input directory with source data (default="{DATASET_DIR}")',
-    )
-    parser.add_argument(
-        "-f",
-        "--format",
-        choices=DataFormat.values(),
-        type=str,
-        default=DataFormat.default(),
-        help=f'a format of source dataset (default="{DataFormat.default()}")',
     )
 
     # --- output options --------------

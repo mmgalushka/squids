@@ -32,20 +32,21 @@ action_usage(){
 }
 
 action_init(){
-    if [ -d .venv ];
-        then
-            rm -r .venv
-    fi
+    # if [ -d .venv ];
+    #     then
+    #         rm -r .venv
+    # fi
 
     python3 -m venv .venv
     source .venv/bin/activate 
 
-    if [[ -f dependencies.txt ]]
-    then
-        pip3 install -r dependencies.txt --no-cache
-    else
-        pip3 install -r requirements.txt --no-cache
-    fi
+    # if [[ -f dependencies.txt ]]
+    # then
+    #     pip3 install -r dependencies.txt --no-cache
+    # else
+    #     pip3 install -r requirements.txt --no-cache
+    # fi
+    pip3 install fiftyone[desktop]
 }
 
 action_test(){
@@ -110,7 +111,11 @@ case $1 in
         action_transform ${@:2}
     ;;
     mkdocs)
-        action_mkdocs ${@:2}
+        # action_mkdocs ${@:2}
+        source .venv/bin/activate
+        # fiftyone quickstart
+        # fiftyone app view --images-dir '/home/papa/Datasets/real'
+        fiftyone app view --dataset-dir '/home/papa/Datasets/real' --type fiftyone.types.COCODetectionDataset
     ;;
     *)
         action_usage
