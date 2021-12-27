@@ -3,15 +3,219 @@ A module for converting a data source to TFRecords.
 """
 from __future__ import annotations
 
+import os
+import csv
 import json
+from abc import ABC, abstractmethod
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
+# import numpy as np
+# import pandas as pd
 from tqdm import tqdm
 from PIL import Image
 
 import tensorflow as tf
+
+from .feature import (
+    image_to_feature,
+    bboxes_to_feature,
+    segments_to_feature,
+    categories_to_feature,
+)
+
+
+class ItemsIterator(ABC):
+    def __iter__(self):
+        return self
+
+    @abstractmethod
+    def __next__(self):
+        pass
+
+
+class CsvIterator(ItemsIterator):
+    def __init__(self, instance_file: Path):
+        super().__init__()
+        self.__instance_file = instance_file
+
+        with open(instance_file.parent / "categories.json") as categories_fp:
+            self.__categories = dict()
+            for category in json.load(categories_fp)["categories"]:
+                category_id = category["id"]
+                if category_id not in self.__categories:
+                    self.__categories[category_id] = []
+                self.__categories[category_id].append(category)
+
+        self.__annotations = []
+        with open(instance_file, newline="\n") as csv_fp:
+            csv_reader = csv.DictReader(csv_fp, delimiter=",", quotechar='"')
+            for row in csv_reader:
+                self.__annotations.append(
+                    {
+                        "image": {"file_name": row["file_name"]},
+                        "annotations": [
+                            {
+                                "bbox": bbox,
+                                "segmentation": [segmentation],
+                                "category_id": category_id,
+                            }
+                            for bbox, segmentation, category_id in zip(
+                                json.loads(row["bboxes"]),
+                                json.loads(row["segments"]),
+                                json.loads(row["categories"]),
+                            )
+                        ],
+                    }
+                )
+
+            self.__size = len(self.__annotations)
+            self.__pointer = 0
+
+    def __len__(self):
+        return self.__size
+
+    def __next__(self):
+        if self.__pointer >= self.__size:
+            raise StopIteration
+
+        item = self.__annotations[self.__pointer]
+        item["image"]["content"] = Image.open(
+            self.__instance_file.parent / item["image"]["file_name"]
+        )
+        self.__pointer += 1
+
+        return item
+
+
+class CocoIterator(ItemsIterator):
+    def __init__(self, instance_file: Path):
+        super().__init__()
+
+        with open(instance_file) as f:
+            self.content = json.load(f)
+
+        self.__annotations = dict()
+        for annotation in self.content["annotations"]:
+            image_id = annotation["image_id"]
+            if image_id not in self.__annotations:
+                self.__annotations[image_id] = []
+            self.__annotations[image_id].append(annotation)
+
+        self.__categories = dict()
+        for category in self.content["categories"]:
+            category_id = category["id"]
+            if category_id not in self.__categories:
+                self.__categories[category_id] = []
+            self.__categories[category_id].append(category)
+
+        self.__pointer = 0
+        self.__size = len(self.content["images"])
+
+    def __len__(self):
+        return self.__size
+
+    def __next__(self):
+        if self.__pointer >= self.__size:
+            raise StopIteration
+
+        image = self.content["images"][self.__pointer]
+        image["content"] = Image.open(image["file_name"])
+
+        item = dict()
+        item["image"] = image
+        item["annotations"] = self.__annotations[image["id"]]
+
+        self.__pointer += 1
+
+        return item
+
+
+def items_to_tfrecords(
+    output_dir: Path,
+    instance_file: Path,
+    items: ItemsIterator,
+    tfrecords_size: int,
+    image_width: int,
+    image_height: int,
+    verbose: bool,
+):
+    def get_example(item):
+        img = item["image"]["content"]
+        bboxes = [anno["bbox"] for anno in item["annotations"]]
+        segments = [anno["segmentation"][0] for anno in item["annotations"]]
+        categories = [anno["category_id"] for anno in item["annotations"]]
+
+        feature = {
+            **image_to_feature(img, image_width, image_height),
+            **bboxes_to_feature(bboxes),
+            **segments_to_feature(segments),
+            **categories_to_feature(categories),
+        }
+        return tf.train.Example(features=tf.train.Features(feature=feature))
+
+    # Makes a directory where TFRecords files will be stored. For example
+    #    output_dir -> /x/y/z
+    #    instance_file   -> train.csv
+    #
+    # the TFRecords directory will be
+    #    tfrecords_dir ->  /x/y/z/train
+    tfrecords_dir = output_dir / instance_file.stem
+    tfrecords_dir.mkdir(exist_ok=True)
+
+    # The TFRecords writer.
+    writer = None
+    # The index for the next TFRecords partition.
+    part_index = -1
+    # The count of how many records stored in the TFRecords files. It
+    # is set here to maximum capacity (as a trick) to make the "if"
+    # condition in the loop equals to True and start 0 - partition.
+    part_count = tfrecords_size
+
+    # Initializes the progress bar of verbose mode is on.
+    if verbose:
+        pbar = tqdm(total=len(items))
+
+    for item in items:
+        if part_count >= tfrecords_size:
+            # The current partition has been reached the maximum capacity,
+            # so we need to start a new one.
+            if writer is not None:
+                # Closes the existing TFRecords writer.
+                writer.close()
+            part_index += 1
+            writer = tf.io.TFRecordWriter(
+                str(tfrecords_dir / f"part-{part_index}.tfrecord")
+            )
+            part_count = 0
+
+        example = get_example(item)
+        writer.write(example.SerializeToString())
+        part_count += 1
+
+        # Updates the progress bar of verbose mode is on.
+        if verbose:
+            pbar.update(1)
+
+    # Closes the existing TFRecords writer after the last row.
+    writer.close()
+
+
+def is_csv_input(input_dir: Path) -> bool:
+    return set(os.listdir(input_dir)) == set(
+        [
+            "images",
+            "instances_train.csv",
+            "instances_test.csv",
+            "instances_val.csv",
+            "categories.json",
+        ]
+    )
+
+
+def is_coco_input(input_dir: Path) -> bool:
+    return set(os.listdir(input_dir)) == set(
+        ["annotations", "train", "test", "val"]
+    )
 
 
 def create_tfrecords(
@@ -36,197 +240,28 @@ def create_tfrecords(
         output_dir = Path(tfrecords_dir)
     output_dir.mkdir(exist_ok=True)
 
-    # Creates a map for mapping categories
-    # full_dataset_categories = dataset_categories.copy()
-    # full_dataset_categories.insert(0, None)
-    # categories_map = {
-    #     category: code for code, category in enumerate
-    #               (full_dataset_categories)
-    # }
-
-    # if dataset_format == DataFormat.CSV:
-    if True:
-        _csv_to_tfrecords(
-            input_dir,
-            output_dir,
-            dataset_categories,
-            tfrecords_size,
-            image_width,
-            image_height,
-            verbose,
-        )
-    else:
-        raise ValueError("invalid ")
-
-
-def _csv_to_tfrecords(
-    input_dir: Path,
-    output_dir: Path,
-    categories: list,
-    tfrecords_size: int,
-    image_width: int,
-    image_height: int,
-    verbose: bool,
-):
-
-    # --- Internal function ---------------------------------------------------
-    # The function receives a CSV row and converts it into an example.
-    def get_example(row):
-        image_file = Path(row["image"])
-        if image_file.is_absolute():
-            fp = image_file
-        else:
-            fp = input_dir / image_file
-
-        feature = {
-            **_image_feature(fp, image_width, image_height),
-            **_bboxes_feature(json.loads(row["bboxes"])),
-            **_segments_feature(json.loads(row["segments"])),
-            **_categories_feature(eval(row["categories"])),
-        }
-        return tf.train.Example(features=tf.train.Features(feature=feature))
-
-    # --- Internal function ---------------------------------------------------
-    # This function transforms an individual CSV file into the TFRecords.
-    def transform_file(csv_file):
-        # Loads the content of all CSV files into the Dataframe.
-        df = pd.read_csv(csv_file, index_col=False)
-
-        # Check the CSV file columns. The expected (default) structure of
-        # the CSV file should include the following columns:
-        # file_name | bbox | segment | category
-        if list(df.columns) == ["image", "bboxes", "segments", "categories"]:
-            pass
-        else:
-            raise ValueError(
-                f"Invalid structure of the CSV file: {csv_file};\n"
-                "The expected CSV file must contain the following columns:\n"
-                "  - image\n"
-                "  - bboxes\n"
-                "  - segments\n"
-                "  - categories\n"
-                "The This column order must be preserved."
+    if is_csv_input(input_dir):
+        for instance_file in input_dir.rglob("*.csv"):
+            items_to_tfrecords(
+                output_dir,
+                instance_file,
+                CsvIterator(instance_file),
+                tfrecords_size,
+                image_width,
+                image_height,
+                verbose,
+            )
+    elif is_coco_input(input_dir):
+        for instance_file in (input_dir / "annotations").rglob("*.json"):
+            items_to_tfrecords(
+                output_dir,
+                instance_file,
+                CocoIterator(instance_file),
+                tfrecords_size,
+                image_width,
+                image_height,
+                verbose,
             )
 
-        # Makes a directory where TFRecords files will be stored. For example
-        #    output_dir -> /x/y/z
-        #    csv_file   -> train.csv
-        #
-        # the TFRecords directory will be
-        #    tfrecords_dir ->  /x/y/z/train
-        tfrecords_dir = output_dir / csv_file.stem
-        tfrecords_dir.mkdir(exist_ok=True)
-
-        # The TFRecords writer.
-        writer = None
-        # The index for the next TFRecords partition.
-        part_index = -1
-        # The count of how many records stored in the TFRecords files. It
-        # is set here to maximum capacity (as a trick) to make the "if"
-        # condition in the loop equals to True and start 0 - partition.
-        part_count = tfrecords_size
-
-        # Initializes the progress bar of verbose mode is on.
-        if verbose:
-            pbar = tqdm(total=len(df))
-
-        for _, row in df.iterrows():
-            if part_count >= tfrecords_size:
-                # The current partition has been reached the maximum capacity,
-                # so we need to start a new one.
-                if writer is not None:
-                    # Closes the existing TFRecords writer.
-                    writer.close()
-                part_index += 1
-                writer = tf.io.TFRecordWriter(
-                    str(tfrecords_dir / f"part-{part_index}.tfrecord")
-                )
-                part_count = 0
-
-            example = get_example(row)
-            writer.write(example.SerializeToString())
-            part_count += 1
-
-            # Updates the progress bar of verbose mode is on.
-            if verbose:
-                pbar.update(1)
-
-        # Closes the existing TFRecords writer after the last row.
-        writer.close()
-
-    # Processes all CSV files in the input directory.
-    partitions = ["train", "val", "test"]
-    for partition in partitions:
-        transform_file(Path(input_dir / f"{partition}.csv"))
-
-
-def _image_feature(fp: Path, width: int, height: int):
-    """Returns a bytes_list from a string / byte."""
-    image = Image.open(fp)
-    if isinstance(width, int) and isinstance(height, int):
-        array = np.array(image.resize((width, height)))
-    elif width is None and height is None:
-        array = np.array(image)
     else:
-        raise ValueError(
-            "Invalid arguments for resizing an image. Both arguments "
-            "representing image width and height must be either integer "
-            f"or None. But received width is {type(width)} and height is "
-            f"{type(height)}."
-        )
-    return {
-        "image/shape": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=list(array.shape))
-        ),
-        "image/content": tf.train.Feature(
-            bytes_list=tf.train.BytesList(value=[array.tostring()])
-        ),
-    }
-
-
-def _bboxes_feature(bboxes: list):
-    """Returns an int64_list from a bool / enum / int / uint."""
-    data = []
-    for bbox in bboxes:
-        data.extend(bbox)
-
-    return {
-        "bboxes/number": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[len(bboxes)])
-        ),
-        "bboxes/data": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=data)
-        ),
-    }
-
-
-def _segments_feature(segments: list):
-    """Returns an int64_list from a bool / enum / int / uint."""
-    schema = []
-    data = []
-    for segment in segments:
-        schema.append(len(segment))
-        data.extend(segment)
-
-    return {
-        "segments/schema": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=schema)
-        ),
-        "segments/data": tf.train.Feature(
-            float_list=tf.train.FloatList(value=data)
-        ),
-    }
-
-
-def _categories_feature(categories: list):
-    """Returns an int64_list from a bool / enum / int / uint."""
-    return {
-        "categories/number": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[len(categories)])
-        ),
-        "categories/data": tf.train.Feature(
-            bytes_list=tf.train.BytesList(
-                value=[category.encode("utf-8") for category in categories]
-            )
-        ),
-    }
+        raise ValueError("invalid input data format.")

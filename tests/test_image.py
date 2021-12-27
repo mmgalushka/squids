@@ -15,7 +15,7 @@ def test_image():
 
     assert len(shapes) > 0 and len(shapes) <= 3
     for shape in shapes:
-        assert shape.category in ["rectangle", "triangle"]
+        assert shape.category_id in [0, 1]
 
     image, shapes = create_synthetic_image(
         64, 64, Palette.BINARY, Background.WHITE, 3

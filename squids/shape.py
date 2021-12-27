@@ -28,15 +28,20 @@ class Shape(ABC):
     """
 
     def __init__(
-        self, polygon: Polygon, bbox: BBox, color: Color, category: str
+        self, polygon: Polygon, bbox: BBox, color: Color, category_id: int
     ):
         self.polygon = polygon
         self.bbox = bbox
         self.color = color
-        self.category = category
+        self.category_id = category_id
 
     def __str__(self):
-        return f"(BBox{str(self.bbox)}, Polygon{str(self.polygon)})"
+        return (
+            f"(bbox={str(self.bbox)}, "
+            f"polygon={str(self.polygon)}, "
+            f"color='{str(self.color)}', "
+            f"category_id={self.category_id})"
+        )
 
     @abstractmethod
     def get_area(self) -> float:
@@ -55,7 +60,7 @@ class Rectangle(Shape):
                 Point(bbox.anchor.x, bbox.anchor.y + bbox.height),
             ]
         )
-        super().__init__(polygon, bbox, color, "rectangle")
+        super().__init__(polygon, bbox, color, 0)
 
     def get_area(self) -> float:
         return self.bbox.width * self.bbox.height
@@ -73,7 +78,7 @@ class Triangle(Shape):
                 Point(bbox.anchor.x, bbox.anchor.y + bbox.height),
             ]
         )
-        super().__init__(polygon, bbox, color, "triangle")
+        super().__init__(polygon, bbox, color, 1)
 
     def get_area(self) -> float:
         return (self.bbox.width * self.bbox.height) / 2.0

@@ -20,9 +20,9 @@ def test_rectangle():
     assert len(s.polygon.flatten()) == 8
     assert str(s.bbox) == str(BBOX)
     assert str(s.color) == str(COLOR)
-    assert s.category == "rectangle"
+    assert s.category_id == 0
 
-    assert "BBox" in str(s) and "Polygon" in str(s)
+    assert "bbox=" in str(s) and "bbox=" in str(s)
 
 
 def test_triangle():
@@ -32,6 +32,6 @@ def test_triangle():
     assert len(s.polygon.flatten()) == 6
     assert str(s.bbox) == str(BBOX)
     assert str(s.color) == str(COLOR)
-    assert s.category == "triangle"
+    assert s.category_id == 1
 
-    assert "BBox" in str(s) and "Polygon" in str(s)
+    assert "bbox=" in str(s) and "polygon=" in str(s)
