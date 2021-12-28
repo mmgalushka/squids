@@ -14,27 +14,31 @@ from shutil import rmtree
 from tqdm import tqdm
 
 from .shape import Rectangle, Triangle
-from .image import Palette, Background, create_synthetic_image
+from .image import (
+    Palette,
+    Background,
+    create_synthetic_image,
+    IMAGE_CAPACITY,
+    IMAGE_HEIGHT,
+    IMAGE_WIDTH,
+)
 
 DATASET_DIR = "dataset/synthetic"
 """A default dataset directory."""
 
-DATASET_SIZE = 10000
+DATASET_SIZE = 1000
 """A number of generating synthetic images."""
-
-DATASET_CATEGORIES = ["rectangle", "triangle"]
-"""Shapes generating in image."""
 
 
 def create_csv_dataset(
     dataset_dir: str,
-    dataset_size: int,
-    image_width: int,
-    image_height: int,
-    image_palette: Palette,
-    image_background: Background,
-    image_capacity: int,
-    verbose: bool,
+    dataset_size: int = DATASET_SIZE,
+    image_width: int = IMAGE_WIDTH,
+    image_height: int = IMAGE_HEIGHT,
+    image_palette: Palette = Palette.COLOR,
+    image_background: Background = Background.WHITE,
+    image_capacity: int = IMAGE_CAPACITY,
+    verbose: bool = False,
 ):
     """Generates CSV dataset.
 
@@ -66,11 +70,11 @@ def create_csv_dataset(
             {
                 "categories": [
                     {
-                        "supercategory": "geometry",
+                        "supercategory": "shape",
                         "id": 0,
                         "name": "rectangle",
                     },
-                    {"supercategory": "geometry", "id": 1, "name": "triangle"},
+                    {"supercategory": "shape", "id": 1, "name": "triangle"},
                 ]
             },
             categories_fp,
@@ -80,7 +84,7 @@ def create_csv_dataset(
         test_file, "w"
     ) as test:
 
-        header = "image_id,file_name,bboxes,segments,categories\n"
+        header = "image_id,file_name,bboxes,segmentations,category_ids\n"
         train.write(header)
         val.write(header)
         test.write(header)
@@ -97,24 +101,24 @@ def create_csv_dataset(
                 image_background,
                 image_capacity,
             )
-            path = images_dir / image_file
-            image.save(path, "JPEG", quality=100, subsampling=0)
+            file_name = images_dir / image_file
+            image.save(file_name, "JPEG", quality=100, subsampling=0)
 
             bboxes = []
-            segments = []
-            categories = []
+            segmentations = []
+            category_ids = []
             for shape in shapes:
                 bboxes.append(shape.bbox.flatten())
-                segments.append(shape.polygon.flatten())
-                categories.append(shape.category_id)
+                segmentations.append(shape.polygon.flatten())
+                category_ids.append(shape.category_id)
 
             record = ",".join(
                 [
                     f"{image_id}",
-                    f"images/{image_file}",
+                    f"{file_name}",
                     f'"{bboxes}"',
-                    f'"{segments}"',
-                    f'"{categories}"\n',
+                    f'"{segmentations}"',
+                    f'"{category_ids}"\n',
                 ]
             )
 
@@ -132,13 +136,13 @@ def create_csv_dataset(
 
 def create_coco_dataset(
     dataset_dir: str,
-    dataset_size: int,
-    image_width: int,
-    image_height: int,
-    image_palette: Palette,
-    image_background: Background,
-    image_capacity: int,
-    verbose: bool,
+    dataset_size: int = DATASET_SIZE,
+    image_width: int = IMAGE_WIDTH,
+    image_height: int = IMAGE_HEIGHT,
+    image_palette: Palette = Palette.COLOR,
+    image_background: Background = Background.WHITE,
+    image_capacity: int = IMAGE_CAPACITY,
+    verbose: bool = False,
 ):
     """Generates COCO dataset.
 
@@ -185,8 +189,8 @@ def create_coco_dataset(
         ],
         "images": [],
         "categories": [
-            {"supercategory": "geometry", "id": 0, "name": "rectangle"},
-            {"supercategory": "geometry", "id": 1, "name": "triangle"},
+            {"supercategory": "shape", "id": 0, "name": "rectangle"},
+            {"supercategory": "shape", "id": 1, "name": "triangle"},
         ],
         "annotations": [],
     }

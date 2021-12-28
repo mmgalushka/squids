@@ -8,7 +8,8 @@ import argparse
 import tempfile
 from pathlib import Path
 
-from squids.image import Palette, Background
+import pytest
+
 from squids.dataset import create_csv_dataset, create_coco_dataset
 from squids.tfrecords import create_tfrecords
 
@@ -25,7 +26,7 @@ def validate_csv_generator(tmp_dataset_dir):
             "categories.json",
         ]
     )
-    assert len(os.listdir(tmp_dataset_dir / "images")) == 100
+    assert len(os.listdir(tmp_dataset_dir / "images")) == 1000
 
 
 def validate_csv_transformer(tmp_tfrecords_dir):
@@ -67,7 +68,7 @@ def validate_coco_transformer(tmp_tfrecords_dir):
     assert len(os.listdir(tmp_tfrecords_dir / "instances_test")) > 0
 
 
-def test_test_csv_gen_trans_actions():
+def test_test_csv_gen_tran_actions():
     """Tests the CSV data generate/transform actions."""
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -77,9 +78,7 @@ def test_test_csv_gen_trans_actions():
     with tempfile.TemporaryDirectory() as tmp_dir:
         # Generates and checks CSV dataset
         tmp_dataset_dir = Path(tmp_dir + "/synthetic")
-        args = parser.parse_args(
-            ["generate", "-o", str(tmp_dataset_dir), "-s", "100"]
-        )
+        args = parser.parse_args(["generate", "-o", str(tmp_dataset_dir)])
         args.func(args)
 
         validate_csv_generator(tmp_dataset_dir)
@@ -100,8 +99,8 @@ def test_test_csv_gen_trans_actions():
         validate_csv_transformer(tmp_tfrecords_dir)
 
 
-def test_test_coco_gen_trans_actions():
-    """Tests the CSV data generate/transform actions."""
+def test_test_coco_gen_tran_actions():
+    """Tests the COCO data generate/transform actions."""
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
     generate(subparsers)
@@ -111,7 +110,7 @@ def test_test_coco_gen_trans_actions():
         # Generates and checks COCO dataset
         tmp_dataset_dir = Path(tmp_dir + "/synthetic")
         args = parser.parse_args(
-            ["generate", "-o", str(tmp_dataset_dir), "-s", "100", "--coco"]
+            ["generate", "-o", str(tmp_dataset_dir), "--coco"]
         )
         args.func(args)
 
@@ -133,61 +132,63 @@ def test_test_coco_gen_trans_actions():
         validate_coco_transformer(tmp_tfrecords_dir)
 
 
-def test_test_csv_gen_trans_functions():
+def test_test_csv_gen_tran_functions():
     """Tests the CSV data generate/transform actions."""
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
-    generate(subparsers)
-    transform(subparsers)
-
     with tempfile.TemporaryDirectory() as tmp_dir:
         # Generates and checks CSV dataset
         tmp_dataset_dir = Path(tmp_dir + "/synthetic")
-        create_csv_dataset(
-            tmp_dataset_dir,
-            100,
-            64,
-            64,
-            Palette.COLOR,
-            Background.WHITE,
-            3,
-            True,
-        )
+        create_csv_dataset(tmp_dataset_dir, verbose=True)
 
         validate_csv_generator(tmp_dataset_dir)
 
         # Transforms CSV dataset to the TFRecords
-        create_tfrecords(tmp_dataset_dir, ["rectangle", "triangle"])
+        create_tfrecords(tmp_dataset_dir, verbose=True)
         tmp_tfrecords_dir = Path(tmp_dir + "/synthetic-tfrecords")
 
         validate_csv_transformer(tmp_tfrecords_dir)
 
+    # Tests an action for removing the "/synthetic" directory.
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_dataset_dir = Path(tmp_dir + "/synthetic")
+        tmp_dataset_dir.mkdir()
+        create_csv_dataset(tmp_dataset_dir)
 
-def test_test_coc_gen_trans_functions():
-    """Tests the CSV data generate/transform actions."""
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
-    generate(subparsers)
-    transform(subparsers)
+    # Tests a reaction fon missing directory
+    with pytest.raises(FileNotFoundError):
+        tmp_dataset_dir = Path(tmp_dir + "/synthetic")
+        create_tfrecords(tmp_dataset_dir)
 
+
+def test_test_coco_gen_tran_functions():
+    """Tests the COCO data generate/transform actions."""
     with tempfile.TemporaryDirectory() as tmp_dir:
         # Generates and checks COCO dataset
         tmp_dataset_dir = Path(tmp_dir + "/synthetic")
-        create_coco_dataset(
-            tmp_dataset_dir,
-            100,
-            64,
-            64,
-            Palette.COLOR,
-            Background.WHITE,
-            3,
-            True,
-        )
+        create_coco_dataset(tmp_dataset_dir, verbose=True)
 
         validate_coco_generator(tmp_dataset_dir)
 
         # Transforms COCO dataset to the TFRecords
-        create_tfrecords(tmp_dataset_dir, ["rectangle", "triangle"])
+        create_tfrecords(tmp_dataset_dir, verbose=True)
         tmp_tfrecords_dir = Path(tmp_dir + "/synthetic-tfrecords")
 
         validate_coco_transformer(tmp_tfrecords_dir)
+
+    # This tests the action for removing the "/synthetic" directory.
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_dataset_dir = Path(tmp_dir + "/synthetic")
+        tmp_dataset_dir.mkdir()
+        create_coco_dataset(tmp_dataset_dir)
+
+
+def test_test_unknown_tran():
+    """Tests the CSV data generate/transform actions."""
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        # Generates and checks CSV dataset
+        tmp_dataset_dir = Path(tmp_dir + "/synthetic")
+        tmp_dataset_dir.mkdir()
+
+        with pytest.raises(ValueError):
+            tmp_dataset_dir = Path(tmp_dir + "/synthetic")
+            # The tmp_dataset_dir does not contain either CSV or COCO data.
+            create_tfrecords(tmp_dataset_dir)

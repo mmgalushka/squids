@@ -2,7 +2,6 @@
 A module for handling a shape on an image.
 """
 
-from abc import ABC, abstractmethod
 from random import randint
 
 from .point import Point
@@ -11,7 +10,7 @@ from .bbox import BBox
 from .color import Color
 
 
-class Shape(ABC):
+class Shape:
     """A base shape to define geometrical figure.
 
     Args:
@@ -42,10 +41,6 @@ class Shape(ABC):
             f"color='{str(self.color)}', "
             f"category_id={self.category_id})"
         )
-
-    @abstractmethod
-    def get_area(self) -> float:
-        return
 
 
 class Rectangle(Shape):

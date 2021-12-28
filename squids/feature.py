@@ -108,48 +108,48 @@ def feature_to_bboxes(
 
 
 # -----------------------------------------------------------------------------
-# Segments -> Feature -> Segments transformars
+# Segmentations -> Feature -> Segmentations transformars
 # -----------------------------------------------------------------------------
 
 
-def segments_to_feature(segments: list):
+def segmentations_to_feature(segmentations: list):
     """Returns an int64_list from a bool / enum / int / uint."""
     schema = []
     data = []
-    for segment in segments:
+    for segment in segmentations:
         schema.append(len(segment))
         data.extend(segment)
 
     return {
-        "segments/schema": tf.train.Feature(
+        "segmentations/schema": tf.train.Feature(
             int64_list=tf.train.Int64List(value=schema)
         ),
-        "segments/data": tf.train.Feature(
+        "segmentations/data": tf.train.Feature(
             float_list=tf.train.FloatList(value=data)
         ),
     }
 
 
 # -----------------------------------------------------------------------------
-# Categories -> Feature -> Categories transformars
+# Category IDs -> Feature -> Category IDs transformars
 # -----------------------------------------------------------------------------
 
 
-def categories_to_feature(categories: list):
+def category_ids_to_feature(category_ids: list):
     """Returns an int64_list from a bool / enum / int / uint."""
     return {
-        "categories/number": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[len(categories)])
+        "category_ids/number": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[len(category_ids)])
         ),
-        # "categories/data": tf.train.Feature(
+        # "category_ids/data": tf.train.Feature(
         #     bytes_list=tf.train.BytesList(
-        #         value=[category.encode("utf-8") for category in categories]
+        #         value=[category.encode("utf-8") for category in category_ids]
         #     )
         # ),
     }
 
 
-def feature_to_categories(
+def feature_to_category_ids(
     parsed_features: dict,
     detecting_categories: list,
     num_detecting_objects: int,

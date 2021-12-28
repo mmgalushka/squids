@@ -135,7 +135,6 @@ def transform(subparsers):
         )
         create_tfrecords(
             dataset_dir=args.input,
-            dataset_categories=["rectangle", "triangle"],
             tfrecords_dir=args.output,
             tfrecords_size=args.size,
             image_width=args.image_width,

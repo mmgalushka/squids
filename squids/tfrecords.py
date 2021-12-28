@@ -6,11 +6,8 @@ from __future__ import annotations
 import os
 import csv
 import json
-from abc import ABC, abstractmethod
 from pathlib import Path
 
-# import numpy as np
-# import pandas as pd
 from tqdm import tqdm
 from PIL import Image
 
@@ -19,23 +16,25 @@ import tensorflow as tf
 from .feature import (
     image_to_feature,
     bboxes_to_feature,
-    segments_to_feature,
-    categories_to_feature,
+    segmentations_to_feature,
+    category_ids_to_feature,
 )
 
 
-class ItemsIterator(ABC):
+class ItemsIterator:
+    def __init__(self, size):
+        self._pointer = 0
+        self.__size = size
+
     def __iter__(self):
         return self
 
-    @abstractmethod
-    def __next__(self):
-        pass
+    def __len__(self):
+        return self.__size
 
 
 class CsvIterator(ItemsIterator):
     def __init__(self, instance_file: Path):
-        super().__init__()
         self.__instance_file = instance_file
 
         with open(instance_file.parent / "categories.json") as categories_fp:
@@ -61,36 +60,30 @@ class CsvIterator(ItemsIterator):
                             }
                             for bbox, segmentation, category_id in zip(
                                 json.loads(row["bboxes"]),
-                                json.loads(row["segments"]),
-                                json.loads(row["categories"]),
+                                json.loads(row["segmentations"]),
+                                json.loads(row["category_ids"]),
                             )
                         ],
                     }
                 )
 
-            self.__size = len(self.__annotations)
-            self.__pointer = 0
-
-    def __len__(self):
-        return self.__size
+            super().__init__(len(self.__annotations))
 
     def __next__(self):
-        if self.__pointer >= self.__size:
+        if self._pointer >= len(self):
             raise StopIteration
 
-        item = self.__annotations[self.__pointer]
+        item = self.__annotations[self._pointer]
         item["image"]["content"] = Image.open(
             self.__instance_file.parent / item["image"]["file_name"]
         )
-        self.__pointer += 1
+        self._pointer += 1
 
         return item
 
 
 class CocoIterator(ItemsIterator):
     def __init__(self, instance_file: Path):
-        super().__init__()
-
         with open(instance_file) as f:
             self.content = json.load(f)
 
@@ -108,24 +101,20 @@ class CocoIterator(ItemsIterator):
                 self.__categories[category_id] = []
             self.__categories[category_id].append(category)
 
-        self.__pointer = 0
-        self.__size = len(self.content["images"])
-
-    def __len__(self):
-        return self.__size
+        super().__init__(len(self.content["images"]))
 
     def __next__(self):
-        if self.__pointer >= self.__size:
+        if self._pointer >= len(self):
             raise StopIteration
 
-        image = self.content["images"][self.__pointer]
+        image = self.content["images"][self._pointer]
         image["content"] = Image.open(image["file_name"])
 
         item = dict()
         item["image"] = image
         item["annotations"] = self.__annotations[image["id"]]
 
-        self.__pointer += 1
+        self._pointer += 1
 
         return item
 
@@ -142,14 +131,16 @@ def items_to_tfrecords(
     def get_example(item):
         img = item["image"]["content"]
         bboxes = [anno["bbox"] for anno in item["annotations"]]
-        segments = [anno["segmentation"][0] for anno in item["annotations"]]
-        categories = [anno["category_id"] for anno in item["annotations"]]
+        segmentations = [
+            anno["segmentation"][0] for anno in item["annotations"]
+        ]
+        category_ids = [anno["category_id"] for anno in item["annotations"]]
 
         feature = {
             **image_to_feature(img, image_width, image_height),
             **bboxes_to_feature(bboxes),
-            **segments_to_feature(segments),
-            **categories_to_feature(categories),
+            **segmentations_to_feature(segmentations),
+            **category_ids_to_feature(category_ids),
         }
         return tf.train.Example(features=tf.train.Features(feature=feature))
 
@@ -220,7 +211,6 @@ def is_coco_input(input_dir: Path) -> bool:
 
 def create_tfrecords(
     dataset_dir: str,
-    dataset_categories: list,
     tfrecords_dir: str = None,
     tfrecords_size: int = 256,
     image_width: int = None,
@@ -230,8 +220,8 @@ def create_tfrecords(
     # Gets input directory, containing dataset files that need to be
     # transformed to TFRecords.
     input_dir = Path(dataset_dir)
-    if not input_dir.exists():
-        raise FileExistsError(f"Input directory not found at: {input_dir}")
+    # if not input_dir.exists():
+    #     raise FileExistsError(f"Input directory not found at: {input_dir}")
 
     # Creates the output directory, where TFRecords should be stored.
     if tfrecords_dir is None:
