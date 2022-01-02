@@ -42,9 +42,40 @@ class Color:
             random.choice(Color.__GRADIENTS),
         )
 
+    @staticmethod
+    def from_hex(code: str):
+        """Returns a color created from hex-code.
 
-WHITE_COLOR = Color(255, 255, 255)
+        Args:
+            code:
+                The hex-code for the creating color.
+
+        Returns:
+            The generated rundom color.
+        """
+        h = code.lstrip("#")
+        red, green, blue = tuple(
+            int(h[i : i + 2], 16) for i in (0, 2, 4)  # noqa
+        )
+        return Color(red, green, blue)
+
+
+WHITE_COLOR = Color.from_hex("#ffffff")
 """A constant for the `White` color."""
 
-BLACK_COLOR = Color(0, 0, 0)
+BLACK_COLOR = Color.from_hex("#000000")
 """A constant for the `Black` color."""
+
+CATEGORY_COLORS = [
+    Color.from_hex("#e6194b"),  # red
+    Color.from_hex("#f58231"),  # orange
+    Color.from_hex("#ffe119"),  # yellow
+    Color.from_hex("#bfef45"),  # lime
+    Color.from_hex("#3cb44b"),  # green
+    Color.from_hex("#42d4f4"),  # cyan
+    Color.from_hex("#4363d8"),  # blue
+    Color.from_hex("#911eb4"),  # purple
+    Color.from_hex("#f032e6"),  # magenta
+    Color.from_hex("#a9a9a9"),  # grey
+]
+"""A well-separated colors range."""

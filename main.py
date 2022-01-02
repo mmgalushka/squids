@@ -16,6 +16,8 @@ parser = argparse.ArgumentParser(prog="./helper.sh", usage="%(prog)s")
 subparsers = parser.add_subparsers()
 sds.generate(subparsers)
 sds.transform(subparsers)
+sds.inspect(subparsers)
+sds.view(subparsers)
 
 
 def main():

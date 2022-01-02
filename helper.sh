@@ -84,6 +84,16 @@ action_transform(){
     python main.py transform ${@}
 }
 
+action_inspect(){
+    source .venv/bin/activate
+    python main.py inspect ${@}
+}
+
+action_view(){
+    source .venv/bin/activate
+    python main.py view ${@}
+}
+
 action_mkdocs(){
     source .venv/bin/activate
     mkdocs serve
@@ -109,6 +119,12 @@ case $1 in
     ;;
     transform)
         action_transform ${@:2}
+    ;;
+    inspect)
+        action_inspect ${@:2}
+    ;;
+    view)
+        action_view ${@:2}
     ;;
     mkdocs)
         # action_mkdocs ${@:2}

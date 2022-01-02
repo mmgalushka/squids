@@ -55,7 +55,7 @@ class Rectangle(Shape):
                 Point(bbox.anchor.x, bbox.anchor.y + bbox.height),
             ]
         )
-        super().__init__(polygon, bbox, color, 0)
+        super().__init__(polygon, bbox, color, 1)
 
     def get_area(self) -> float:
         return self.bbox.width * self.bbox.height
@@ -73,7 +73,7 @@ class Triangle(Shape):
                 Point(bbox.anchor.x, bbox.anchor.y + bbox.height),
             ]
         )
-        super().__init__(polygon, bbox, color, 1)
+        super().__init__(polygon, bbox, color, 2)
 
     def get_area(self) -> float:
         return (self.bbox.width * self.bbox.height) / 2.0

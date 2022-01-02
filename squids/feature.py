@@ -5,192 +5,189 @@ A module for handling TFRecords features.
 from __future__ import annotations
 
 import numpy as np
-from PIL import Image
-
 import tensorflow as tf
+from PIL import Image, ImageDraw
 
-# -----------------------------------------------------------------------------
-# Image -> Feature -> Image transformars
-# -----------------------------------------------------------------------------
+from .color import BLACK_COLOR, WHITE_COLOR
 
 
-def image_to_feature(image: Image, width: int, height: int):
-    """Returns a bytes_list from a string / byte."""
-    # image = Image.open(fp)
-    # if isinstance(width, int) and isinstance(height, int):
-    #     array = np.array(image.resize((width, height)))
-    # elif width is None and height is None:
-    #     array = np.array(image)
-    # else:
-    #     raise ValueError(
-    #         "Invalid arguments for resizing an image. Both arguments "
-    #         "representing image width and height must be either integer "
-    #         f"or None. But received width is {type(width)} and height is "
-    #         f"{type(height)}."
-    #     )
+def item_to_feature(
+    image_id: int,
+    image: Image,
+    target_width: int,
+    target_height: int,
+    bboxes: list,
+    segmentations: list,
+    category_ids: list,
+) -> dict:
+    """Transforms an image to the TFRecord feature.
 
-    # array = np.array(image.resize((width, height)))
-    array = np.array(image)
+    Args:
+        image:
+            The image object to transform.
+        target_width:
+            The target width to resize image.
+        target_height:
+            The target height to resize image.
+        bboxes:
+            The bounding boxes around annotated objects.
+        segmentations:
+            The polygons around annotated objects.
+        category_ids:
+            The list of categories for annotated objects.
+
+    Returns:
+        The dictionary with features.
+    """
+    original_image_width, original_image_height = image.size
+
+    scale_ratio_for_width = target_width / original_image_width
+    scale_ratio_for_height = target_height / original_image_height
+
+    image_data = np.array(
+        image.resize((target_width, target_height))
+    ).flatten()
+
+    annotations_number = len(bboxes)
+    bboxes_data = []
+    segmentations_data = []
+    for bbox, segmentation in zip(bboxes, segmentations):
+        bboxes_data.extend(
+            [
+                scale_ratio_for_width * value
+                if (i % 2) == 0
+                else scale_ratio_for_height * value
+                for i, value in enumerate(bbox)
+            ]
+        )
+
+        mask = Image.new(
+            "RGB", (target_width, target_height), str(BLACK_COLOR)
+        )
+        drawing = ImageDraw.Draw(mask)
+        drawing.polygon(
+            [
+                scale_ratio_for_width * value
+                if (i % 2) == 0
+                else scale_ratio_for_height * value
+                for i, value in enumerate(segmentation)
+            ],
+            fill=str(WHITE_COLOR),
+            outline=str(WHITE_COLOR),
+        )
+        segmentations_data.extend(np.array(mask).flatten())
+    segmentations_data = np.array(segmentations_data)
+    category_ids_data = category_ids
+
     return {
-        "image/shape": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=list(array.shape))
+        "image/id": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[image_id])
         ),
-        "image/content": tf.train.Feature(
-            bytes_list=tf.train.BytesList(value=[array.tostring()])
+        "image/width": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[target_width])
         ),
-    }
-
-
-def feature_to_image(parsed_features: dict) -> tf.Tensor:
-    image = tf.io.decode_raw(parsed_features["image/content"], tf.uint8)
-    image = tf.reshape(image, parsed_features["image/shape"])
-    image = tf.cast(image, tf.float32) / 255.0
-    return image
-
-
-# -----------------------------------------------------------------------------
-# BBoxes -> Feature -> BBoxes transformars
-# -----------------------------------------------------------------------------
-
-
-def bboxes_to_feature(bboxes: list):
-    """Returns an int64_list from a bool / enum / int / uint."""
-    data = []
-    for bbox in bboxes:
-        data.extend(bbox)
-
-    return {
-        "bboxes/number": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[len(bboxes)])
+        "image/height": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[target_height])
+        ),
+        "image/data": tf.train.Feature(
+            bytes_list=tf.train.BytesList(value=[image_data.tostring()])
+        ),
+        "annotations/number": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[annotations_number])
         ),
         "bboxes/data": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=data)
+            float_list=tf.train.FloatList(value=bboxes_data)
+        ),
+        "segmentations/data": tf.train.Feature(
+            bytes_list=tf.train.BytesList(
+                value=[segmentations_data.tostring()]
+            )
+        ),
+        "category_ids/data": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=category_ids_data)
         ),
     }
 
 
-def feature_to_bboxes(
-    parsed_features, num_detecting_objects: int
-) -> tf.Tensor:
-    # Loads all binding boxes defined in a TFRecord.
+def feature_to_item(
+    parsed_features: dict, num_detecting_objects: int = None
+) -> dict:
+    """Transforms an image to the TFRecord feature.
 
-    n = parsed_features["bboxes/number"][0]
-    # let's assume it is 2
+    Args:
+        parsed_features:
+            The dictionary with feature data to parse.
+        num_detecting_objects:
+            The number of detecting objects.
+
+    Returns:
+        image:
+            The image object to transform.
+        target_width:
+            The target width to resize image.
+        target_height:
+            The target height to resize image.
+        bboxes:
+            The bounding boxes around annotated objects.
+        segmentations:
+            The polygons around annotated objects.
+        category_ids:
+            The list of categories for annotated objects.
+    """
+    image_id = parsed_features["image/id"][0]
+    image_width = parsed_features["image/width"][0]
+    image_height = parsed_features["image/height"][0]
+    image_shape = (image_width, image_height, 3)
+    image_size = image_width * image_height * 3
+
+    image = tf.io.decode_raw(parsed_features["image/data"], tf.uint8)
+    image = tf.reshape(image, image_shape)
+    image = tf.cast(image, tf.float32)
+    image = image / 255.0
+
+    n = parsed_features["annotations/number"][0]
 
     bboxes = parsed_features["bboxes/data"]
     bboxes = tf.reshape(bboxes, (-1, 4))
-    # [[1 2 3 4]
-    #  [5 6 7 8]], shape=(2, 4), dtype=int32
 
-    if n < num_detecting_objects:
-        # If the obtained number of record binding boxes is less than the
-        # detection capacity, then the binding boxes must be padded with
-        # [0, 0, 0, 0].
-        bboxes = tf.pad(
-            bboxes, [[0, num_detecting_objects - n], [0, 0]], constant_values=0
-        )
-        # [[1 2 3 4]
-        #  [5 6 7 8]
-        #  [0 0 0 0]
-        #  [0 0 0 0]], shape=(4, 4), dtype=int32)
-        # values = [b'rectangle' b'triangle' b'[UNK]' b'[UNK]'], shape=(4,)
-    elif n > 4:
-        # If the obtained number of record binding boxes is greater than the
-        # detection capacity, then the  binding boxes list must be sliced.
-        bboxes = tf.slice(bboxes, [0, 0], [num_detecting_objects, 4])
+    segmentations = tf.io.decode_raw(
+        parsed_features["segmentations/data"], tf.uint8
+    )
+    segmentations = tf.reshape(segmentations, (-1, image_size))
+
+    category_ids = parsed_features["category_ids/data"]
+
+    if num_detecting_objects:
+        if n < num_detecting_objects:
+            # If the obtained number of record less than the detection
+            # capacity, then the records must be padded.
+            bboxes = tf.pad(
+                bboxes,
+                [[0, num_detecting_objects - n], [0, 0]],
+                constant_values=0,
+            )
+            segmentations = tf.pad(
+                segmentations,
+                [[0, num_detecting_objects - n], [0, 0]],
+                constant_values=0,
+            )
+            category_ids = tf.pad(
+                category_ids,
+                [[0, num_detecting_objects - n]],
+                constant_values=0,
+            )
+        else:
+            # If the obtained number of record binding boxes is greater
+            # than the detection capacity, then the  binding boxes list
+            # must be sliced.
+            bboxes = tf.slice(bboxes, [0, 0], [num_detecting_objects, 4])
+            segmentations = tf.slice(
+                segmentations, [0, 0], [num_detecting_objects, image_size]
+            )
+            category_ids = tf.slice(category_ids, [0], [num_detecting_objects])
 
     bboxes = tf.cast(bboxes, dtype=tf.float32)
-    # [[1. 2. 3. 4.]
-    #  [5. 6. 7. 8.]
-    #  [0. 0. 0. 0.]
-    #  [0. 0. 0. 0.]], shape=(4, 4), dtype=float32
-    return bboxes
+    segmentations = tf.cast(segmentations, dtype=tf.float32)
+    category_ids = tf.one_hot(category_ids, depth=20)
 
-
-# -----------------------------------------------------------------------------
-# Segmentations -> Feature -> Segmentations transformars
-# -----------------------------------------------------------------------------
-
-
-def segmentations_to_feature(segmentations: list):
-    """Returns an int64_list from a bool / enum / int / uint."""
-    schema = []
-    data = []
-    for segment in segmentations:
-        schema.append(len(segment))
-        data.extend(segment)
-
-    return {
-        "segmentations/schema": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=schema)
-        ),
-        "segmentations/data": tf.train.Feature(
-            float_list=tf.train.FloatList(value=data)
-        ),
-    }
-
-
-# -----------------------------------------------------------------------------
-# Category IDs -> Feature -> Category IDs transformars
-# -----------------------------------------------------------------------------
-
-
-def category_ids_to_feature(category_ids: list):
-    """Returns an int64_list from a bool / enum / int / uint."""
-    return {
-        "category_ids/number": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[len(category_ids)])
-        ),
-        # "category_ids/data": tf.train.Feature(
-        #     bytes_list=tf.train.BytesList(
-        #         value=[category.encode("utf-8") for category in category_ids]
-        #     )
-        # ),
-    }
-
-
-def feature_to_category_ids(
-    parsed_features: dict,
-    detecting_categories: list,
-    num_detecting_objects: int,
-) -> tf.Tensor:
-    # Loads all categories values defined in a TFRecord.
-
-    n = parsed_features["categories/number"][0]
-    # lets assume it is 2
-
-    categories = parsed_features["categories/data"]
-    # [b'rectangle' b'triangle'], shape=(4,), dtype=string
-
-    # if n < num_detecting_objects:
-    #     # If the obtained number of record categories less than the
-    #     # detection capacity, then the categories list must be padded with
-    #     # "unknown category".
-    #     categories = tf.pad(
-    #         categories, [[0, num_detecting_objects - n]],
-    #         constant_values='[UNK]')
-    #     # [b'rectangle' b'triangle' b'[UNK]' b'[UNK]'], shape=(4,),
-    #       dtype=string
-    # elif n > num_detecting_objects:
-    #     # If the obtained number of record categories greater than the
-    #     # detection capacity, then the categories list must be sliced.
-    #     categories = tf.slice(categories, [0], [num_detecting_objects])
-
-    categories = tf.pad(
-        categories, [[0, num_detecting_objects - n]], constant_values="[UNK]"
-    )
-
-    categories = tf.keras.layers.experimental.preprocessing.StringLookup(
-        vocabulary=detecting_categories
-    )(categories)
-    # [2 3 1 1], shape=(4,), dtype=int64
-
-    categories = categories - tf.constant(1, dtype=tf.int64)
-    # [1 2 0 0], shape=(4,), dtype=int64
-
-    categories = tf.one_hot(categories, len(detecting_categories) + 1)
-    # [[0. 1. 0.]
-    #  [0. 0. 1.]
-    #  [1. 0. 0.]
-    #  [1. 0. 0.]], shape=(4, 3), dtype=float32
-    return categories
+    return image_id, image, bboxes, segmentations, category_ids

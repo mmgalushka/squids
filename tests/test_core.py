@@ -182,7 +182,7 @@ def test_test_coco_gen_tran_functions():
 
 
 def test_test_unknown_tran():
-    """Tests the CSV data generate/transform actions."""
+    """Tests transform of an unknown dataset type."""
     with tempfile.TemporaryDirectory() as tmp_dir:
         # Generates and checks CSV dataset
         tmp_dataset_dir = Path(tmp_dir + "/synthetic")

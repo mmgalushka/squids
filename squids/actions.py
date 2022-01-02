@@ -15,7 +15,7 @@ from .dataset import (
     create_csv_dataset,
     create_coco_dataset,
 )
-from .tfrecords import create_tfrecords
+from .tfrecords import create_tfrecords, inspect_tfrecords, view_tfrecords
 
 
 def generate(subparsers):
@@ -135,6 +135,7 @@ def transform(subparsers):
         )
         create_tfrecords(
             dataset_dir=args.input,
+            selected_categories=args.select_categories,
             tfrecords_dir=args.output,
             tfrecords_size=args.size,
             image_width=args.image_width,
@@ -181,15 +182,25 @@ def transform(subparsers):
         "--image-width",
         metavar="PIXELS",
         type=int,
-        default=None,
+        default=IMAGE_WIDTH,
         help="an image width resize to (default=None)",
     )
     parser.add_argument(
         "--image-height",
         metavar="PIXELS",
         type=int,
-        default=None,
+        default=IMAGE_HEIGHT,
         help="an image height resize to (default=None)",
+    )
+
+    # --- selection options -----------
+    parser.add_argument(
+        "--select-categories",
+        metavar="CATEGORY_IDS",
+        nargs="+",
+        type=int,
+        help="a list of selected category IDs",
+        default=[],
     )
 
     # --- system options --------------
@@ -198,4 +209,75 @@ def transform(subparsers):
         "--verbose",
         help="the flag to set verbose mode",
         action="store_true",
+    )
+
+
+def inspect(subparsers):
+    # Defines the command name.
+    cmd = "inspect"
+
+    def run(args):
+        print(f"\nInspect tfrecords from '{args.input}'...")
+        inspect_tfrecords(tfrecords_dir=args.input)
+
+    # ---------------------------------
+    # Sets "inspect" command options
+    # ---------------------------------
+    parser = subparsers.add_parser(cmd)
+    parser.set_defaults(func=run)
+
+    # --- input options ---------------
+    parser.add_argument(
+        "-i",
+        "--input",
+        metavar="DIR",
+        type=str,
+        help="an input directory with tfrecords",
+    )
+
+
+def view(subparsers):
+    # Defines the command name.
+    cmd = "view"
+
+    def run(args):
+        print(f"\nView '{args.image_id}' tfrecords from '{args.input}'...")
+        view_tfrecords(
+            tfrecords_dir=args.input,
+            image_id=args.image_id,
+            with_bboxes=args.no_bboxes,
+            with_segmentations=args.no_segmentations,
+        )
+
+    # ---------------------------------
+    # Sets "view" command options
+    # ---------------------------------
+    parser = subparsers.add_parser(cmd)
+    parser.set_defaults(func=run)
+
+    # --- input options ---------------
+    parser.add_argument(
+        "input",
+        metavar="DIR",
+        type=str,
+        help="an input directory with tfrecords",
+    )
+
+    parser.add_argument(
+        "image_id",
+        metavar="IMAGE_ID",
+        type=int,
+        help="an image ID to view",
+    )
+
+    parser.add_argument(
+        "--no-bboxes",
+        help="turn off the showing of bounding boxes",
+        action="store_false",
+    )
+
+    parser.add_argument(
+        "--no-segmentations",
+        help="turn off the showing of segmentations",
+        action="store_false",
     )
