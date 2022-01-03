@@ -351,6 +351,23 @@ class CocoIterator:
         else:
             raise ValueError("Invalid instance file name.")
 
+        # Creates a map for remapping old categories' IDs to the new ones.
+        # This helps to reduce the one-hot encoding tensor, by shrinking
+        # it to the exact number of predicting categories.
+        if len(selected_categories) > 0:
+            categories_map = {
+                old_category_id: new_category_id
+                + 1  # +1 since the valid category starts from 1, not 0
+                for new_category_id, old_category_id in enumerate(
+                    sorted(selected_categories)
+                )
+            }
+        else:
+            categories_map = {
+                category["id"]: category["id"]
+                for category in self.content["categories"]
+            }
+
         self.__annotations = dict()
         for annotation in self.content["annotations"]:
             if len(selected_categories) > 0:
@@ -360,7 +377,14 @@ class CocoIterator:
             image_id = annotation["image_id"]
             if image_id not in self.__annotations:
                 self.__annotations[image_id] = []
-            self.__annotations[image_id].append(annotation)
+
+            # Remaps ald category ID to the new one.
+            new_annotation = copy.deepcopy(annotation)
+            new_annotation["category_id"] = categories_map[
+                annotation["category_id"]
+            ]
+
+            self.__annotations[image_id].append(new_annotation)
 
         self.__categories = dict()
         for category in self.content["categories"]:
@@ -371,7 +395,12 @@ class CocoIterator:
                     continue
             if category_id not in self.__categories:
                 self.__categories[category_id] = []
-            self.__categories[category_id].append(category)
+
+            # Remaps ald category ID to the new one.
+            new_category = copy.deepcopy(annotation)
+            new_category["id"] = categories_map[category["id"]]
+
+            self.__categories[category_id].append(new_category)
 
         self.__pointer = 0
         self.__size = len(self.content["images"])

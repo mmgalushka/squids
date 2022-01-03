@@ -273,8 +273,13 @@ def get_tfrecords_explorer(
 def inspect_tfrecords(tfrecords_dir: str):
     batch = get_tfrecords_explorer(Path(tfrecords_dir))
     image_ids = []
-    for image_id, _, _, _, _ in batch:
-        image_ids.append(str(image_id.numpy()[0]))
+    for image_id, _, _, _, category_ids in batch:
+        image_ids.append(
+            str(image_id.numpy()[0])
+            + "("
+            + ",".join(map(str, category_ids.numpy()))
+            + ")"
+        )
     cli = cmd.Cmd()
     cli.columnize(image_ids)
 

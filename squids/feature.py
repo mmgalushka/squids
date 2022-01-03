@@ -14,8 +14,8 @@ from .color import BLACK_COLOR, WHITE_COLOR
 def item_to_feature(
     image_id: int,
     image: Image,
-    target_width: int,
-    target_height: int,
+    target_image_width: int,
+    target_image_height: int,
     bboxes: list,
     segmentations: list,
     category_ids: list,
@@ -25,9 +25,9 @@ def item_to_feature(
     Args:
         image:
             The image object to transform.
-        target_width:
+        target_image_width:
             The target width to resize image.
-        target_height:
+        target_image_height:
             The target height to resize image.
         bboxes:
             The bounding boxes around annotated objects.
@@ -41,11 +41,11 @@ def item_to_feature(
     """
     original_image_width, original_image_height = image.size
 
-    scale_ratio_for_width = target_width / original_image_width
-    scale_ratio_for_height = target_height / original_image_height
+    scale_ratio_for_width = target_image_width / original_image_width
+    scale_ratio_for_height = target_image_height / original_image_height
 
     image_data = np.array(
-        image.resize((target_width, target_height))
+        image.resize((target_image_width, target_image_height))
     ).flatten()
 
     annotations_number = len(bboxes)
@@ -54,6 +54,7 @@ def item_to_feature(
     for bbox, segmentation in zip(bboxes, segmentations):
         bboxes_data.extend(
             [
+                # The following block scales bounding boxes coordinates.
                 scale_ratio_for_width * value
                 if (i % 2) == 0
                 else scale_ratio_for_height * value
@@ -62,11 +63,12 @@ def item_to_feature(
         )
 
         mask = Image.new(
-            "RGB", (target_width, target_height), str(BLACK_COLOR)
+            "RGB", (target_image_width, target_image_height), str(BLACK_COLOR)
         )
         drawing = ImageDraw.Draw(mask)
         drawing.polygon(
             [
+                # The following block scales polygons coordinates.
                 scale_ratio_for_width * value
                 if (i % 2) == 0
                 else scale_ratio_for_height * value
@@ -84,10 +86,10 @@ def item_to_feature(
             int64_list=tf.train.Int64List(value=[image_id])
         ),
         "image/width": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[target_width])
+            int64_list=tf.train.Int64List(value=[target_image_width])
         ),
         "image/height": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[target_height])
+            int64_list=tf.train.Int64List(value=[target_image_height])
         ),
         "image/data": tf.train.Feature(
             bytes_list=tf.train.BytesList(value=[image_data.tostring()])
@@ -123,9 +125,9 @@ def feature_to_item(
     Returns:
         image:
             The image object to transform.
-        target_width:
+        target_image_width:
             The target width to resize image.
-        target_height:
+        target_image_height:
             The target height to resize image.
         bboxes:
             The bounding boxes around annotated objects.
@@ -188,6 +190,6 @@ def feature_to_item(
 
     bboxes = tf.cast(bboxes, dtype=tf.float32)
     segmentations = tf.cast(segmentations, dtype=tf.float32)
-    category_ids = tf.one_hot(category_ids, depth=20)
+    category_ids = tf.one_hot(category_ids, depth=3)
 
     return image_id, image, bboxes, segmentations, category_ids
