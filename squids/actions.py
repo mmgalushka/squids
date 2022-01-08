@@ -15,7 +15,7 @@ from .dataset import (
     create_csv_dataset,
     create_coco_dataset,
 )
-from .tfrecords import create_tfrecords, inspect_tfrecords, view_tfrecords
+from .tfrecords import create_tfrecords, inspect_tfrecords, inspect_tfrecord
 
 
 def generate(subparsers):
@@ -24,10 +24,9 @@ def generate(subparsers):
 
     def run(args):
         if args.coco:
-            print(f"\nGenerate COCO dataset in '{args.output}'...")
             create_coco_dataset(
-                dataset_dir=args.output,
-                dataset_size=args.size,
+                dataset_dir=args.dataset_dir,
+                dataset_size=args.dataset_size,
                 image_width=args.image_width,
                 image_height=args.image_height,
                 image_palette=args.image_palette,
@@ -36,10 +35,9 @@ def generate(subparsers):
                 verbose=args.verbose,
             )
         else:
-            print(f"\nGenerate CSV dataset in '{args.output}'...")
             create_csv_dataset(
-                dataset_dir=args.output,
-                dataset_size=args.size,
+                dataset_dir=args.dataset_dir,
+                dataset_size=args.dataset_size,
                 image_width=args.image_width,
                 image_height=args.image_height,
                 image_palette=args.image_palette,
@@ -56,16 +54,19 @@ def generate(subparsers):
 
     # --- I/O options -----------------
     parser.add_argument(
-        "-o",
-        "--output",
-        metavar="DIR",
+        "dataset_dir",
+        metavar="DATASET_DIR",
+        nargs="?",
         type=str,
         default=DATASET_DIR,
-        help=f'an output directory (default="{DATASET_DIR}")',
+        help=(
+            "a generating dataset directory, if not defined, "
+            f"it will be created under the './{DATASET_DIR}'"
+        ),
     )
     parser.add_argument(
         "-s",
-        "--size",
+        "--dataset-size",
         metavar="NUMBER",
         type=int,
         default=DATASET_SIZE,
@@ -75,7 +76,7 @@ def generate(subparsers):
         "--coco",
         dest="coco",
         action="store_true",
-        help="a flag to generate dataset using the COCO format.",
+        help="a flag to generate dataset in the COCO format",
     )
 
     # --- image options ---------------
@@ -98,14 +99,14 @@ def generate(subparsers):
         choices=Palette.values(),
         type=str,
         default=Palette.default(),
-        help=f'an image palette (default="{Palette.default()}")',
+        help=f'a generated palette (default="{Palette.default()}")',
     )
     parser.add_argument(
         "--image-background",
         choices=Background.values(),
         type=str,
         default=Background.default(),
-        help=f'an image background (default="{Background.default()}")',
+        help=f'a generated background (default="{Background.default()}")',
     )
     parser.add_argument(
         "--image-capacity",
@@ -119,7 +120,7 @@ def generate(subparsers):
     parser.add_argument(
         "-v",
         "--verbose",
-        help="the flag to set verbose mode",
+        help="a flag to set verbose mode",
         action="store_true",
     )
 
@@ -129,17 +130,13 @@ def transform(subparsers):
     cmd = "transform"
 
     def run(args):
-        print(
-            f"\nTransform dataset from '{args.input}' "
-            f"to tfrecords in '{args.output}'..."
-        )
         create_tfrecords(
-            dataset_dir=args.input,
+            dataset_dir=args.dataset_dir,
             selected_categories=args.select_categories,
-            tfrecords_dir=args.output,
-            tfrecords_size=args.size,
-            image_width=args.image_width,
-            image_height=args.image_height,
+            tfrecords_dir=args.tfrecords_dir,
+            tfrecords_size=args.tfrecords_size,
+            tfrecords_image_width=args.tfrecords_image_width,
+            tfrecords_image_height=args.tfrecords_image_height,
             verbose=args.verbose,
         )
 
@@ -151,52 +148,60 @@ def transform(subparsers):
 
     # --- input options ---------------
     parser.add_argument(
-        "-i",
-        "--input",
-        metavar="DIR",
+        "dataset_dir",
+        metavar="DATASET_DIR",
+        nargs="?",
         type=str,
         default=DATASET_DIR,
-        help=f'an input directory with source data (default="{DATASET_DIR}")',
+        help=(
+            "a source dataset directory, if not defined, "
+            f"it will be selected as the './{DATASET_DIR}'"
+        ),
     )
 
     # --- output options --------------
     parser.add_argument(
-        "-o",
-        "--output",
-        metavar="DIR",
+        "tfrecords_dir",
+        metavar="TFRECORDS_DIR",
+        nargs="?",
         type=str,
         default=None,
-        help="an output directory for TFRecords (default=None)",
+        help=(
+            "a TFRecords directory, if not defined, "
+            "it will be created in the <DATASET_DIR> parent "
+            "under the name '<DATASET_DIR>-tfrecords"
+        ),
     )
+
     parser.add_argument(
         "-s",
-        "--size",
+        "--tfrecords-size",
         metavar="NUMBER",
         type=int,
         default=256,
-        help="a number of records per partion (default=256)",
+        help="a number of images per partion (default=256)",
     )
 
     # --- image options ---------------
     parser.add_argument(
-        "--image-width",
+        "--tfrecords-image-width",
         metavar="PIXELS",
         type=int,
         default=IMAGE_WIDTH,
-        help="an image width resize to (default=None)",
+        help=f"a TFRecords image width resize to (default={IMAGE_WIDTH})",
     )
     parser.add_argument(
-        "--image-height",
+        "--tfrecords-image-height",
         metavar="PIXELS",
         type=int,
         default=IMAGE_HEIGHT,
-        help="an image height resize to (default=None)",
+        help=f"a TFRecords image height resize to (default={IMAGE_HEIGHT})",
     )
 
     # --- selection options -----------
     parser.add_argument(
         "--select-categories",
-        metavar="CATEGORY_IDS",
+        metavar="CATEGORY_ID",
         nargs="+",
         type=int,
         help="a list of selected category IDs",
@@ -207,7 +212,7 @@ def transform(subparsers):
     parser.add_argument(
         "-v",
         "--verbose",
-        help="the flag to set verbose mode",
+        help="a flag to set verbose mode",
         action="store_true",
     )
 
@@ -217,8 +222,17 @@ def inspect(subparsers):
     cmd = "inspect"
 
     def run(args):
-        print(f"\nInspect tfrecords from '{args.input}'...")
-        inspect_tfrecords(tfrecords_dir=args.input)
+        if args.image_id:
+            inspect_tfrecord(
+                tfrecords_dir=args.tfrecords_dir,
+                image_id=args.image_id,
+                output_dir=args.output_dir,
+                with_summary=not args.no_summary,
+                with_bboxes=not args.no_bboxes,
+                with_segmentations=not args.no_segmentations,
+            )
+        else:
+            inspect_tfrecords(tfrecords_dir=args.tfrecords_dir)
 
     # ---------------------------------
     # Sets "inspect" command options
@@ -228,56 +242,46 @@ def inspect(subparsers):
 
     # --- input options ---------------
     parser.add_argument(
-        "-i",
-        "--input",
-        metavar="DIR",
+        "tfrecords_dir",
+        metavar="TFRECORDS_DIR",
         type=str,
-        help="an input directory with tfrecords",
+        help="a TFRecords directory to inspect",
     )
 
+    group = parser.add_argument_group("A record inspection options")
 
-def view(subparsers):
-    # Defines the command name.
-    cmd = "view"
-
-    def run(args):
-        print(f"\nView '{args.image_id}' tfrecords from '{args.input}'...")
-        view_tfrecords(
-            tfrecords_dir=args.input,
-            image_id=args.image_id,
-            with_bboxes=args.no_bboxes,
-            with_segmentations=args.no_segmentations,
-        )
-
-    # ---------------------------------
-    # Sets "view" command options
-    # ---------------------------------
-    parser = subparsers.add_parser(cmd)
-    parser.set_defaults(func=run)
-
-    # --- input options ---------------
-    parser.add_argument(
-        "input",
-        metavar="DIR",
-        type=str,
-        help="an input directory with tfrecords",
-    )
-
-    parser.add_argument(
+    group.add_argument(
         "image_id",
         metavar="IMAGE_ID",
+        nargs="?",
         type=int,
-        help="an image ID to view",
+        help="an image ID to select",
+        default=None,
     )
 
-    parser.add_argument(
+    group.add_argument(
+        "output_dir",
+        metavar="OUTPUT_DIR",
+        nargs="?",
+        type=str,
+        help="an output directory to save rendered image",
+        default=".",
+    )
+
+    group.add_argument(
+        "--no-summary",
+        help="turn off the showing of image summary",
+        action="store_true",
+    )
+
+    group.add_argument(
         "--no-bboxes",
         help="turn off the showing of bounding boxes",
-        action="store_false",
+        action="store_true",
     )
 
-    parser.add_argument(
+    group.add_argument(
         "--no-segmentations",
         help="turn off the showing of segmentations",
-        action="store_false",
+        action="store_true",
     )

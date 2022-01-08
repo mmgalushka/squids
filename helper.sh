@@ -37,7 +37,7 @@ action_init(){
     #         rm -r .venv
     # fi
 
-    python3 -m venv .venv
+    # python3 -m venv .venv
     source .venv/bin/activate 
 
     # if [[ -f dependencies.txt ]]
@@ -46,7 +46,8 @@ action_init(){
     # else
     #     pip3 install -r requirements.txt --no-cache
     # fi
-    pip3 install fiftyone[desktop]
+    # pip3 install -r requirements.txt --no-cache
+    pip3 install tabulate
 }
 
 action_test(){
@@ -89,11 +90,6 @@ action_inspect(){
     python main.py inspect ${@}
 }
 
-action_view(){
-    source .venv/bin/activate
-    python main.py view ${@}
-}
-
 action_mkdocs(){
     source .venv/bin/activate
     mkdocs serve
@@ -122,9 +118,6 @@ case $1 in
     ;;
     inspect)
         action_inspect ${@:2}
-    ;;
-    view)
-        action_view ${@:2}
     ;;
     mkdocs)
         # action_mkdocs ${@:2}

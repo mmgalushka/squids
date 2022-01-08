@@ -14,9 +14,11 @@ import PIL.Image as Image
 import PIL.ImageDraw as ImageDraw
 import PIL.ImageFont as ImageFont
 import tensorflow as tf
+import numpy as np
 from tqdm import tqdm
+from tabulate import tabulate
 
-from .dataset import CsvIterator, CocoIterator
+from .dataset import DATASET_DIR, CsvIterator, CocoIterator
 from .feature import item_to_feature, feature_to_item
 from .image import IMAGE_WIDTH, IMAGE_HEIGHT
 from .color import CATEGORY_COLORS
@@ -39,11 +41,20 @@ def items_to_tfrecords(
     def get_example(item):
         image_id = item["image"]["id"]
         img = item["image"]["content"]
-        bboxes = [anno["bbox"] for anno in item["annotations"]]
-        segmentations = [
-            anno["segmentation"][0] for anno in item["annotations"]
-        ]
-        category_ids = [anno["category_id"] for anno in item["annotations"]]
+        annotations = item["annotations"]
+        categories = item["categories"]
+
+        category_max_id = max([category["id"] for category in categories])
+
+        bboxes = []
+        segmentations = []
+        category_ids = []
+        for annotation in annotations:
+            if annotation["iscrowd"] == 0:
+
+                bboxes.append(annotation["bbox"])
+                segmentations.append(annotation["segmentation"][0])
+                category_ids.append(annotation["category_id"])
 
         feature = item_to_feature(
             image_id,
@@ -53,6 +64,7 @@ def items_to_tfrecords(
             bboxes,
             segmentations,
             category_ids,
+            category_max_id,
         )
         return tf.train.Example(features=tf.train.Features(feature=feature))
 
@@ -87,7 +99,8 @@ def items_to_tfrecords(
                 part_count = 0
 
             example = get_example(item)
-            writer.write(example.SerializeToString())
+            if example:
+                writer.write(example.SerializeToString())
         part_count += 1
 
         # Updates the progress bar of verbose mode is on.
@@ -111,27 +124,30 @@ def is_csv_input(input_dir: Path) -> bool:
 
 
 def is_coco_input(input_dir: Path) -> bool:
-    return set(os.listdir(input_dir)) == set(
-        ["annotations", "train", "test", "val"]
-    )
+    root_artifacts = os.listdir(input_dir)
+    if "annotations" in root_artifacts:
+        annotations_artifacts = os.listdir(input_dir / "annotations")
+        stems_artifacts = [
+            Path(artifact).stem for artifact in annotations_artifacts
+        ]
+        return set(stems_artifacts).issubset(set(root_artifacts))
+    return False
 
 
 def create_tfrecords(
-    dataset_dir: str,
+    dataset_dir: str = DATASET_DIR,
     selected_categories: list = [],
     tfrecords_dir: str = None,
     tfrecords_size: int = 256,
-    image_width: int = IMAGE_WIDTH,
-    image_height: int = IMAGE_HEIGHT,
+    tfrecords_image_width: int = IMAGE_WIDTH,
+    tfrecords_image_height: int = IMAGE_HEIGHT,
     verbose: bool = False,
 ):
-    # Gets input directory, containing dataset files that need to be
-    # transformed to TFRecords.
-    input_dir = Path(dataset_dir)
-    # if not input_dir.exists():
-    #     raise FileExistsError(f"Input directory not found at: {input_dir}")
 
-    # Creates the output directory, where TFRecords should be stored.
+    input_dir = Path(dataset_dir)
+    if not input_dir.exists():
+        raise FileNotFoundError(str(input_dir))
+
     if tfrecords_dir is None:
         output_dir = input_dir.parent / (input_dir.name + "-tfrecords")
     else:
@@ -145,8 +161,8 @@ def create_tfrecords(
                 instance_file,
                 CsvIterator(instance_file, selected_categories),
                 tfrecords_size,
-                image_width,
-                image_height,
+                tfrecords_image_width,
+                tfrecords_image_height,
                 verbose,
             )
     elif is_coco_input(input_dir):
@@ -156,8 +172,8 @@ def create_tfrecords(
                 instance_file,
                 CocoIterator(instance_file, selected_categories),
                 tfrecords_size,
-                image_width,
-                image_height,
+                tfrecords_image_width,
+                tfrecords_image_height,
                 verbose,
             )
 
@@ -192,6 +208,9 @@ KEY_FEATURE_MAP = {
         [], tf.string, allow_missing=True
     ),
     "category_ids/data": tf.io.FixedLenSequenceFeature(
+        [], tf.int64, allow_missing=True
+    ),
+    "category_ids/max": tf.io.FixedLenSequenceFeature(
         [], tf.int64, allow_missing=True
     ),
 }
@@ -271,31 +290,75 @@ def get_tfrecords_explorer(
 
 
 def inspect_tfrecords(tfrecords_dir: str):
-    batch = get_tfrecords_explorer(Path(tfrecords_dir))
-    image_ids = []
-    for image_id, _, _, _, category_ids in batch:
-        image_ids.append(
-            str(image_id.numpy()[0])
-            + "("
-            + ",".join(map(str, category_ids.numpy()))
-            + ")"
-        )
     cli = cmd.Cmd()
-    cli.columnize(image_ids)
+    input_path = Path(tfrecords_dir)
+    if input_path.is_dir():
+        tfrecord_files = glob.glob(str(input_path / "part-*.tfrecord"))
+        if len(tfrecord_files) > 0:
+            records = []
+            batch = get_tfrecords_explorer(input_path)
+            for image_id, _, _, _, category_onehots in batch:
+                category_ids = [
+                    np.argmax(category_onehot)
+                    for category_onehot in category_onehots.numpy()[0]
+                ]
+
+                records.append(
+                    str(image_id.numpy()[0])
+                    + " ("
+                    + ",".join(map(str, set(category_ids)))
+                    + ")"
+                )
+
+            print(f"\n{tfrecords_dir} ({len(tfrecord_files)} parts)")
+            cli.columnize(records)
+            print(f"Total {len(records)} records")
+        else:
+            print(f"\n{tfrecords_dir} (no tfrecords found)")
+            cli.columnize(os.listdir(input_path))
+    else:
+        raise FileNotFoundError(tfrecords_dir)
 
 
-def view_tfrecords(
+def inspect_tfrecord(
     tfrecords_dir: str,
     image_id: int,
-    with_bboxes: bool,
-    with_segmentations: bool,
+    output_dir: str = ".",
+    with_summary: bool = True,
+    with_bboxes: bool = True,
+    with_segmentations: bool = True,
 ):
+
     batch = get_tfrecords_explorer(Path(tfrecords_dir))
     for selected_image_id, image, bboxes, segmentations, category_ids in batch:
         if image_id == selected_image_id:
             output_image = Image.fromarray(
                 tf.squeeze(image * 255, [0]).numpy().astype("uint8"), "RGB"
             )
+            output_image_size = output_image.size
+            output_image_shape = (
+                output_image_size[0],
+                output_image_size[1],
+                3,
+            )
+
+            if with_summary:
+                total_labeled_objects = len(category_ids.numpy()[0])
+                available_categories_set = set(
+                    [
+                        np.argmax(category_onehot)
+                        for category_onehot in category_ids.numpy()[0]
+                    ]
+                )
+
+                summary = [
+                    ["Image ID", image_id],
+                    ["Image Type", "RGB"],
+                    ["Image Shape", output_image_shape],
+                    ["Total Labeled Objects", total_labeled_objects],
+                    ["Available Categories Set", available_categories_set],
+                ]
+                print(tabulate(summary, headers=["Property", "Value"]))
 
             if with_segmentations:
                 for mask, onehot in zip(
@@ -309,10 +372,11 @@ def view_tfrecords(
                     ]
 
                     blend_image = Image.new(
-                        "RGBA", (64, 64), str(category_color)
+                        "RGBA", output_image_size, str(category_color)
                     )
                     mask_image = Image.fromarray(
-                        (mask.reshape(64, 64, 3)).astype("uint8"), "RGB"
+                        (mask.reshape(output_image_shape)).astype("uint8"),
+                        "RGB",
                     ).convert("L")
                     output_image = Image.blend(
                         output_image,
@@ -354,6 +418,8 @@ def view_tfrecords(
                         font=ImageFont.load_default(),
                     )
 
-            output_image.save("my.png")
+            output_file = f"{output_dir}/{image_id}.png"
+            output_image.save(output_file)
+            print(f"Image saved to {output_file}")
         else:
             continue

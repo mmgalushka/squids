@@ -36,7 +36,7 @@ DATASET_SIZE = 1000
 
 
 def create_csv_dataset(
-    dataset_dir: str,
+    dataset_dir: str = DATASET_DIR,
     dataset_size: int = DATASET_SIZE,
     image_width: int = IMAGE_WIDTH,
     image_height: int = IMAGE_HEIGHT,
@@ -155,10 +155,14 @@ class CsvIterator:
             for row in csv_reader:
                 self.__annotations.append(
                     {
-                        "image": {"file_name": row["file_name"]},
+                        "image": {
+                            "id": int(row["image_id"]),
+                            "file_name": row["file_name"],
+                        },
                         "annotations": [
                             {
                                 "bbox": bbox,
+                                "iscrowd": 0,
                                 "segmentation": [segmentation],
                                 "category_id": category_id,
                             }
@@ -167,6 +171,18 @@ class CsvIterator:
                                 json.loads(row["segmentations"]),
                                 json.loads(row["category_ids"]),
                             )
+                        ],
+                        "categories": [
+                            {
+                                "supercategory": "shape",
+                                "id": 1,
+                                "name": "rectangle",
+                            },
+                            {
+                                "supercategory": "shape",
+                                "id": 2,
+                                "name": "triangle",
+                            },
                         ],
                     }
                 )
@@ -199,7 +215,7 @@ class CsvIterator:
 
 
 def create_coco_dataset(
-    dataset_dir: str,
+    dataset_dir: str = DATASET_DIR,
     dataset_size: int = DATASET_SIZE,
     image_width: int = IMAGE_WIDTH,
     image_height: int = IMAGE_HEIGHT,
@@ -225,13 +241,13 @@ def create_coco_dataset(
         rmtree(output_dir)
     output_dir.mkdir(parents=True)
 
-    annotations_images_dir = output_dir / "annotations"
-    annotations_images_dir.mkdir()
-    train_images_dir = output_dir / "train"
+    annotations_dir = output_dir / "annotations"
+    annotations_dir.mkdir()
+    train_images_dir = output_dir / "instances_train"
     train_images_dir.mkdir()
-    val_images_dir = output_dir / "val"
+    val_images_dir = output_dir / "instances_val"
     val_images_dir.mkdir()
-    test_images_dir = output_dir / "test"
+    test_images_dir = output_dir / "instances_test"
     test_images_dir.mkdir()
 
     now = datetime.datetime.now()
@@ -287,7 +303,7 @@ def create_coco_dataset(
         image.save(file_name, "JPEG", quality=100, subsampling=0)
 
         image_record = {
-            "file_name": str(file_name),
+            "file_name": str(image_file),
             "coco_url": f"file:///{str(file_name)}",
             "width": int(image_width),
             "height": int(image_height),
@@ -325,9 +341,9 @@ def create_coco_dataset(
         if verbose:
             pbar.update(1)
 
-    train_file = Path(annotations_images_dir / "instances_train.json")
-    val_file = Path(annotations_images_dir / "instances_val.json")
-    test_file = Path(annotations_images_dir / "instances_test.json")
+    train_file = Path(annotations_dir / "instances_train.json")
+    val_file = Path(annotations_dir / "instances_val.json")
+    test_file = Path(annotations_dir / "instances_test.json")
 
     with open(train_file, "w") as fp:
         json.dump(train, fp, indent=4)
@@ -342,14 +358,7 @@ class CocoIterator:
         with open(instance_file) as f:
             self.content = json.load(f)
 
-        if "train" in instance_file.name:
-            self.__image_dir = instance_file.parent.parent / "train"
-        elif "val" in instance_file.name:
-            self.__image_dir = instance_file.parent.parent / "val"
-        elif "test" in instance_file.name:
-            self.__image_dir = instance_file.parent.parent / "test"
-        else:
-            raise ValueError("Invalid instance file name.")
+        self.__image_dir = instance_file.parent.parent / instance_file.stem
 
         # Creates a map for remapping old categories' IDs to the new ones.
         # This helps to reduce the one-hot encoding tensor, by shrinking
@@ -416,12 +425,14 @@ class CocoIterator:
             raise StopIteration
 
         image = self.content["images"][self.__pointer]
+
         image["content"] = Image.open(self.__image_dir / image["file_name"])
 
         if image["id"] in self.__annotations:
             item = dict()
             item["image"] = image
             item["annotations"] = self.__annotations[image["id"]]
+            item["categories"] = self.content["categories"]
         else:
             item = None
 

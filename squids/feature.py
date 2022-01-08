@@ -19,6 +19,7 @@ def item_to_feature(
     bboxes: list,
     segmentations: list,
     category_ids: list,
+    category_ids_max: int,
 ) -> dict:
     """Transforms an image to the TFRecord feature.
 
@@ -44,11 +45,17 @@ def item_to_feature(
     scale_ratio_for_width = target_image_width / original_image_width
     scale_ratio_for_height = target_image_height / original_image_height
 
+    # Resize image to the target size which will be used durinn the model
+    # training;
     image_data = np.array(
         image.resize((target_image_width, target_image_height))
     ).flatten()
 
+    # Gets the total number annotations in the image.
     annotations_number = len(bboxes)
+
+    # Gets bounding boxes and segmentation masks scaled according to the
+    # target image size.
     bboxes_data = []
     segmentations_data = []
     for bbox, segmentation in zip(bboxes, segmentations):
@@ -79,6 +86,8 @@ def item_to_feature(
         )
         segmentations_data.extend(np.array(mask).flatten())
     segmentations_data = np.array(segmentations_data)
+
+    # Gets annotated category IDs.
     category_ids_data = category_ids
 
     return {
@@ -108,6 +117,9 @@ def item_to_feature(
         "category_ids/data": tf.train.Feature(
             int64_list=tf.train.Int64List(value=category_ids_data)
         ),
+        "category_ids/max": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[category_ids_max])
+        ),
     }
 
 
@@ -136,6 +148,7 @@ def feature_to_item(
         category_ids:
             The list of categories for annotated objects.
     """
+    # Gets an image.
     image_id = parsed_features["image/id"][0]
     image_width = parsed_features["image/width"][0]
     image_height = parsed_features["image/height"][0]
@@ -149,16 +162,21 @@ def feature_to_item(
 
     n = parsed_features["annotations/number"][0]
 
+    # Gets bounding boxes;
     bboxes = parsed_features["bboxes/data"]
     bboxes = tf.reshape(bboxes, (-1, 4))
 
+    # Gets segments masks;
     segmentations = tf.io.decode_raw(
         parsed_features["segmentations/data"], tf.uint8
     )
     segmentations = tf.reshape(segmentations, (-1, image_size))
 
+    # Gets category IDs;
     category_ids = parsed_features["category_ids/data"]
+    category_ids_max = parsed_features["category_ids/max"][0]
 
+    # Slices a pads data depending on number of detecting objects;
     if num_detecting_objects:
         if n < num_detecting_objects:
             # If the obtained number of record less than the detection
@@ -180,8 +198,7 @@ def feature_to_item(
             )
         else:
             # If the obtained number of record binding boxes is greater
-            # than the detection capacity, then the  binding boxes list
-            # must be sliced.
+            # than the detection capacity, then the records must be sliced.
             bboxes = tf.slice(bboxes, [0, 0], [num_detecting_objects, 4])
             segmentations = tf.slice(
                 segmentations, [0, 0], [num_detecting_objects, image_size]
@@ -190,6 +207,7 @@ def feature_to_item(
 
     bboxes = tf.cast(bboxes, dtype=tf.float32)
     segmentations = tf.cast(segmentations, dtype=tf.float32)
-    category_ids = tf.one_hot(category_ids, depth=3)
+    # +1 to the categories_number to allow "no object" category with ID == 0;
+    category_ids = tf.one_hot(category_ids, depth=int(category_ids_max + 1))
 
     return image_id, image, bboxes, segmentations, category_ids
