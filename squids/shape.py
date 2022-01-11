@@ -27,20 +27,14 @@ class Shape:
     """
 
     def __init__(
-        self, polygon: Polygon, bbox: BBox, color: Color, category_id: int
+        self,
+        bbox: BBox,
+        polygon: Polygon,
+        color: Color,
     ):
-        self.polygon = polygon
         self.bbox = bbox
+        self.polygon = polygon
         self.color = color
-        self.category_id = category_id
-
-    def __str__(self):
-        return (
-            f"(bbox={str(self.bbox)}, "
-            f"polygon={str(self.polygon)}, "
-            f"color='{str(self.color)}', "
-            f"category_id={self.category_id})"
-        )
 
 
 class Rectangle(Shape):
@@ -55,10 +49,20 @@ class Rectangle(Shape):
                 Point(bbox.anchor.x, bbox.anchor.y + bbox.height),
             ]
         )
-        super().__init__(polygon, bbox, color, 1)
+        super().__init__(bbox, polygon, color)
+
+    category_name = "rectangle"
+    category_id = 1
 
     def get_area(self) -> float:
         return self.bbox.width * self.bbox.height
+
+    def __str__(self):
+        return (
+            f"Rectangle(bbox={str(self.bbox)}, "
+            f"polygon={str(self.polygon)}, "
+            f"color='{str(self.color)}'"
+        )
 
 
 class Triangle(Shape):
@@ -73,7 +77,31 @@ class Triangle(Shape):
                 Point(bbox.anchor.x, bbox.anchor.y + bbox.height),
             ]
         )
-        super().__init__(polygon, bbox, color, 2)
+        super().__init__(bbox, polygon, color)
+
+    category_name = "triangle"
+    category_id = 2
 
     def get_area(self) -> float:
         return (self.bbox.width * self.bbox.height) / 2.0
+
+    def __str__(self):
+        return (
+            f"Triangle(bbox={str(self.bbox)}, "
+            f"polygon={str(self.polygon)}, "
+            f"color='{str(self.color)}'"
+        )
+
+
+SHAPES_CATEGORIES = [
+    {
+        "supercategory": "shape",
+        "id": Rectangle.category_id,
+        "name": Rectangle.category_name,
+    },
+    {
+        "supercategory": "shape",
+        "id": Triangle.category_id,
+        "name": Triangle.category_name,
+    },
+]

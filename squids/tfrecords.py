@@ -18,7 +18,11 @@ import numpy as np
 from tqdm import tqdm
 from tabulate import tabulate
 
-from .dataset import DATASET_DIR, CsvIterator, CocoIterator
+from .dataset import (
+    DATASET_DIR,
+    CsvIterator,
+    CocoIterator,
+)
 from .feature import item_to_feature, feature_to_item
 from .image import IMAGE_WIDTH, IMAGE_HEIGHT
 from .color import CATEGORY_COLORS
@@ -40,11 +44,11 @@ def items_to_tfrecords(
 ):
     def get_example(item):
         image_id = item["image"]["id"]
-        img = item["image"]["content"]
+        img = item["image"]["data"]
         annotations = item["annotations"]
         categories = item["categories"]
 
-        category_max_id = max([category["id"] for category in categories])
+        category_max_id = max(list(categories.keys()))
 
         bboxes = []
         segmentations = []

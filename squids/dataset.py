@@ -23,6 +23,7 @@ from .image import (
     IMAGE_HEIGHT,
     IMAGE_WIDTH,
 )
+from .shape import SHAPES_CATEGORIES
 
 DATASET_DIR = "dataset/synthetic"
 """A default dataset directory."""
@@ -30,9 +31,9 @@ DATASET_DIR = "dataset/synthetic"
 DATASET_SIZE = 1000
 """A number of generating synthetic images."""
 
-# -----------------------------------------------------------------------------
-# Support for the CSV Datasets
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# CSV/COCO Datasets Creators
+# ------------------------------------------------------------------------------
 
 
 def create_csv_dataset(
@@ -71,18 +72,12 @@ def create_csv_dataset(
     categories_file = Path(output_dir / "categories.json")
 
     with open(categories_file, "w") as categories_fp:
+
         json.dump(
-            {
-                "categories": [
-                    {
-                        "supercategory": "shape",
-                        "id": 0,
-                        "name": "rectangle",
-                    },
-                    {"supercategory": "shape", "id": 1, "name": "triangle"},
-                ]
-            },
+            {"categories": SHAPES_CATEGORIES},
             categories_fp,
+            sort_keys=True,
+            indent=4,
         )
 
     with open(train_file, "w") as train, open(val_file, "w") as val, open(
@@ -98,7 +93,7 @@ def create_csv_dataset(
             pbar = tqdm(range(dataset_size))
 
         for image_id in range(dataset_size):
-            image_file = f"image{image_id}.jpg"
+            file_name = f"image{image_id}.jpg"
             image, shapes = create_synthetic_image(
                 image_width,
                 image_height,
@@ -106,8 +101,9 @@ def create_csv_dataset(
                 image_background,
                 image_capacity,
             )
-            file_name = images_dir / image_file
-            image.save(file_name, "JPEG", quality=100, subsampling=0)
+            image.save(
+                images_dir / file_name, "JPEG", quality=100, subsampling=0
+            )
 
             bboxes = []
             segmentations = []
@@ -137,81 +133,6 @@ def create_csv_dataset(
 
             if verbose:
                 pbar.update(1)
-
-
-class CsvIterator:
-    def __init__(self, instance_file: Path, selected_categories: list = []):
-        with open(instance_file.parent / "categories.json") as categories_fp:
-            self.__categories = dict()
-            for category in json.load(categories_fp)["categories"]:
-                category_id = category["id"]
-                if category_id not in self.__categories:
-                    self.__categories[category_id] = []
-                self.__categories[category_id].append(category)
-
-        self.__annotations = []
-        with open(instance_file, newline="\n") as csv_fp:
-            csv_reader = csv.DictReader(csv_fp, delimiter=",", quotechar='"')
-            for row in csv_reader:
-                self.__annotations.append(
-                    {
-                        "image": {
-                            "id": int(row["image_id"]),
-                            "file_name": row["file_name"],
-                        },
-                        "annotations": [
-                            {
-                                "bbox": bbox,
-                                "iscrowd": 0,
-                                "segmentation": [segmentation],
-                                "category_id": category_id,
-                            }
-                            for bbox, segmentation, category_id in zip(
-                                json.loads(row["bboxes"]),
-                                json.loads(row["segmentations"]),
-                                json.loads(row["category_ids"]),
-                            )
-                        ],
-                        "categories": [
-                            {
-                                "supercategory": "shape",
-                                "id": 1,
-                                "name": "rectangle",
-                            },
-                            {
-                                "supercategory": "shape",
-                                "id": 2,
-                                "name": "triangle",
-                            },
-                        ],
-                    }
-                )
-
-        self.__pointer = 0
-        self.__size = len(self.__annotations)
-        self.__selected_categories = selected_categories
-
-    def __iter__(self):
-        return self
-
-    def __len__(self):
-        return self.__size
-
-    def __next__(self):
-        if self.__pointer >= len(self):
-            raise StopIteration
-
-        item = self.__annotations[self.__pointer]
-        item["image"]["content"] = Image.open(item["image"]["file_name"])
-
-        self.__pointer += 1
-
-        return item
-
-
-# -----------------------------------------------------------------------------
-# Support for the COCO Datasets
-# -----------------------------------------------------------------------------
 
 
 def create_coco_dataset(
@@ -268,10 +189,7 @@ def create_coco_dataset(
             }
         ],
         "images": [],
-        "categories": [
-            {"supercategory": "shape", "id": 1, "name": "rectangle"},
-            {"supercategory": "shape", "id": 2, "name": "triangle"},
-        ],
+        "categories": SHAPES_CATEGORIES,
         "annotations": [],
     }
 
@@ -353,66 +271,41 @@ def create_coco_dataset(
         json.dump(test, fp, indent=4)
 
 
-class CocoIterator:
-    def __init__(self, instance_file: Path, selected_categories: list = []):
-        with open(instance_file) as f:
-            self.content = json.load(f)
+# ------------------------------------------------------------------------------
+# CSV/COCO Datasets Iterators
+# ------------------------------------------------------------------------------
 
-        self.__image_dir = instance_file.parent.parent / instance_file.stem
 
-        # Creates a map for remapping old categories' IDs to the new ones.
-        # This helps to reduce the one-hot encoding tensor, by shrinking
-        # it to the exact number of predicting categories.
+class CategoriesMap:
+    def __init__(self, selected_categories: list = []):
+        self.__categories_mapping = {}
         if len(selected_categories) > 0:
-            categories_map = {
-                old_category_id: new_category_id
-                + 1  # +1 since the valid category starts from 1, not 0
-                for new_category_id, old_category_id in enumerate(
-                    sorted(selected_categories)
+            for new_category_id, old_category_id in enumerate(
+                sorted(selected_categories)
+            ):
+                self.__categories_mapping[old_category_id] = (
+                    new_category_id + 1
                 )
-            }
+
+    def __getitem__(self, category_id):
+        if self.__categories_mapping:
+            return self.__categories_mapping[category_id]
         else:
-            categories_map = {
-                category["id"]: category["id"]
-                for category in self.content["categories"]
-            }
+            return category_id
 
-        self.__annotations = dict()
-        for annotation in self.content["annotations"]:
-            if len(selected_categories) > 0:
-                if annotation["category_id"] not in selected_categories:
-                    # Skips all not selected categories;
-                    continue
-            image_id = annotation["image_id"]
-            if image_id not in self.__annotations:
-                self.__annotations[image_id] = []
+    def __contains__(self, category_id):
+        if self.__categories_mapping:
+            return category_id in self.__categories_mapping
+        else:
+            return True
 
-            # Remaps ald category ID to the new one.
-            new_annotation = copy.deepcopy(annotation)
-            new_annotation["category_id"] = categories_map[
-                annotation["category_id"]
-            ]
 
-            self.__annotations[image_id].append(new_annotation)
-
-        self.__categories = dict()
-        for category in self.content["categories"]:
-            category_id = category["id"]
-            if len(selected_categories) > 0:
-                if category_id not in selected_categories:
-                    # Skips all not selected categories;
-                    continue
-            if category_id not in self.__categories:
-                self.__categories[category_id] = []
-
-            # Remaps ald category ID to the new one.
-            new_category = copy.deepcopy(annotation)
-            new_category["id"] = categories_map[category["id"]]
-
-            self.__categories[category_id].append(new_category)
-
+class DatasetIterator:
+    def __init__(self, records: list, image_dir: Path):
+        self.__records = records
+        self.__image_dir = image_dir
+        self.__size = len(self.__records)
         self.__pointer = 0
-        self.__size = len(self.content["images"])
 
     def __iter__(self):
         return self
@@ -421,21 +314,108 @@ class CocoIterator:
         return self.__size
 
     def __next__(self):
-        if self.__pointer >= len(self):
+        if self.__pointer >= self.__size:
             raise StopIteration
 
-        image = self.content["images"][self.__pointer]
-
-        image["content"] = Image.open(self.__image_dir / image["file_name"])
-
-        if image["id"] in self.__annotations:
-            item = dict()
-            item["image"] = image
-            item["annotations"] = self.__annotations[image["id"]]
-            item["categories"] = self.content["categories"]
-        else:
-            item = None
-
+        record = self.__records[self.__pointer]
+        record["image"]["data"] = Image.open(
+            self.__image_dir / record["image"]["file_name"]
+        )
         self.__pointer += 1
 
-        return item
+        return record
+
+
+class CsvIterator(DatasetIterator):
+    def __init__(self, instance_file: Path, selected_categories: list):
+        categories_map = CategoriesMap(selected_categories)
+
+        categories = dict()
+        with open(instance_file.parent / "categories.json") as fp:
+            for category in json.load(fp)["categories"]:
+                category_id = category["id"]
+                if category_id in categories_map:
+                    # Remaps ald category ID to the new one.
+                    new_category = copy.deepcopy(category)
+                    new_category["id"] = categories_map[category["id"]]
+                    categories[new_category["id"]] = new_category
+
+        records = []
+        with open(instance_file, newline="\n") as csv_fp:
+            csv_reader = csv.DictReader(csv_fp, delimiter=",", quotechar='"')
+            for row in csv_reader:
+                annotations = []
+                for bbox, segmentation, category_id in zip(
+                    json.loads(row["bboxes"]),
+                    json.loads(row["segmentations"]),
+                    json.loads(row["category_ids"]),
+                ):
+                    if category_id in categories_map:
+                        annotations.append(
+                            {
+                                "bbox": bbox,
+                                "iscrowd": 0,
+                                "segmentation": [segmentation],
+                                "category_id": categories_map[category_id],
+                            }
+                        )
+
+                # Here we discard all images which do not have any
+                # annotations for the selected categories.
+                if len(annotations) > 0:
+                    records.append(
+                        {
+                            "image": {
+                                "id": int(row["image_id"]),
+                                "file_name": row["file_name"],
+                            },
+                            "annotations": annotations,
+                            "categories": categories,
+                        }
+                    )
+        super().__init__(records, instance_file.parent / "images")
+
+
+class CocoIterator(DatasetIterator):
+    def __init__(self, instance_file: Path, selected_categories: list):
+        categories_map = CategoriesMap(selected_categories)
+
+        with open(instance_file) as f:
+            content = json.load(f)
+
+        annotations = dict()
+        for annotation in content["annotations"]:
+            category_id = annotation["category_id"]
+            if category_id in categories_map:
+                image_id = annotation["image_id"]
+                if image_id not in annotations:
+                    annotations[image_id] = []
+
+                # Remaps ald category ID to the new one.
+                new_annotation = copy.deepcopy(annotation)
+                new_annotation["category_id"] = categories_map[category_id]
+                annotations[image_id].append(new_annotation)
+
+        categories = dict()
+        for category in content["categories"]:
+            category_id = category["id"]
+            if category_id in categories_map:
+                # Remaps ald category ID to the new one.
+                new_category = copy.deepcopy(category)
+                new_category["id"] = categories_map[category_id]
+                categories[new_category["id"]] = new_category
+
+        records = []
+        for image in content["images"]:
+            if image["id"] in annotations:
+                records.append(
+                    {
+                        "image": image,
+                        "annotations": annotations[image["id"]],
+                        "categories": categories,
+                    }
+                )
+
+        super().__init__(
+            records, instance_file.parent.parent / instance_file.stem
+        )

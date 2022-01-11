@@ -207,7 +207,7 @@ def feature_to_item(
 
     bboxes = tf.cast(bboxes, dtype=tf.float32)
     segmentations = tf.cast(segmentations, dtype=tf.float32)
-    # +1 to the categories_number to allow "no object" category with ID == 0;
+    # +1: to the categories_number to allow "no object" category with ID == 0
     category_ids = tf.one_hot(category_ids, depth=int(category_ids_max + 1))
 
     return image_id, image, bboxes, segmentations, category_ids
