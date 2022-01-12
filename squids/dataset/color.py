@@ -65,17 +65,3 @@ WHITE_COLOR = Color.from_hex("#ffffff")
 
 BLACK_COLOR = Color.from_hex("#000000")
 """A constant for the `Black` color."""
-
-CATEGORY_COLORS = [
-    Color.from_hex("#e6194b"),  # red
-    Color.from_hex("#f58231"),  # orange
-    Color.from_hex("#ffe119"),  # yellow
-    Color.from_hex("#bfef45"),  # lime
-    Color.from_hex("#3cb44b"),  # green
-    Color.from_hex("#42d4f4"),  # cyan
-    Color.from_hex("#4363d8"),  # blue
-    Color.from_hex("#911eb4"),  # purple
-    Color.from_hex("#f032e6"),  # magenta
-    Color.from_hex("#a9a9a9"),  # grey
-]
-"""A well-separated colors range."""

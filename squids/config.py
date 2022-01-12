@@ -3,25 +3,26 @@ A module for handling configuration.
 """
 
 from pathlib import Path
-from logging import getLogger
 
 import yaml
 
-LOG = getLogger(__name__)
-
 IMAGE_WIDTH = 64
-"""A default image width."""
+"""The width of synthetic and TFRecords images."""
+
 IMAGE_HEIGHT = 64
-"""A default image height."""
+"""The height of synthetic and TFRecords images."""
+
 IMAGE_CHANNELS = 3
-"""A default number of image channels."""
+"""The number of image channels."""
+
+IMAGE_CAPACITY = 2
+"""The maximum number of geometrical shapes per image (minimum is 1)."""
 
 DATASET_DIR = "dataset/synthetic"
-TRAIN_DIR = f"{DATASET_DIR}-tfrecords/train"
-VAL_DIR = f"{DATASET_DIR}-tfrecords/val"
+"""The default location for generating synthetic dataset."""
 
-DETECTING_CATEGORIES = ["rectangle", "triangle"]
-NUM_DETECTING_OBJECTS = 10
+DATASET_SIZE = 1000
+"""The number of generatign dataset records (images + annotations)."""
 
 
 class Config(dict):
@@ -113,11 +114,6 @@ def create_config(
     image_width: int = IMAGE_WIDTH,
     image_height: int = IMAGE_HEIGHT,
     image_channels: int = IMAGE_CHANNELS,
-    train_dir: str = TRAIN_DIR,
-    train_steps_per_epoch: int = 0,
-    val_dir: str = VAL_DIR,
-    val_steps_per_epoch: int = 0,
-    num_detecting_objects: int = NUM_DETECTING_OBJECTS,
 ):
     source = {
         "input": {
@@ -126,17 +122,8 @@ def create_config(
                 "height": image_height,
                 "channels": image_channels,
             },
-            "train": {"dir": train_dir, "steps": train_steps_per_epoch},
-            "val": {"dir": val_dir, "steps": val_steps_per_epoch},
-        },
-        "output": {
-            "detecting": {
-                "capacity": num_detecting_objects,
-            }
         },
     }
-
-    LOG.debug("Created training configuration: %s;", source)
     return Config(source)
 
 

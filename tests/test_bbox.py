@@ -1,8 +1,9 @@
 """
-Test for the `BBox` class form `squids/bbox.py`.
+Test for the `BBox` class form `squids/dataset/bbox.py`.
 """
 
-from squids.image import Point, BBox
+from squids.dataset.bbox import BBox
+from squids.dataset.point import Point
 
 
 def test_bbox_constructor():

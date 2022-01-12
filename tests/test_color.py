@@ -1,8 +1,8 @@
 """
-Test for the `Color` class form `squids/color.py`.
+Test for the `Color` class form `squids/dataset/color.py`.
 """
 
-from squids.color import Color
+from squids.dataset.color import Color
 
 
 def test_color_constructor():

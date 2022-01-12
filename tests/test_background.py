@@ -1,8 +1,8 @@
 """
-Test for the `Background` class form `squids/background.py`.
+Test for the `Background` class form `squids/dataset/background.py`.
 """
 
-from squids.background import Background
+from squids.dataset.background import Background
 
 
 def test_background():

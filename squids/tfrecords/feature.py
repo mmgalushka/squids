@@ -8,7 +8,35 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image, ImageDraw
 
-from .color import BLACK_COLOR, WHITE_COLOR
+KEY_FEATURE_MAP = {
+    "image/id": tf.io.FixedLenSequenceFeature(
+        [], tf.int64, allow_missing=True
+    ),
+    "image/width": tf.io.FixedLenSequenceFeature(
+        [], tf.int64, allow_missing=True
+    ),
+    "image/height": tf.io.FixedLenSequenceFeature(
+        [], tf.int64, allow_missing=True
+    ),
+    "image/data": tf.io.FixedLenSequenceFeature(
+        [], tf.string, allow_missing=True
+    ),
+    "annotations/number": tf.io.FixedLenSequenceFeature(
+        [], tf.int64, allow_missing=True
+    ),
+    "bboxes/data": tf.io.FixedLenSequenceFeature(
+        [], tf.float32, allow_missing=True
+    ),
+    "segmentations/data": tf.io.FixedLenSequenceFeature(
+        [], tf.string, allow_missing=True
+    ),
+    "category/ids": tf.io.FixedLenSequenceFeature(
+        [], tf.int64, allow_missing=True
+    ),
+    "category/max": tf.io.FixedLenSequenceFeature(
+        [], tf.int64, allow_missing=True
+    ),
+}
 
 
 def item_to_feature(
@@ -19,7 +47,7 @@ def item_to_feature(
     bboxes: list,
     segmentations: list,
     category_ids: list,
-    category_ids_max: int,
+    category_max_id: int,
 ) -> dict:
     """Transforms an image to the TFRecord feature.
 
@@ -70,25 +98,26 @@ def item_to_feature(
         )
 
         mask = Image.new(
-            "RGB", (target_image_width, target_image_height), str(BLACK_COLOR)
+            # mask is a image with black background;
+            "RGB",
+            (target_image_width, target_image_height),
+            "#000000",
         )
         drawing = ImageDraw.Draw(mask)
         drawing.polygon(
             [
-                # The following block scales polygons coordinates.
+                # the following block scales polygons coordinates;
                 scale_ratio_for_width * value
                 if (i % 2) == 0
                 else scale_ratio_for_height * value
                 for i, value in enumerate(segmentation)
             ],
-            fill=str(WHITE_COLOR),
-            outline=str(WHITE_COLOR),
+            # the object segmentation is showing as white area;
+            fill="#ffffff",
+            outline="#ffffff",
         )
         segmentations_data.extend(np.array(mask).flatten())
     segmentations_data = np.array(segmentations_data)
-
-    # Gets annotated category IDs.
-    category_ids_data = category_ids
 
     return {
         "image/id": tf.train.Feature(
@@ -114,11 +143,11 @@ def item_to_feature(
                 value=[segmentations_data.tostring()]
             )
         ),
-        "category_ids/data": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=category_ids_data)
+        "category/ids": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=category_ids)
         ),
-        "category_ids/max": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[category_ids_max])
+        "category/max": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[category_max_id])
         ),
     }
 
@@ -173,8 +202,8 @@ def feature_to_item(
     segmentations = tf.reshape(segmentations, (-1, image_size))
 
     # Gets category IDs;
-    category_ids = parsed_features["category_ids/data"]
-    category_ids_max = parsed_features["category_ids/max"][0]
+    category_ids = parsed_features["category/ids"]
+    category_max_id = parsed_features["category/max"][0]
 
     # Slices a pads data depending on number of detecting objects;
     if num_detecting_objects:
@@ -208,6 +237,6 @@ def feature_to_item(
     bboxes = tf.cast(bboxes, dtype=tf.float32)
     segmentations = tf.cast(segmentations, dtype=tf.float32)
     # +1: to the categories_number to allow "no object" category with ID == 0
-    category_ids = tf.one_hot(category_ids, depth=int(category_ids_max + 1))
+    category_ids = tf.one_hot(category_ids, depth=int(category_max_id + 1))
 
     return image_id, image, bboxes, segmentations, category_ids

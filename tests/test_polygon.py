@@ -1,9 +1,9 @@
 """
-Test for the `Polygon` class form `squids/polygon.py`.
+Test for the `Polygon` class form `squids/dataset/polygon.py`.
 """
 
-from squids.point import Point
-from squids.polygon import Polygon
+from squids.dataset.point import Point
+from squids.dataset.polygon import Polygon
 
 
 def test_polygon_constructor():

@@ -1,8 +1,8 @@
 """
-Test for the `Point` class form `squids/point.py`.
+Test for the `Point` class form `squids/dataset/point.py`.
 """
 
-from squids.point import Point
+from squids.dataset.point import Point
 
 
 def test_point_constructor():

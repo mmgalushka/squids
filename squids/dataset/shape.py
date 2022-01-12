@@ -91,17 +91,3 @@ class Triangle(Shape):
             f"polygon={str(self.polygon)}, "
             f"color='{str(self.color)}'"
         )
-
-
-SHAPES_CATEGORIES = [
-    {
-        "supercategory": "shape",
-        "id": Rectangle.category_id,
-        "name": Rectangle.category_name,
-    },
-    {
-        "supercategory": "shape",
-        "id": Triangle.category_id,
-        "name": Triangle.category_name,
-    },
-]

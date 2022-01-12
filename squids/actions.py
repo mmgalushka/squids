@@ -2,18 +2,19 @@
 A module for handling user actions.
 """
 
-from .image import (
+from .config import (
     IMAGE_WIDTH,
     IMAGE_HEIGHT,
     IMAGE_CAPACITY,
-    Palette,
-    Background,
-)
-from .dataset import (
     DATASET_DIR,
     DATASET_SIZE,
+)
+
+from .dataset import (
     create_csv_dataset,
     create_coco_dataset,
+    Background,
+    Palette,
 )
 from .tfrecords import create_tfrecords, inspect_tfrecords, inspect_tfrecord
 

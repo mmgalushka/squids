@@ -1,8 +1,8 @@
 """
-Test for the `Palette` class form `squids/palette.py`.
+Test for the `Palette` class form `squids/dataset/palette.py`.
 """
 
-from squids.palette import Palette
+from squids.dataset.palette import Palette
 
 
 def test_palette():
