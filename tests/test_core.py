@@ -13,9 +13,9 @@ import pytest
 
 from squids.dataset.maker import create_csv_dataset, create_coco_dataset
 from squids.tfrecords.maker import create_tfrecords, CategoriesMap
-from squids.tfrecords.explorer import inspect_tfrecords, inspect_tfrecord
+from squids.tfrecords.explorer import explore_tfrecords, explore_tfrecord
 
-from squids.actions import generate, transform, inspect
+from squids.actions import generate, transform, explore
 
 # ------------------------------------------------------------------------------
 # Helper Functions
@@ -154,7 +154,7 @@ def test_csv_generator_transformer_functions(capsys):
         # Explores TFRecords.
         image_id = None
         for kind in ["train", "val", "test"]:
-            inspect_tfrecords(
+            explore_tfrecords(
                 Path(tmp_dir + f"/synthetic-tfrecords/instances_{kind}")
             )
             stdout, _ = capsys.readouterr()
@@ -170,7 +170,7 @@ def test_csv_generator_transformer_functions(capsys):
         assert image_id is not None
 
         # Explores single TFRecord.
-        inspect_tfrecord(
+        explore_tfrecord(
             Path(tmp_dir + "/synthetic-tfrecords/instances_train"),
             image_id,
             tmp_tfrecords_dir,
@@ -207,7 +207,7 @@ def test_coco_generator_transformer_functions(capsys):
 
         # Explores TFRecords.
         for kind in ["train", "val", "test"]:
-            inspect_tfrecords(
+            explore_tfrecords(
                 Path(tmp_dir + f"/synthetic-tfrecords/instances_{kind}")
             )
             stdout, _ = capsys.readouterr()
@@ -231,7 +231,7 @@ def test_CSV_generator_transformer_actions(capsys):
     subparsers = parser.add_subparsers()
     generate(subparsers)
     transform(subparsers)
-    inspect(subparsers)
+    explore(subparsers)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         # Generates and checks CSV dataset.
@@ -258,7 +258,7 @@ def test_CSV_generator_transformer_actions(capsys):
         for kind in ["train", "val", "test"]:
             args = parser.parse_args(
                 [
-                    "inspect",
+                    "explore",
                     str(tmp_tfrecords_dir / f"instances_{kind}"),
                 ]
             )
@@ -275,7 +275,7 @@ def test_coco_generator_transformer_actions(capsys):
     subparsers = parser.add_subparsers()
     generate(subparsers)
     transform(subparsers)
-    inspect(subparsers)
+    explore(subparsers)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         # Generates and checks COCO dataset.
@@ -302,7 +302,7 @@ def test_coco_generator_transformer_actions(capsys):
         for kind in ["train", "val", "test"]:
             args = parser.parse_args(
                 [
-                    "inspect",
+                    "explore",
                     str(tmp_tfrecords_dir / f"instances_{kind}"),
                 ]
             )

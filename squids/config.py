@@ -15,7 +15,7 @@ IMAGE_HEIGHT = 64
 IMAGE_CHANNELS = 3
 """The number of image channels."""
 
-IMAGE_CAPACITY = 2
+IMAGE_CAPACITY = 3
 """The maximum number of geometrical shapes per image (minimum is 1)."""
 
 DATASET_DIR = "dataset/synthetic"

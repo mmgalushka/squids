@@ -56,7 +56,7 @@ def get_tfrecords_dataset(
     return dataset
 
 
-def inspect_tfrecords(tfrecords_dir: str):
+def explore_tfrecords(tfrecords_dir: str):
     cli = cmd.Cmd()
     input_path = Path(tfrecords_dir)
     if input_path.is_dir():
@@ -87,7 +87,7 @@ def inspect_tfrecords(tfrecords_dir: str):
         raise FileNotFoundError(tfrecords_dir)
 
 
-def inspect_tfrecord(
+def explore_tfrecord(
     tfrecords_dir: str,
     image_id: int,
     output_dir: str = ".",

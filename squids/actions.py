@@ -16,7 +16,7 @@ from .dataset import (
     Background,
     Palette,
 )
-from .tfrecords import create_tfrecords, inspect_tfrecords, inspect_tfrecord
+from .tfrecords import create_tfrecords, explore_tfrecords, explore_tfrecord
 
 
 def generate(subparsers):
@@ -60,10 +60,7 @@ def generate(subparsers):
         nargs="?",
         type=str,
         default=DATASET_DIR,
-        help=(
-            "a generating dataset directory, if not defined, "
-            f"it will be created under the './{DATASET_DIR}'"
-        ),
+        help=(f"a generating dataset directory, (default './{DATASET_DIR}')"),
     )
     parser.add_argument(
         "-s",
@@ -100,14 +97,14 @@ def generate(subparsers):
         choices=Palette.values(),
         type=str,
         default=Palette.default(),
-        help=f'a generated palette (default="{Palette.default()}")',
+        help=f"a generated palette (default='{Palette.default()}')",
     )
     parser.add_argument(
         "--image-background",
         choices=Background.values(),
         type=str,
         default=Background.default(),
-        help=f'a generated background (default="{Background.default()}")',
+        help=f"a generated background (default='{Background.default()}')",
     )
     parser.add_argument(
         "--image-capacity",
@@ -218,13 +215,13 @@ def transform(subparsers):
     )
 
 
-def inspect(subparsers):
+def explore(subparsers):
     # Defines the command name.
-    cmd = "inspect"
+    cmd = "explore"
 
     def run(args):
         if args.image_id:
-            inspect_tfrecord(
+            explore_tfrecord(
                 tfrecords_dir=args.tfrecords_dir,
                 image_id=args.image_id,
                 output_dir=args.output_dir,
@@ -233,10 +230,10 @@ def inspect(subparsers):
                 with_segmentations=not args.no_segmentations,
             )
         else:
-            inspect_tfrecords(tfrecords_dir=args.tfrecords_dir)
+            explore_tfrecords(tfrecords_dir=args.tfrecords_dir)
 
     # ---------------------------------
-    # Sets "inspect" command options
+    # Sets "explore" command options
     # ---------------------------------
     parser = subparsers.add_parser(cmd)
     parser.set_defaults(func=run)
@@ -246,10 +243,10 @@ def inspect(subparsers):
         "tfrecords_dir",
         metavar="TFRECORDS_DIR",
         type=str,
-        help="a TFRecords directory to inspect",
+        help="a TFRecords directory to explore",
     )
 
-    group = parser.add_argument_group("A record inspection options")
+    group = parser.add_argument_group("A record exploration options")
 
     group.add_argument(
         "image_id",

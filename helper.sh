@@ -78,14 +78,15 @@ action_transform(){
     python main.py transform ${@}
 }
 
-action_inspect(){
+action_explore(){
     source .venv/bin/activate
-    python main.py inspect ${@}
+    python main.py explore ${@}
 }
 
 action_mkdocs(){
     source .venv/bin/activate
-    mkdocs serve
+    mkdocs new my-project
+    # mkdocs serve
 }
 
 action_build(){
@@ -109,15 +110,15 @@ case $1 in
     transform)
         action_transform ${@:2}
     ;;
-    inspect)
-        action_inspect ${@:2}
+    explore)
+        action_explore ${@:2}
     ;;
     mkdocs)
-        # action_mkdocs ${@:2}
-        source .venv/bin/activate
+        action_mkdocs ${@:2}
+        # source .venv/bin/activate
         # fiftyone quickstart
         # fiftyone app view --images-dir '/home/papa/Datasets/real'
-        fiftyone app view --dataset-dir '/home/papa/Datasets/real' --type fiftyone.types.COCODetectionDataset
+        # fiftyone app view --dataset-dir '/home/papa/Datasets/real' --type fiftyone.types.COCODetectionDataset
     ;;
     *)
         action_usage

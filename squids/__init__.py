@@ -11,7 +11,7 @@ from .dataset import (  # noqa
 from .tfrecords import (  # noqa
     create_tfrecords,
     get_tfrecords_generator,
-    inspect_tfrecords,
-    inspect_tfrecord,
+    explore_tfrecords,
+    explore_tfrecord,
 )
-from .actions import generate, transform, inspect  # noqa
+from .actions import generate, transform, explore  # noqa
