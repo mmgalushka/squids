@@ -13,3 +13,6 @@ Pillow
 numpy
 pandas
 tqdm
+tabulate
+ipykernel
+notebook

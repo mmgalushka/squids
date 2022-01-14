@@ -32,22 +32,15 @@ action_usage(){
 }
 
 action_init(){
-    # if [ -d .venv ];
-    #     then
-    #         rm -r .venv
-    # fi
+    if [ -d .venv ];
+        then
+            rm -r .venv
+    fi
 
-    # python3 -m venv .venv
+    python3 -m venv .venv
     source .venv/bin/activate 
 
-    # if [[ -f dependencies.txt ]]
-    # then
-    #     pip3 install -r dependencies.txt --no-cache
-    # else
-    #     pip3 install -r requirements.txt --no-cache
-    # fi
-    # pip3 install -r requirements.txt --no-cache
-    pip3 install tabulate
+    pip3 install -r requirements.txt --no-cache
 }
 
 action_test(){
