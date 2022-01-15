@@ -57,6 +57,7 @@ def get_tfrecords_dataset(
 
 
 def explore_tfrecords(tfrecords_dir: str):
+    """Explores multiple TFRecords."""
     cli = cmd.Cmd()
     input_path = Path(tfrecords_dir)
     if input_path.is_dir():
@@ -95,7 +96,7 @@ def explore_tfrecord(
     with_bboxes: bool = True,
     with_segmentations: bool = True,
 ):
-
+    """Explores a single TFRecord."""
     batch = get_tfrecords_dataset(Path(tfrecords_dir))
     for selected_image_id, image, bboxes, segmentations, category_ids in batch:
         if image_id == selected_image_id:

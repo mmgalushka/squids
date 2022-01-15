@@ -1,0 +1,35 @@
+site_name: SquiDS
+nav:
+  - Home: index.md
+  - Generator: generator.md
+  - Transformer: transformer.md
+  - Explorer: explorer.md
+  - Loader: loader.md
+  - About: about.md
+
+plugins:
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        rendering:
+          show_root_heading: false
+          show_source: false
+          heading_level: 4
+    watch:
+      - squids
+
+theme:
+  name: material
+
+markdown_extensions:
+# Code highlight extensions
+- pymdownx.highlight:
+    anchor_linenums: true
+- pymdownx.inlinehilite
+- pymdownx.snippets
+- pymdownx.superfences
+- pymdownx.superfences
+# Content tabbing extensions
+- pymdownx.tabbed:
+    alternate_style: true 

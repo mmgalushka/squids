@@ -11,12 +11,12 @@ OPT=$(echo "\033[0;34m")
 
 action_usage(){
 
-    echo -e "   ____              _ ____  ____                                  "
-    echo -e "  / ___|  __ _ _   _(_)  _ \/ ___|  Synthetic dataset generator    "
-    echo -e "  \___ \ / _\` | | | | | | | \\___ \\  for Computer Vision tasks:  "
-    echo -e "   ___) | (_| | |_| | | |_| |___) |   - detection;                 "
-    echo -e "  |____/ \__, |\__,_|_|____/|____/    - localization;              "            
-    echo -e "            |_|                       - segmentation;              "
+    echo -e "   ____              _ ____  ____                                       "
+    echo -e "  / ___|  __ _ _   _(_)  _ \/ ___|  Synthetic dataset generator         "
+    echo -e "  \___ \ / _\` | | | | | | | \\___ \\  for Computer Vision tasks:       "
+    echo -e "   ___) | (_| | |_| | | |_| |___) |   - classification;                 "
+    echo -e "  |____/ \__, |\__,_|_|____/|____/    - objects detection/localisation; "            
+    echo -e "            |_|                       - objects segmentation;           "
     echo -e ""                                          
     echo -e "${BOLD}System Commands:${NC}"
     echo -e "   ${CMD}init${NC} initializers environment;"
@@ -27,8 +27,7 @@ action_usage(){
     echo -e "   ${CMD}generate${OPT} -h${NC} generates synthetic dataset;"
     echo -e "   ${CMD}transform${OPT} -h${NC} transforms source to TFRecords;"
     echo -e "   ${CMD}docs${NC} generates documentation;"
-    echo -e "   ${CMD}build${NC} generates distribution archives;"
-    echo -e "   ${CMD}stage${NC} deploy SquiDS to Test Python Package Index;"  
+    echo -e "   ${CMD}build${NC} generates distribution archives;" 
 }
 
 action_init(){
@@ -83,10 +82,9 @@ action_explore(){
     python main.py explore ${@}
 }
 
-action_mkdocs(){
+action_docs(){
     source .venv/bin/activate
-    mkdocs new my-project
-    # mkdocs serve
+    mkdocs serve
 }
 
 action_build(){
@@ -113,12 +111,8 @@ case $1 in
     explore)
         action_explore ${@:2}
     ;;
-    mkdocs)
-        action_mkdocs ${@:2}
-        # source .venv/bin/activate
-        # fiftyone quickstart
-        # fiftyone app view --images-dir '/home/papa/Datasets/real'
-        # fiftyone app view --dataset-dir '/home/papa/Datasets/real' --type fiftyone.types.COCODetectionDataset
+    docs)
+        action_docs ${@:2}
     ;;
     *)
         action_usage

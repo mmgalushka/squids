@@ -16,3 +16,6 @@ tqdm
 tabulate
 ipykernel
 notebook
+mkdocs
+mkdocstrings
+mkdocs-material

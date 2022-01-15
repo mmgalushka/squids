@@ -22,9 +22,11 @@
 
 # Except test SquiDS modules
 
-# !docs/
-# !docs/**/
-# !docs/**/*.*
+!docs/
+!docs/**/
+!docs/**/*.md
+!docs/**/*.png
+
 
 !tests/
 !tests/**/
@@ -36,5 +38,4 @@
 !setup.py
 !README.md
 !requirements.txt
-!pytest.ini
-!logging.yaml
+!mkdocs.yml
