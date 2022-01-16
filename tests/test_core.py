@@ -1,6 +1,5 @@
 """
-Test functions for processing datasets form `squids/dataset.py` and
-`squids/tfrecords.py`.
+Test functions for processing datasets: generate, transform and explore;
 """
 
 import os
@@ -11,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from squids.dataset.maker import create_csv_dataset, create_coco_dataset
+from squids.dataset.maker import create_dataset
 from squids.tfrecords.maker import create_tfrecords, CategoriesMap
 from squids.tfrecords.explorer import explore_tfrecords, explore_tfrecord
 
@@ -141,7 +140,7 @@ def test_csv_generator_transformer_functions(capsys):
     with tempfile.TemporaryDirectory() as tmp_dir:
         # Generates and checks CSV dataset.
         tmp_dataset_dir = Path(tmp_dir + "/synthetic")
-        create_csv_dataset(tmp_dataset_dir, verbose=True)
+        create_dataset(tmp_dataset_dir, verbose=True)
 
         validate_csv_generator(tmp_dataset_dir)
 
@@ -182,7 +181,7 @@ def test_csv_generator_transformer_functions(capsys):
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_dataset_dir = Path(tmp_dir + "/synthetic")
         tmp_dataset_dir.mkdir()
-        create_csv_dataset(tmp_dataset_dir)
+        create_dataset(tmp_dataset_dir)
 
     # Tests a reaction for missing directory
     with pytest.raises(FileNotFoundError):
@@ -195,7 +194,7 @@ def test_coco_generator_transformer_functions(capsys):
     with tempfile.TemporaryDirectory() as tmp_dir:
         # Generates and checks COCO dataset.
         tmp_dataset_dir = Path(tmp_dir + "/synthetic")
-        create_coco_dataset(tmp_dataset_dir, verbose=True)
+        create_dataset(tmp_dataset_dir, coco=True, verbose=True)
 
         validate_coco_generator(tmp_dataset_dir)
 
@@ -217,7 +216,7 @@ def test_coco_generator_transformer_functions(capsys):
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_dataset_dir = Path(tmp_dir + "/synthetic")
         tmp_dataset_dir.mkdir()
-        create_coco_dataset(tmp_dataset_dir)
+        create_dataset(tmp_dataset_dir, coco=True)
 
     # Tests a reaction for missing directory.
     with pytest.raises(FileNotFoundError):

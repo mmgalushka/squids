@@ -1,5 +1,5 @@
 """
-A module for creating and transforming dataset to TFRecords.
+A module for creating synthetic datasets in CSV and COCO formats.
 """
 
 from __future__ import annotations
@@ -38,9 +38,10 @@ SHAPES_CATEGORIES = [
         "name": Triangle.category_name,
     },
 ]
+"""The common shapes categories."""
 
 
-def create_csv_dataset(
+def create_dataset(
     dataset_dir: str = DATASET_DIR,
     dataset_size: int = DATASET_SIZE,
     image_width: int = IMAGE_WIDTH,
@@ -48,19 +49,91 @@ def create_csv_dataset(
     image_palette: Palette = Palette.COLOR,
     image_background: Background = Background.WHITE,
     image_capacity: int = IMAGE_CAPACITY,
+    coco: bool = False,
     verbose: bool = False,
+):
+    """Generates dataset in CSV or COCO format.
+
+    The input parameters for generating the dataset in CSV or COCO format
+    are the same except for the `coco` flag. If the `coco` flag is `False`
+    the dataset generating in CSV format, and if it is `True` the dataset
+    generating in COCO format respectively.
+
+    Args:
+        dataset_dir (str):
+            The directory where generated data are stored.
+        dataset_size (int):
+            The number of generated samples.
+        image_width (int):
+            The image width in pixels.
+        image_height (int):
+            The image height in pixels.
+        image_palette (Palette):
+            The palette for generating images.
+        image_background (Background):
+            The palette for generating images.
+        image_capacity (int):
+            The number of geometrical shapes per image.
+        coco (bool):
+            The flag defines a type of generating dataset. If `False`
+            to generate the CSV dataset, if `True` the COCO dataset
+            respectively.
+        verbose (bool):
+            The flag to set verbose mode.
+    """
+    if coco:
+        create_coco_dataset(
+            dataset_dir,
+            dataset_size,
+            image_width,
+            image_height,
+            image_palette,
+            image_background,
+            image_capacity,
+            verbose,
+        )
+    else:
+        create_csv_dataset(
+            dataset_dir,
+            dataset_size,
+            image_width,
+            image_height,
+            image_palette,
+            image_background,
+            image_capacity,
+            verbose,
+        )
+
+
+def create_csv_dataset(
+    dataset_dir: str,
+    dataset_size: int,
+    image_width: int,
+    image_height: int,
+    image_palette: Palette,
+    image_background: Background,
+    image_capacity: int,
+    verbose: bool,
 ):
     """Generates CSV dataset.
 
     Args:
-        dataset_dir (str): The directory where generated data will be stored.
-        dataset_size (int): The number of generated samples.
-        image_width (int): The image width in pixels.
-        image_height (int): The image height in pixels.
-        image_palette (Palette): The palette for generating images.
-        image_background (Background): The palette for generating images.
-        image_capacity (int): The number of geometrical shapes per image.
-        verbose (bool): The flag to set verbose mode.
+        dataset_dir (str):
+            The directory where generated data are stored.
+        dataset_size (int):
+            The number of generated samples.
+        image_width (int):
+            The image width in pixels.
+        image_height (int):
+            The image height in pixels.
+        image_palette (Palette):
+            The palette for generating images.
+        image_background (Background):
+            The palette for generating images.
+        image_capacity (int):
+            The number of geometrical shapes per image.
+        verbose (bool):
+            The flag to set verbose mode.
     """
     output_dir = Path(dataset_dir)
     if output_dir.exists():
@@ -140,26 +213,34 @@ def create_csv_dataset(
 
 
 def create_coco_dataset(
-    dataset_dir: str = DATASET_DIR,
-    dataset_size: int = DATASET_SIZE,
-    image_width: int = IMAGE_WIDTH,
-    image_height: int = IMAGE_HEIGHT,
-    image_palette: Palette = Palette.COLOR,
-    image_background: Background = Background.WHITE,
-    image_capacity: int = IMAGE_CAPACITY,
-    verbose: bool = False,
+    dataset_dir: str,
+    dataset_size: int,
+    image_width: int,
+    image_height: int,
+    image_palette: Palette,
+    image_background: Background,
+    image_capacity: int,
+    verbose: bool,
 ):
     """Generates COCO dataset.
 
     Args:
-        dataset_dir (str): The directory where generated data will be stored.
-        dataset_size (int): The number of generated samples.
-        image_width (int): The image width in pixels.
-        image_height (int): The image height in pixels.
-        image_palette (Palette): The palette for generating images.
-        image_background (Background): The palette for generating images.
-        image_capacity (int): The number of geometrical shapes per image.
-        verbose (bool): The flag to set verbose mode.
+        dataset_dir (str):
+            The directory where generated data are stored.
+        dataset_size (int):
+            The number of generated samples.
+        image_width (int):
+            The image width in pixels.
+        image_height (int):
+            The image height in pixels.
+        image_palette (Palette):
+            The palette for generating images.
+        image_background (Background):
+            The palette for generating images.
+        image_capacity (int):
+            The number of geometrical shapes per image.
+        verbose (bool):
+            The flag to set verbose mode.
     """
     output_dir = Path(dataset_dir)
     if output_dir.exists():

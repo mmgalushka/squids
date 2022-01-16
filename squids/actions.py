@@ -11,8 +11,7 @@ from .config import (
 )
 
 from .dataset import (
-    create_csv_dataset,
-    create_coco_dataset,
+    create_dataset,
     Background,
     Palette,
 )
@@ -24,28 +23,17 @@ def generate(subparsers):
     cmd = "generate"
 
     def run(args):
-        if args.coco:
-            create_coco_dataset(
-                dataset_dir=args.dataset_dir,
-                dataset_size=args.dataset_size,
-                image_width=args.image_width,
-                image_height=args.image_height,
-                image_palette=args.image_palette,
-                image_background=args.image_background,
-                image_capacity=args.image_capacity,
-                verbose=args.verbose,
-            )
-        else:
-            create_csv_dataset(
-                dataset_dir=args.dataset_dir,
-                dataset_size=args.dataset_size,
-                image_width=args.image_width,
-                image_height=args.image_height,
-                image_palette=args.image_palette,
-                image_background=args.image_background,
-                image_capacity=args.image_capacity,
-                verbose=args.verbose,
-            )
+        create_dataset(
+            dataset_dir=args.dataset_dir,
+            dataset_size=args.dataset_size,
+            image_width=args.image_width,
+            image_height=args.image_height,
+            image_palette=args.image_palette,
+            image_background=args.image_background,
+            image_capacity=args.image_capacity,
+            coco=args.coco,
+            verbose=args.verbose,
+        )
 
     # ---------------------------------
     # Sets "generate" command options
