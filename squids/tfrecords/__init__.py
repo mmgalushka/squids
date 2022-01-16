@@ -1,5 +1,5 @@
 """
-The Deeptrace test module.
+A TFRecords handling module.
 """
 
 from .maker import create_tfrecords  # noqa

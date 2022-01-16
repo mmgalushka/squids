@@ -17,6 +17,6 @@ def test_default_constants():
     assert IMAGE_WIDTH == 64
     assert IMAGE_HEIGHT == 64
     assert IMAGE_CHANNELS == 3
-    assert IMAGE_CAPACITY == 2
+    assert IMAGE_CAPACITY == 3
     assert DATASET_DIR == "dataset/synthetic"
     assert DATASET_SIZE == 1000
