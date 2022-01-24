@@ -2,6 +2,7 @@
 A module for handling user actions.
 """
 
+from black import TRANSFORMED_MAGICS
 from .config import (
     IMAGE_WIDTH,
     IMAGE_HEIGHT,
@@ -15,7 +16,7 @@ from .dataset import (
     Background,
     Palette,
 )
-from .tfrecords import create_tfrecords, explore_tfrecords, explore_tfrecord
+from .tfrecords import create_tfrecords, explore_tfrecords
 
 
 def generate(subparsers):
@@ -208,8 +209,8 @@ def explore(subparsers):
     cmd = "explore"
 
     def run(args):
-        if args.image_id:
-            explore_tfrecord(
+        try:
+            explore_tfrecords(
                 tfrecords_dir=args.tfrecords_dir,
                 image_id=args.image_id,
                 output_dir=args.output_dir,
@@ -217,8 +218,8 @@ def explore(subparsers):
                 with_bboxes=not args.no_bboxes,
                 with_segmentations=not args.no_segmentations,
             )
-        else:
-            explore_tfrecords(tfrecords_dir=args.tfrecords_dir)
+        except FileNotFoundError as err:
+            print("\nI/O Error:", err)
 
     # ---------------------------------
     # Sets "explore" command options
