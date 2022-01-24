@@ -1,5 +1,5 @@
 """
-A module for converting a data source to TFRecords.
+A module for converting a data set to TFRecords.
 """
 from __future__ import annotations
 
@@ -7,7 +7,6 @@ import os
 import glob
 import cmd
 from pathlib import Path
-
 
 import PIL.Image as Image
 import PIL.ImageDraw as ImageDraw
@@ -18,7 +17,11 @@ import numpy as np
 from tabulate import tabulate
 
 from .feature import feature_to_item, KEY_FEATURE_MAP
-
+from .errors import (
+    TFRecordsDirNotFoundError,
+    TFRecordIdentifierNotFoundError,
+    OutputDirNotFoundError,
+)
 
 MASK_HIGHLIGHTING_COLORS = [
     "#e6194b",  # red
@@ -32,7 +35,7 @@ MASK_HIGHLIGHTING_COLORS = [
     "#f032e6",  # magenta
     "#a9a9a9",  # grey
 ]
-"""A well-separated colors range."""
+"""A well-separated colors range for creating bounding boxes and masks."""
 
 
 def get_tfrecords_dataset(
@@ -56,76 +59,208 @@ def get_tfrecords_dataset(
     return dataset
 
 
-def explore_tfrecords(tfrecords_dir: str):
-    """Explores multiple TFRecords."""
-    cli = cmd.Cmd()
-    input_path = Path(tfrecords_dir)
-    if input_path.is_dir():
-        tfrecord_files = glob.glob(str(input_path / "part-*.tfrecord"))
-        if len(tfrecord_files) > 0:
-            records = []
-            batch = get_tfrecords_dataset(input_path)
-            for image_id, _, _, _, category_onehots in batch:
-                category_ids = [
-                    np.argmax(category_onehot)
-                    for category_onehot in category_onehots.numpy()[0]
-                ]
-
-                records.append(
-                    str(image_id.numpy()[0])
-                    + " ("
-                    + ",".join(map(str, set(category_ids)))
-                    + ")"
-                )
-
-            print(f"\n{tfrecords_dir} ({len(tfrecord_files)} parts)")
-            cli.columnize(records)
-            print(f"Total {len(records)} records")
-        else:
-            print(f"\n{tfrecords_dir} (no tfrecords found)")
-            cli.columnize(os.listdir(input_path))
-    else:
-        raise FileNotFoundError(tfrecords_dir)
-
-
-def explore_tfrecord(
+def explore_tfrecords(
     tfrecords_dir: str,
-    image_id: int,
+    image_id: int = None,
     output_dir: str = ".",
     with_summary: bool = True,
     with_bboxes: bool = True,
     with_segmentations: bool = True,
+    return_artifacts: bool = False,
 ):
-    """Explores a single TFRecord."""
-    batch = get_tfrecords_dataset(Path(tfrecords_dir))
-    for selected_image_id, image, bboxes, segmentations, category_ids in batch:
-        if image_id == selected_image_id:
-            output_image = Image.fromarray(
+    """Explores TFRecords.
+
+    This function allows listing a summary of all TFRecords as well as
+    viewing the content of individual records such as an image together
+    with annotated bounding boxes, segments, and categories.
+
+    Args:
+        tfrecords_dir (str):
+            The directory containing TFRecords parts.
+        image_id (int):
+            The image ID to view.
+        output_dir (str):
+            The output directory where to store the produced artifacts such as
+            image content with superimposed binding boxes, masks, categories,
+            etc.
+        with_bboxes (bool):
+            The flag to superimpose bounding boxes on an image, defined within
+            a record. If the flag is `True` bounding boxes are superimposed
+            to an image and `False` boxes are discarded.
+        with_segmentations (bool):
+            The flag to superimpose segmentation masks on an image, defined
+            within a record. If the flag is `True` segmentation masks are
+            superimposed to an image and `False` masks are discarded.
+        return_artifacts (bool):
+            The flag (`True` value) enforces the function to return generated
+            artifacts instead of output them to a console or store them in a
+            file. This flag would be useful if you for example working with
+            Jupyter notebook and would like to present inspected results
+            directly within a cell, or planning to perform its further
+            processing.
+
+    Returns:
+        record_summaries (list):
+            The list with summary information about each record
+            (Returned if `image_id==None & return_artifacts==True` ).
+        record_summary (dict):
+            The list with summary information for the specified record
+            (Returned if `image_id!=None & return_artifacts==True`).
+        record_image (Image)
+            The image, which is stored within the specified record with
+            superimposed binding boxes, masks, and categories.
+            Returned if `image_id!=None & return_artifacts==True`
+
+    Raises:
+        TFRecordsDirNotFoundError:
+            If input TFRecords directory directory has not been found.
+        OutputDirNotFoundError:
+            If input output directory directory has not been found.
+        TFRecordIdentifierNotFoundError:
+            If the record with the specified image ID has not been found.
+    """
+    if image_id is None:
+        record_summaries = list_tfrecords(Path(tfrecords_dir))
+        if return_artifacts:
+            return record_summaries
+
+        cli = cmd.Cmd()
+        print(f"\n{tfrecords_dir}")
+        if len(record_summaries) > 0:
+            cli.columnize(record_summaries)
+            print(f"Total {len(record_summaries)} records")
+        else:
+            cli.columnize(os.listdir(tfrecords_dir))
+            print("No tfrecords has found")
+    else:
+        record_summary, record_image = view_tfrecord(
+            Path(tfrecords_dir),
+            image_id,
+            Path(output_dir),
+            with_bboxes,
+            with_segmentations,
+        )
+
+        if return_artifacts:
+            return record_summary, record_image
+
+        print(
+            tabulate(
+                [[k, v] for k, v in record_summary.items()],
+                headers=["Property", "Value"],
+            )
+        )
+        image_file = f"{output_dir}/{image_id}.png"
+        record_image.save(image_file)
+        print(f"Image saved to {image_file}")
+
+
+def list_tfrecords(tfrecords_dir: Path):
+    """List multiple TFRecords.
+
+    Args:
+        tfrecords_dir (Path):
+            The directory containing TFRecords parts.
+
+    Returns:
+        record_summaries (list):
+            The list with summary information about each record.
+
+    Raises:
+        TFRecordsDirNotFoundError:
+            If input TFRecords directory directory has not been found.
+    """
+    if not tfrecords_dir.is_dir():
+        raise TFRecordsDirNotFoundError(tfrecords_dir)
+
+    record_summaries = []
+    tfrecord_files = glob.glob(str(tfrecords_dir / "part-*.tfrecord"))
+    if len(tfrecord_files) > 0:
+        batch = get_tfrecords_dataset(tfrecords_dir)
+        for image_id, _, _, _, category_onehots in batch:
+            category_ids = [
+                np.argmax(category_onehot)
+                for category_onehot in category_onehots.numpy()[0]
+            ]
+            record_summaries.append(
+                str(image_id.numpy()[0])
+                + " ("
+                + ",".join(map(str, set(category_ids)))
+                + ")"
+            )
+    return record_summaries
+
+
+def view_tfrecord(
+    tfrecords_dir: Path,
+    image_id: int,
+    output_dir: Path,
+    with_bboxes: bool,
+    with_segmentations: bool,
+):
+    """Views  an individual TFRecord.
+
+    Args:
+        tfrecords_dir (Path):
+            The directory containing TFRecords parts.
+        image_id (int):
+            The image ID to view.
+        output_dir (Path):
+            The output directory where to store the produced artifacts such as
+            image content with superimposed binding boxes, masks, categories,
+            etc.
+        with_bboxes (bool):
+            The flag to superimpose bounding boxes on an image.
+        with_segmentations (bool):
+            The flag to superimpose segmentation masks on an image.
+
+    Returns:
+        record_summary (dict):
+            The list with summary information for the specified record.
+        record_image (Image):
+            The image, which is stored within the specified record with
+            superimposed binding boxes, masks, and categories.
+
+    Raises:
+        TFRecordsDirNotFoundError:
+            If input TFRecords directory directory has not been found.
+        OutputDirNotFoundError:
+            If input output directory directory has not been found.
+        TFRecordIdentifierNotFoundError:
+            If the record with the specified image ID has not been found.
+    """
+    if not tfrecords_dir.is_dir():
+        raise TFRecordsDirNotFoundError(tfrecords_dir)
+    if not output_dir.is_dir():
+        raise OutputDirNotFoundError(output_dir)
+
+    batch = get_tfrecords_dataset(tfrecords_dir)
+    for record_id, image, bboxes, segmentations, category_ids in batch:
+        if record_id == image_id:
+            record_image = Image.fromarray(
                 tf.squeeze(image * 255, [0]).numpy().astype("uint8"), "RGB"
             )
-            output_image_size = output_image.size
-            output_image_shape = (
-                output_image_size[0],
-                output_image_size[1],
+            record_image_size = record_image.size
+            record_image_shape = (
+                record_image_size[0],
+                record_image_size[1],
                 3,
             )
 
-            if with_summary:
-                total_labeled_objects = len(category_ids.numpy()[0])
-                available_categories_set = set(
-                    [
-                        np.argmax(category_onehot)
-                        for category_onehot in category_ids.numpy()[0]
-                    ]
-                )
-
-                summary = [
-                    ["Image ID", image_id],
-                    ["Image Shape", output_image_shape],
-                    ["Total Labeled Objects", total_labeled_objects],
-                    ["Available Categories Set", available_categories_set],
+            total_labeled_objects = len(category_ids.numpy()[0])
+            available_categories_set = set(
+                [
+                    np.argmax(category_onehot)
+                    for category_onehot in category_ids.numpy()[0]
                 ]
-                print(tabulate(summary, headers=["Property", "Value"]))
+            )
+
+            record_summary = {
+                "image_id": image_id,
+                "image_shape": record_image_shape,
+                "number_labeled_objects": total_labeled_objects,
+                "available_category_ids": available_categories_set,
+            }
 
             if with_segmentations:
                 for mask, onehot in zip(
@@ -139,20 +274,20 @@ def explore_tfrecord(
                     ]
 
                     blend_image = Image.new(
-                        "RGBA", output_image_size, str(category_color)
+                        "RGBA", record_image_size, str(category_color)
                     )
                     mask_image = Image.fromarray(
-                        (mask.reshape(output_image_shape)).astype("uint8"),
+                        (mask.reshape(record_image_shape)).astype("uint8"),
                         "RGB",
                     ).convert("L")
-                    output_image = Image.blend(
-                        output_image,
-                        Image.composite(blend_image, output_image, mask_image),
+                    record_image = Image.blend(
+                        record_image,
+                        Image.composite(blend_image, record_image, mask_image),
                         0.7,
                     )
 
             if with_bboxes:
-                draw = ImageDraw.Draw(output_image)
+                draw = ImageDraw.Draw(record_image)
                 for bbox, onehot in zip(
                     bboxes.numpy()[0],
                     category_ids.numpy()[0],
@@ -185,8 +320,5 @@ def explore_tfrecord(
                         font=ImageFont.load_default(),
                     )
 
-            output_file = f"{output_dir}/{image_id}.png"
-            output_image.save(output_file)
-            print(f"Image saved to {output_file}")
-        else:
-            continue
+            return record_summary, record_image
+    raise TFRecordIdentifierNotFoundError(image_id, tfrecords_dir)
