@@ -43,17 +43,17 @@ This function also can be run with only default arguments. In this case, it will
     dataset/synthetic-tfrecords
         instances_train
             part-0.tfrecord
-            part-1.tfrecord 
+            part-1.tfrecord
             part-2.tfrecord
             ...
         instances_val
             part-0.tfrecord
-            part-1.tfrecord 
+            part-1.tfrecord
             part-2.tfrecord
             ...
         instances_test
             part-0.tfrecord
-            part-1.tfrecord 
+            part-1.tfrecord
             part-2.tfrecord
             ...
     ```
