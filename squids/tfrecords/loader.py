@@ -12,7 +12,7 @@ from math import ceil
 import tensorflow as tf
 from tqdm import tqdm
 
-from .feature import feature_to_item, KEY_FEATURE_MAP
+from .feature import features_to_items, FEATURE_KEYS_MAP
 
 
 def load_tfrecords(
@@ -81,8 +81,8 @@ def load_tfrecords(
         )
 
     def record_parser(proto):
-        parsed_features = tf.io.parse_single_example(proto, KEY_FEATURE_MAP)
-        _, image, bboxes, masks, category_ids = feature_to_item(
+        parsed_features = tf.io.parse_single_example(proto, FEATURE_KEYS_MAP)
+        _, image, bboxes, masks, category_ids = features_to_items(
             parsed_features, num_detecting_objects
         )
 

@@ -16,7 +16,7 @@ import numpy as np
 
 from tabulate import tabulate
 
-from .feature import feature_to_item, KEY_FEATURE_MAP
+from .feature import features_to_items, FEATURE_KEYS_MAP
 from .errors import (
     TFRecordsDirNotFoundError,
     TFRecordIdentifierNotFoundError,
@@ -40,10 +40,14 @@ MASK_HIGHLIGHTING_COLORS = [
 
 def get_tfrecords_dataset(tfrecords_path: Path):
     def record_parser(proto):
-        parsed_features = tf.io.parse_single_example(proto, KEY_FEATURE_MAP)
-        image_id, image, bboxes, segmentations, category_ids = feature_to_item(
-            parsed_features
-        )
+        parsed_features = tf.io.parse_single_example(proto, FEATURE_KEYS_MAP)
+        (
+            image_id,
+            image,
+            bboxes,
+            segmentations,
+            category_ids,
+        ) = features_to_items(parsed_features)
 
         return image_id, image, bboxes, segmentations, category_ids
 

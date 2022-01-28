@@ -14,7 +14,7 @@ import PIL.Image as Image
 import tensorflow as tf
 from tqdm import tqdm
 
-from .feature import item_to_feature
+from .feature import items_to_features
 
 from ..config import (
     IMAGE_WIDTH,
@@ -232,7 +232,7 @@ def items_to_tfrecords(
                 segmentations.append(annotation["segmentation"][0])
                 category_ids.append(annotation["category_id"])
 
-        feature = item_to_feature(
+        feature = items_to_features(
             image_id,
             img,
             image_width,
