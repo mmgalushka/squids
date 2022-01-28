@@ -26,7 +26,7 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/mmgalushka/squids/issues",
     },
     classifiers=[
-        'Intended Audience :: Developers',
+        "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",

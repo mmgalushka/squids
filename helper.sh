@@ -15,19 +15,23 @@ action_usage(){
     echo -e "  / ___|  __ _ _   _(_)  _ \/ ___|  Synthetic dataset generator         "
     echo -e "  \___ \ / _\` | | | | | | | \\___ \\  for Computer Vision tasks:       "
     echo -e "   ___) | (_| | |_| | | |_| |___) |   - classification;                 "
-    echo -e "  |____/ \__, |\__,_|_|____/|____/    - objects detection/localisation; "            
+    echo -e "  |____/ \__, |\__,_|_|____/|____/    - objects detection/localisation; "
     echo -e "            |_|                       - objects segmentation;           "
-    echo -e ""                                          
-    echo -e "${BOLD}System Commands:${NC}"
+    echo -e ""
+    echo -e "${BOLD}Repository System Commands:${NC}"
     echo -e "   ${CMD}init${NC} initializers environment;"
     echo -e "   ${CMD}test${OPT} ...${NC} runs tests;"
     echo -e "      ${OPT}-m <MARK> ${NC}runs tests for mark;"
     echo -e "      ${OPT}-c ${NC}generates code coverage summary;"
     echo -e "      ${OPT}-r ${NC}generates code coverage report;"
+    echo -e "   ${CMD}docs${NC} generates documentation;"
+    echo -e "   ${CMD}prep${NC}  makes pre-commit formatting and checking;"
+    echo -e "   ${CMD}build${NC} generates distribution archives;"
+    echo -e
+    echo -e "${BOLD}Core Functionality Validation Commands:${NC}"
     echo -e "   ${CMD}generate${OPT} -h${NC} generates synthetic dataset;"
     echo -e "   ${CMD}transform${OPT} -h${NC} transforms source to TFRecords;"
-    echo -e "   ${CMD}docs${NC} generates documentation;"
-    echo -e "   ${CMD}build${NC} generates distribution archives;" 
+    echo -e "   ${CMD}explore${OPT} -h${NC} explores TFRecord(s);"
 }
 
 action_init(){
@@ -37,7 +41,7 @@ action_init(){
     fi
 
     python3 -m venv .venv
-    source .venv/bin/activate 
+    source .venv/bin/activate
 
     pip3 install -r requirements.txt --no-cache
 }
@@ -49,13 +53,13 @@ action_test(){
     while getopts ":m:cr" opt; do
         case $opt in
             m)
-                OPTS+=(-m $OPTARG) 
+                OPTS+=(-m $OPTARG)
                 ;;
             c)
-                OPTS+=(--cov=squids) 
+                OPTS+=(--cov=squids)
                 ;;
             r)
-                OPTS+=(--cov-report=xml:cov.xml) 
+                OPTS+=(--cov-report=xml:cov.xml)
                 ;;
             \?)
                 echo -e "Invalid option: -$OPTARG"
@@ -63,14 +67,14 @@ action_test(){
                 ;;
         esac
     done
-    
+
     pytest --capture=no -p no:warnings ${OPTS[@]}
 }
 
 action_generate(){
     source .venv/bin/activate
     python main.py generate ${@}
-} 
+}
 
 action_transform(){
     source .venv/bin/activate
@@ -87,6 +91,11 @@ action_docs(){
     mkdocs serve
 }
 
+action_prep(){
+    source .venv/bin/activate
+    pre-commit run --all-files
+}
+
 action_build(){
     source .venv/bin/activate
     python -m build
@@ -96,12 +105,23 @@ action_build(){
 # HELPER COMMANDS SELECTOR
 # =============================================================================
 case $1 in
+    # Repository system command;
     init)
         action_init
     ;;
     test)
         action_test ${@:2}
     ;;
+    docs)
+        action_docs ${@:2}
+    ;;
+    prep)
+        action_prep ${@:2}
+    ;;
+    build)
+        action_build
+    ;;
+    # Core functionality validation commands;
     generate)
         action_generate ${@:2}
     ;;
@@ -111,12 +131,9 @@ case $1 in
     explore)
         action_explore ${@:2}
     ;;
-    docs)
-        action_docs ${@:2}
-    ;;
     *)
         action_usage
     ;;
-esac  
+esac
 
 exit 0

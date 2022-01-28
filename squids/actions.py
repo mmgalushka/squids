@@ -2,7 +2,6 @@
 A module for handling user actions.
 """
 
-from black import TRANSFORMED_MAGICS
 from .config import (
     IMAGE_WIDTH,
     IMAGE_HEIGHT,
