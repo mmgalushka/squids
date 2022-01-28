@@ -12,6 +12,7 @@ import pytest
 
 from squids.dataset.maker import create_dataset
 from squids.tfrecords.maker import create_tfrecords, CategoriesMap
+from squids.tfrecords.loader import load_tfrecords
 from squids.tfrecords.explorer import explore_tfrecords
 from squids.actions import generate, transform, explore
 from squids.tfrecords.errors import (
@@ -392,3 +393,108 @@ def test_unknown_transformation():
             dataset_dir = Path(tmp_dir + "/synthetic")
             # The dataset_dir does not contain either CSV or COCO data.
             create_tfrecords(dataset_dir)
+
+
+# ------------------------------------------------------------------------------
+# Data Loader Tests
+# ------------------------------------------------------------------------------
+
+
+def test_data_loader(capsys):
+    """Tests data loader for model for training and validation."""
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        dataset_dir = Path(tmp_dir + "/synthetic")
+        tfrecords_dir = Path(tmp_dir + "/synthetic-tfrecords")
+
+        create_dataset(dataset_dir)
+        create_tfrecords(dataset_dir)
+
+        # ------------------------------------
+        # Tests checkers for loader arguments.
+        # ------------------------------------
+        with pytest.raises(ValueError, match="The output schema is empty."):
+            load_tfrecords(tfrecords_dir, output_schema="")
+
+        with pytest.raises(
+            ValueError,
+            match="The output schema contains multiple 'I'",
+        ):
+            load_tfrecords(tfrecords_dir, output_schema="II")
+
+        with pytest.raises(
+            ValueError,
+            match="The output schema contains multiple 'B",
+        ):
+            load_tfrecords(tfrecords_dir, output_schema="BB")
+
+        with pytest.raises(
+            ValueError,
+            match="The output schema contains multiple 'M",
+        ):
+            load_tfrecords(tfrecords_dir, output_schema="MM")
+
+        with pytest.raises(
+            ValueError,
+            match="The output schema contains multiple 'C",
+        ):
+            load_tfrecords(tfrecords_dir, output_schema="CC")
+
+        with pytest.raises(
+            ValueError,
+            match="The output schema contains two consequent commas.",
+        ):
+            load_tfrecords(tfrecords_dir, output_schema=",,")
+
+        with pytest.raises(
+            ValueError,
+            match="The output schema contains unknown element 'X'.",
+        ):
+            load_tfrecords(tfrecords_dir, output_schema="X")
+
+        # ----------------------------------
+        # Tests data load for single output.
+        # ----------------------------------
+        dataset, steps_per_epoch = load_tfrecords(
+            tfrecords_dir / "instances_train", output_schema="C", verbose=True
+        )
+        assert steps_per_epoch > 0
+        for X, y in dataset:
+
+            assert X.shape == (128, 64, 64, 3)
+            assert y.shape == (128, 10, 3)
+            break
+
+        # ----------------------------------------
+        # Tests data load for concatinated output.
+        # ----------------------------------------
+        dataset, steps_per_epoch = load_tfrecords(
+            tfrecords_dir / "instances_train", output_schema="BMC"
+        )
+        assert steps_per_epoch > 0
+        for X, y in dataset:
+            assert X.shape == (128, 64, 64, 3)
+            assert y.shape == (128, 10, 12295)
+            break
+
+        # ----------------------------------------
+        # Tests data load for concatinated output.
+        # ----------------------------------------
+        dataset, steps_per_epoch = load_tfrecords(
+            tfrecords_dir / "instances_train", output_schema="I,BMC"
+        )
+        assert steps_per_epoch > 0
+        for Xi, (Xo, y) in dataset:
+            assert Xi.shape == (128, 64, 64, 3)
+            assert Xo.shape == (128, 64, 64, 3)
+            assert y.shape == (128, 10, 12295)
+            break
+
+        dataset, steps_per_epoch = load_tfrecords(
+            tfrecords_dir / "instances_train", output_schema="B,C"
+        )
+        assert steps_per_epoch > 0
+        for Xi, (yb, yc) in dataset:
+            assert X.shape == (128, 64, 64, 3)
+            assert yb.shape == (128, 10, 4)
+            assert yc.shape == (128, 10, 3)
+            break

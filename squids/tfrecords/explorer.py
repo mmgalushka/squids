@@ -38,9 +38,7 @@ MASK_HIGHLIGHTING_COLORS = [
 """A well-separated colors range for creating bounding boxes and masks."""
 
 
-def get_tfrecords_dataset(
-    tfrecords_path: Path,
-):
+def get_tfrecords_dataset(tfrecords_path: Path):
     def record_parser(proto):
         parsed_features = tf.io.parse_single_example(proto, KEY_FEATURE_MAP)
         image_id, image, bboxes, segmentations, category_ids = feature_to_item(
