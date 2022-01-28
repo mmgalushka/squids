@@ -16,11 +16,7 @@ from tqdm import tqdm
 
 from .feature import items_to_features
 
-from ..config import (
-    IMAGE_WIDTH,
-    IMAGE_HEIGHT,
-    DATASET_DIR,
-)
+from ..config import IMAGE_WIDTH, IMAGE_HEIGHT, DATASET_DIR, TFRECORDS_SIZE
 
 # ------------------------------------------------------------------------------
 # CSV/COCO Dataset Detectors
@@ -291,7 +287,7 @@ def create_tfrecords(
     dataset_dir: str = DATASET_DIR,
     selected_categories: list = [],
     tfrecords_dir: str = None,
-    tfrecords_size: int = 256,
+    tfrecords_size: int = TFRECORDS_SIZE,
     tfrecords_image_width: int = IMAGE_WIDTH,
     tfrecords_image_height: int = IMAGE_HEIGHT,
     verbose: bool = False,
