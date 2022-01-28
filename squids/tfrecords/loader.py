@@ -13,13 +13,14 @@ import tensorflow as tf
 from tqdm import tqdm
 
 from .feature import features_to_items, FEATURE_KEYS_MAP
+from ..config import OUTPUT_SCHEMA, NUM_DETECTING_OBJECTS, BATCH_SIZE
 
 
 def load_tfrecords(
     tfrecords_dir: Path,
-    output_schema: str = "C",
-    num_detecting_objects: int = 10,
-    batch_size: int = 128,
+    output_schema: str = OUTPUT_SCHEMA,
+    num_detecting_objects: int = NUM_DETECTING_OBJECTS,
+    batch_size: int = BATCH_SIZE,
     steps_per_epoch=0,
     verbose: bool = False,
 ):

@@ -15,8 +15,8 @@ from tqdm import tqdm
 
 from .image import create_synthetic_image
 from .shape import Rectangle, Triangle
-from .background import Background
 from .palette import Palette
+from .background import Background
 
 from ..config import (
     IMAGE_WIDTH,
@@ -46,8 +46,8 @@ def create_dataset(
     dataset_size: int = DATASET_SIZE,
     image_width: int = IMAGE_WIDTH,
     image_height: int = IMAGE_HEIGHT,
-    image_palette: Palette = Palette.COLOR,
-    image_background: Background = Background.WHITE,
+    image_palette: Palette = Palette.default(),
+    image_background: Background = Background.default(),
     image_capacity: int = IMAGE_CAPACITY,
     coco: bool = False,
     verbose: bool = False,
