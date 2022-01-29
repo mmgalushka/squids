@@ -48,7 +48,7 @@ def generate(subparsers):
         nargs="?",
         type=str,
         default=DATASET_DIR,
-        help=(f"a generating dataset directory, (default './{DATASET_DIR}')"),
+        help=(f"a generating dataset directory, (default '{DATASET_DIR}')"),
     )
     parser.add_argument(
         "-s",
@@ -85,14 +85,14 @@ def generate(subparsers):
         choices=Palette.values(),
         type=str,
         default=Palette.default(),
-        help=f"a generated palette (default='{Palette.default()}')",
+        help=f"a used image palette (default='{Palette.default()}')",
     )
     parser.add_argument(
         "--image-background",
         choices=Background.values(),
         type=str,
         default=Background.default(),
-        help=f"a generated background (default='{Background.default()}')",
+        help=f"a used image background (default='{Background.default()}')",
     )
     parser.add_argument(
         "--image-capacity",
