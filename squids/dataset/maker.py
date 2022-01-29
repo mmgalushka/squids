@@ -1,5 +1,5 @@
 """
-A module for creating synthetic datasets in CSV and COCO formats.
+A module for creating synthetic datasets.
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ def create_dataset(
     coco: bool = False,
     verbose: bool = False,
 ):
-    """Generates dataset in CSV or COCO format.
+    """This function generates dataset in CSV or COCO format.
 
     The input parameters for generating the dataset in CSV or COCO format
     are the same except for the `coco` flag. If the `coco` flag is `False`
@@ -61,7 +61,7 @@ def create_dataset(
 
     Args:
         dataset_dir (str):
-            The directory where generated data are stored.
+            The directory where to store the generated data.
         dataset_size (int):
             The number of generated samples.
         image_width (int):
@@ -71,7 +71,7 @@ def create_dataset(
         image_palette (Palette):
             The palette for generating images.
         image_background (Background):
-            The palette for generating images.
+            The background for generating images.
         image_capacity (int):
             The number of geometrical shapes per image.
         coco (bool):
