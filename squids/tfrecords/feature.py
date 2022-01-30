@@ -8,14 +8,13 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image, ImageDraw
 
+from ..config import IMAGE_CHANNELS
+
 FEATURE_KEYS_MAP = {
     "image/id": tf.io.FixedLenSequenceFeature(
         [], tf.int64, allow_missing=True
     ),
-    "image/width": tf.io.FixedLenSequenceFeature(
-        [], tf.int64, allow_missing=True
-    ),
-    "image/height": tf.io.FixedLenSequenceFeature(
+    "image/size": tf.io.FixedLenSequenceFeature(
         [], tf.int64, allow_missing=True
     ),
     "image/data": tf.io.FixedLenSequenceFeature(
@@ -70,14 +69,24 @@ def items_to_features(
         features (dict):
             The dictionary with features.
     """
-    original_image_width, original_image_height = image.size
 
-    scale_ratio_for_width = image_width / original_image_width
-    scale_ratio_for_height = image_height / original_image_height
+    def scale_coordinates(coordinates):
+        original_image_width, original_image_height = image.size
+
+        scale_ratio_for_width = image_width / original_image_width
+        scale_ratio_for_height = image_height / original_image_height
+
+        return [
+            scale_ratio_for_width * coordinate
+            if (i % 2) == 0
+            else scale_ratio_for_height * coordinate
+            for i, coordinate in enumerate(coordinates)
+        ]
 
     # Resize image to the target size which will be used durinn the model
     # training.
-    image_data = np.array(image.resize((image_width, image_height))).flatten()
+    image_size = (image_width, image_height)
+    image_data = np.array(image.resize(image_size)).flatten()
 
     # Gets the total number annotations in the image.
     annotations_number = len(bboxes)
@@ -87,35 +96,13 @@ def items_to_features(
     bboxes_data = []
     masks_data = []
     for bbox, segmentation in zip(bboxes, segmentations):
-        bboxes_data.extend(
-            [
-                # The following block scales bounding boxes coordinates.
-                scale_ratio_for_width * value
-                if (i % 2) == 0
-                else scale_ratio_for_height * value
-                for i, value in enumerate(bbox)
-            ]
-        )
+        bboxes_data.extend(scale_coordinates(bbox))
 
-        mask = Image.new(
-            # mask is a image with black background;
-            "RGB",
-            (image_width, image_height),
-            "#000000",
-        )
+        # Mask is a "binary" image with black background.
+        mask = Image.new("1", image_size, 0)
         drawing = ImageDraw.Draw(mask)
-        drawing.polygon(
-            [
-                # the following block scales polygons coordinates;
-                scale_ratio_for_width * value
-                if (i % 2) == 0
-                else scale_ratio_for_height * value
-                for i, value in enumerate(segmentation)
-            ],
-            # the object segmentation is showing as white area;
-            fill="#ffffff",
-            outline="#ffffff",
-        )
+        # The object segmentation is showing as white area.
+        drawing.polygon(scale_coordinates(segmentation), fill=1, outline=1)
         masks_data.extend(np.array(mask).flatten())
     masks_data = np.array(masks_data)
 
@@ -123,11 +110,8 @@ def items_to_features(
         "image/id": tf.train.Feature(
             int64_list=tf.train.Int64List(value=[image_id])
         ),
-        "image/width": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[image_width])
-        ),
-        "image/height": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[image_height])
+        "image/size": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=image_size)
         ),
         "image/data": tf.train.Feature(
             bytes_list=tf.train.BytesList(value=[image_data.tostring()])
@@ -175,10 +159,10 @@ def features_to_items(
     """
     # Gets an image.
     image_id = features["image/id"][0]
-    image_width = features["image/width"][0]
-    image_height = features["image/height"][0]
-    image_shape = (image_width, image_height, 3)
-    image_size = image_width * image_height * 3
+    image_width = features["image/size"][0]
+    image_height = features["image/size"][1]
+    image_shape = (image_width, image_height, IMAGE_CHANNELS)
+    mask_size = image_width * image_height
 
     image = tf.io.decode_raw(features["image/data"], tf.uint8)
     image = tf.reshape(image, image_shape)
@@ -193,7 +177,7 @@ def features_to_items(
 
     # Gets segments masks;
     masks = tf.io.decode_raw(features["masks/data"], tf.uint8)
-    masks = tf.reshape(masks, (-1, image_size))
+    masks = tf.reshape(masks, (-1, mask_size))
 
     # Gets category IDs;
     category_ids = features["category/ids"]
@@ -223,9 +207,7 @@ def features_to_items(
             # If the obtained number of record binding boxes is greater
             # than the detection capacity, then the records must be sliced.
             bboxes = tf.slice(bboxes, [0, 0], [num_detecting_objects, 4])
-            masks = tf.slice(
-                masks, [0, 0], [num_detecting_objects, image_size]
-            )
+            masks = tf.slice(masks, [0, 0], [num_detecting_objects, mask_size])
             category_ids = tf.slice(category_ids, [0], [num_detecting_objects])
 
     bboxes = tf.cast(bboxes, dtype=tf.float32)

@@ -18,9 +18,8 @@ from tabulate import tabulate
 
 from .feature import features_to_items, FEATURE_KEYS_MAP
 from .errors import (
-    TFRecordsDirNotFoundError,
-    TFRecordIdentifierNotFoundError,
-    OutputDirNotFoundError,
+    DirNotFoundError,
+    IdentifierNotFoundError,
 )
 
 MASK_HIGHLIGHTING_COLORS = [
@@ -173,7 +172,7 @@ def list_tfrecords(tfrecords_dir: Path):
             If input TFRecords directory directory has not been found.
     """
     if not tfrecords_dir.is_dir():
-        raise TFRecordsDirNotFoundError(tfrecords_dir)
+        raise DirNotFoundError("exploring TFRecords", tfrecords_dir)
 
     record_summaries = []
     tfrecord_files = glob.glob(str(tfrecords_dir / "part-*.tfrecord"))
@@ -232,9 +231,9 @@ def view_tfrecord(
             If the record with the specified image ID has not been found.
     """
     if not tfrecords_dir.is_dir():
-        raise TFRecordsDirNotFoundError(tfrecords_dir)
+        raise DirNotFoundError("exploring TFRecords", tfrecords_dir)
     if not output_dir.is_dir():
-        raise OutputDirNotFoundError(output_dir)
+        raise DirNotFoundError("output", output_dir)
 
     batch = get_tfrecords_dataset(tfrecords_dir)
     for record_id, image, bboxes, segmentations, category_ids in batch:
@@ -278,10 +277,19 @@ def view_tfrecord(
                     blend_image = Image.new(
                         "RGBA", record_image_size, str(category_color)
                     )
+
                     mask_image = Image.fromarray(
-                        (mask.reshape(record_image_shape)).astype("uint8"),
-                        "RGB",
+                        (
+                            mask.reshape(
+                                (
+                                    record_image_size[0],
+                                    record_image_size[1],
+                                )
+                            )
+                            * 255.0
+                        ).astype("uint8"),
                     ).convert("L")
+
                     record_image = Image.blend(
                         record_image,
                         Image.composite(blend_image, record_image, mask_image),
@@ -323,4 +331,4 @@ def view_tfrecord(
                     )
 
             return record_summary, record_image
-    raise TFRecordIdentifierNotFoundError(image_id, tfrecords_dir)
+    raise IdentifierNotFoundError(image_id, tfrecords_dir)

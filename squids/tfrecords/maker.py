@@ -15,6 +15,7 @@ import tensorflow as tf
 from tqdm import tqdm
 
 from .feature import items_to_features
+from .errors import DirNotFoundError, InvalidDatasetFormat
 
 from ..config import IMAGE_WIDTH, IMAGE_HEIGHT, DATASET_DIR, TFRECORDS_SIZE
 
@@ -205,7 +206,7 @@ def items_to_tfrecords(
     output_dir: Path,
     instance_file: Path,
     items: Iterator,
-    tfrecords_size: int,
+    size: int,
     image_width: int,
     image_height: int,
     verbose: bool,
@@ -250,7 +251,7 @@ def items_to_tfrecords(
     # The count of how many records stored in the TFRecords files. It
     # is set here to maximum capacity (as a trick) to make the "if"
     # condition in the loop equals to True and start 0 - partition.
-    part_count = tfrecords_size
+    part_count = size
 
     # Initializes the progress bar of verbose mode is on.
     if verbose:
@@ -258,7 +259,7 @@ def items_to_tfrecords(
 
     for item in items:
         if item:
-            if part_count >= tfrecords_size:
+            if part_count >= size:
                 # The current partition has been reached the maximum capacity,
                 # so we need to start a new one.
                 if writer is not None:
@@ -285,25 +286,47 @@ def items_to_tfrecords(
 
 def create_tfrecords(
     dataset_dir: str = DATASET_DIR,
-    selected_categories: list = [],
     tfrecords_dir: str = None,
-    tfrecords_size: int = TFRECORDS_SIZE,
-    tfrecords_image_width: int = IMAGE_WIDTH,
-    tfrecords_image_height: int = IMAGE_HEIGHT,
+    size: int = TFRECORDS_SIZE,
+    image_width: int = IMAGE_WIDTH,
+    image_height: int = IMAGE_HEIGHT,
+    selected_categories: list = [],
     verbose: bool = False,
 ):
-    """
-    HEllo
-    """
+    """This function transforms CSV or COCO dataset to TFRecords.
 
+    Args:
+        dataset_dir (str):
+            The path to the data set to transform.
+        tfrecords_dir (str):
+            The path to the output directory for TFRecords.
+        size (int):
+            The number of images per partion.
+        image_width (int):
+            The TFRecords image width resize to.
+        image_height (int):
+            The TFRecords image height resize to.
+        selected_categories (list):
+            The list of selected category IDs.
+        verbose (bool):
+            The flag to set verbose mode.
+
+    Raises:
+        DirNotFoundError:
+            If input or output directories do not exist.
+        InvalidDatasetFormat:
+            If the input dataset has invalid CSV or COCO format.
+    """
     input_dir = Path(dataset_dir)
     if not input_dir.exists():
-        raise FileNotFoundError(str(input_dir))
+        raise DirNotFoundError("input dataset", input_dir)
 
     if tfrecords_dir is None:
         output_dir = input_dir.parent / (input_dir.name + "-tfrecords")
     else:
         output_dir = Path(tfrecords_dir)
+        if not output_dir.parent.exists():
+            raise DirNotFoundError("parent (to output)", output_dir.parent)
     output_dir.mkdir(exist_ok=True)
 
     if is_csv_input(input_dir):
@@ -312,9 +335,9 @@ def create_tfrecords(
                 output_dir,
                 instance_file,
                 CsvIterator(instance_file, selected_categories),
-                tfrecords_size,
-                tfrecords_image_width,
-                tfrecords_image_height,
+                size,
+                image_width,
+                image_height,
                 verbose,
             )
     elif is_coco_input(input_dir):
@@ -323,11 +346,11 @@ def create_tfrecords(
                 output_dir,
                 instance_file,
                 CocoIterator(instance_file, selected_categories),
-                tfrecords_size,
-                tfrecords_image_width,
-                tfrecords_image_height,
+                size,
+                image_width,
+                image_height,
                 verbose,
             )
 
     else:
-        raise ValueError("invalid input data format.")
+        raise InvalidDatasetFormat()

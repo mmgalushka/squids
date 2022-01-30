@@ -4,7 +4,7 @@ Synthetic datasets can help you quickly validate your ideas during building ML m
 
 ## Usage
 
-The process of generating a synthetic dataset can be initiated by the Python `create_coco_dataset()` (see [PyDoc](#pydoc) for more information) function or via a command line.
+The process of generating a synthetic dataset can be initiated by the Python `create_dataset()` function (see [PyDoc](#pydoc) for more information)  or via a command line.
 
 <!-- Usage tab (Python|Shell)  -->
 

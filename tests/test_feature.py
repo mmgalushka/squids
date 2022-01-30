@@ -26,16 +26,17 @@ def test_items_to_features():
     expected_bboxes = [[1.0, 2.0, 3.0, 4.0]]
     expected_segmentations = [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]]
     expected_mask = Image.new(
-        "RGB",
+        "1",
         (IMAGE_WIDTH, IMAGE_HEIGHT),
-        "#000000",
+        0,
     )
     drawing = ImageDraw.Draw(expected_mask)
     drawing.polygon(
         expected_segmentations[0],
-        fill="#ffffff",
-        outline="#ffffff",
+        fill=1,
+        outline=1,
     )
+
     expected_category_ids = [1]
     expected_category_max_id = 2
 
@@ -43,11 +44,10 @@ def test_items_to_features():
         "image/id": tf.train.Feature(
             int64_list=tf.train.Int64List(value=[expected_image_id])
         ),
-        "image/width": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[expected_image_width])
-        ),
-        "image/height": tf.train.Feature(
-            int64_list=tf.train.Int64List(value=[expected_image_height])
+        "image/size": tf.train.Feature(
+            int64_list=tf.train.Int64List(
+                value=[expected_image_width, expected_image_height]
+            )
         ),
         "image/data": tf.train.Feature(
             bytes_list=tf.train.BytesList(
@@ -62,7 +62,7 @@ def test_items_to_features():
         ),
         "masks/data": tf.train.Feature(
             bytes_list=tf.train.BytesList(
-                value=[np.array(expected_mask).tostring()]
+                value=[np.array(expected_mask).astype("byte").tostring()]
             )
         ),
         "category/ids": tf.train.Feature(
@@ -99,31 +99,31 @@ def test_features_to_items():
     ]
     expected_masks = [
         Image.new(
-            "RGB",
+            "1",
             (IMAGE_WIDTH, IMAGE_HEIGHT),
-            "#000000",
+            0,
         ),
         Image.new(
-            "RGB",
+            "1",
             (IMAGE_WIDTH, IMAGE_HEIGHT),
-            "#000000",
+            0,
         ),
     ]
     drawing = ImageDraw.Draw(expected_masks[0])
     drawing.polygon(
         expected_segmentations[0],
-        fill="#ffffff",
-        outline="#ffffff",
+        fill=1,
+        outline=1,
     )
     drawing = ImageDraw.Draw(expected_masks[1])
     drawing.polygon(
         expected_segmentations[1],
-        fill="#ffffff",
-        outline="#ffffff",
+        fill=1,
+        outline=1,
     )
     expected_masks = [
-        np.array(expected_masks[0]).flatten(),
-        np.array(expected_masks[1]).flatten(),
+        np.array(expected_masks[0]).flatten().astype("byte"),
+        np.array(expected_masks[1]).flatten().astype("byte"),
     ]
     expected_category_ids = [1, 2]
     expected_category_onehot = [[0, 1, 0], [0, 0, 1]]
@@ -131,8 +131,7 @@ def test_features_to_items():
 
     features = {
         "image/id": tf.constant([expected_image_id], tf.int64),
-        "image/width": tf.constant([IMAGE_WIDTH], tf.int64),
-        "image/height": tf.constant([IMAGE_HEIGHT], tf.int64),
+        "image/size": tf.constant([IMAGE_WIDTH, IMAGE_HEIGHT], tf.int64),
         "image/data": tf.constant(
             [np.array(expected_image).tostring()], tf.string
         ),
@@ -143,7 +142,10 @@ def test_features_to_items():
         "masks/data": tf.constant(
             [
                 np.concatenate(
-                    (expected_masks[0], expected_masks[1])
+                    (
+                        expected_masks[0],
+                        expected_masks[1],
+                    )
                 ).tostring()
             ],
             tf.string,
@@ -179,10 +181,11 @@ def test_features_to_items():
     )
     assert actual_masks.shape == (
         2,
-        IMAGE_WIDTH * IMAGE_HEIGHT * IMAGE_CHANNELS,
+        IMAGE_WIDTH * IMAGE_HEIGHT,
     )
     assert tf.math.less(
-        tf.reduce_sum(tf.abs(actual_masks - expected_masks)), EPS
+        tf.reduce_sum(tf.abs(actual_masks - expected_masks)),
+        EPS,
     )
     assert actual_category_onehot.shape == (2, 3)
     assert tf.math.less(
@@ -210,7 +213,7 @@ def test_features_to_items():
         assert actual_bboxes.shape == (expected_num_detecting_objects, 4)
         assert actual_masks.shape == (
             expected_num_detecting_objects,
-            IMAGE_WIDTH * IMAGE_HEIGHT * IMAGE_CHANNELS,
+            IMAGE_WIDTH * IMAGE_HEIGHT,
         )
         assert actual_category_onehot.shape == (
             expected_num_detecting_objects,

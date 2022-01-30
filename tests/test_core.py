@@ -11,15 +11,15 @@ from pathlib import Path
 import pytest
 
 from squids.dataset.maker import create_dataset
-from squids.tfrecords.maker import create_tfrecords, CategoriesMap
+from squids.tfrecords.maker import (
+    create_tfrecords,
+    CategoriesMap,
+    InvalidDatasetFormat,
+)
 from squids.tfrecords.loader import load_tfrecords
 from squids.tfrecords.explorer import explore_tfrecords
 from squids.actions import generate, transform, explore
-from squids.tfrecords.errors import (
-    TFRecordsDirNotFoundError,
-    TFRecordIdentifierNotFoundError,
-    OutputDirNotFoundError,
-)
+from squids.tfrecords.errors import DirNotFoundError, IdentifierNotFoundError
 
 # ------------------------------------------------------------------------------
 # Helper Functions
@@ -201,7 +201,7 @@ def core_function_testscript(coco):
             if kind == "train":
                 image_id = int(record_summaries[0].split(" ")[0])
 
-        with pytest.raises(TFRecordsDirNotFoundError):
+        with pytest.raises(DirNotFoundError):
             record_summaries = explore_tfrecords(
                 Path(tmp_dir + "/synthetic-tfrecords/instances_xxx"),
                 return_artifacts=True,
@@ -220,7 +220,7 @@ def core_function_testscript(coco):
 
         validate_tfrecord_artifacts(record_summary, record_image, image_id)
 
-        with pytest.raises(TFRecordsDirNotFoundError):
+        with pytest.raises(DirNotFoundError):
             explore_tfrecords(
                 Path(tmp_dir + "/synthetic-tfrecords/instances_xxx"),
                 image_id,
@@ -228,7 +228,7 @@ def core_function_testscript(coco):
                 return_artifacts=True,
             )
 
-        with pytest.raises(OutputDirNotFoundError):
+        with pytest.raises(DirNotFoundError):
             explore_tfrecords(
                 Path(tmp_dir + "/synthetic-tfrecords/instances_train"),
                 image_id,
@@ -236,7 +236,7 @@ def core_function_testscript(coco):
                 return_artifacts=True,
             )
 
-        with pytest.raises(TFRecordIdentifierNotFoundError):
+        with pytest.raises(IdentifierNotFoundError):
             explore_tfrecords(
                 Path(tmp_dir + "/synthetic-tfrecords/instances_train"),
                 999999,
@@ -251,7 +251,7 @@ def core_function_testscript(coco):
         create_dataset(dataset_dir)
 
     # Tests a reaction for missing directory
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(DirNotFoundError):
         dataset_dir = Path(tmp_dir + "/synthetic")
         create_tfrecords(dataset_dir)
 
@@ -389,7 +389,7 @@ def test_unknown_transformation():
         dataset_dir = Path(tmp_dir + "/synthetic")
         dataset_dir.mkdir()
 
-        with pytest.raises(ValueError):
+        with pytest.raises(InvalidDatasetFormat):
             dataset_dir = Path(tmp_dir + "/synthetic")
             # The dataset_dir does not contain either CSV or COCO data.
             create_tfrecords(dataset_dir)
@@ -473,7 +473,7 @@ def test_data_loader(capsys):
         assert steps_per_epoch > 0
         for X, y in dataset:
             assert X.shape == (128, 64, 64, 3)
-            assert y.shape == (128, 10, 12295)
+            assert y.shape == (128, 10, 4096 + 4 + 3)
             break
 
         # ----------------------------------------
@@ -486,7 +486,7 @@ def test_data_loader(capsys):
         for Xi, (Xo, y) in dataset:
             assert Xi.shape == (128, 64, 64, 3)
             assert Xo.shape == (128, 64, 64, 3)
-            assert y.shape == (128, 10, 12295)
+            assert y.shape == (128, 10, 4096 + 4 + 3)
             break
 
         dataset, steps_per_epoch = load_tfrecords(
