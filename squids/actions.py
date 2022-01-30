@@ -2,8 +2,6 @@
 A module for handling user actions.
 """
 
-import traceback
-
 from .config import (
     IMAGE_WIDTH,
     IMAGE_HEIGHT,
@@ -18,7 +16,7 @@ from .dataset import (
     Background,
     Palette,
 )
-from .tfrecords import create_tfrecords, explore_tfrecords, TFRecordsError
+from .tfrecords import create_tfrecords, explore_tfrecords
 
 
 def generate(subparsers):
@@ -119,20 +117,15 @@ def transform(subparsers):
     cmd = "transform"
 
     def run(args):
-        try:
-            create_tfrecords(
-                dataset_dir=args.dataset_dir,
-                tfrecords_dir=args.tfrecords_dir,
-                size=args.size,
-                image_width=args.image_width,
-                image_height=args.image_height,
-                selected_categories=args.select_categories,
-                verbose=args.verbose,
-            )
-        except TFRecordsError as err:
-            print(f"Error: {err}")
-        except Exception:
-            traceback.print_stack()
+        create_tfrecords(
+            dataset_dir=args.dataset_dir,
+            tfrecords_dir=args.tfrecords_dir,
+            size=args.size,
+            image_width=args.image_width,
+            image_height=args.image_height,
+            selected_categories=args.select_categories,
+            verbose=args.verbose,
+        )
 
     # ---------------------------------
     # Sets "transform" command options

@@ -255,6 +255,13 @@ def core_function_testscript(coco):
         dataset_dir = Path(tmp_dir + "/synthetic")
         create_tfrecords(dataset_dir)
 
+    # Tests a reaction for missing directory
+    with pytest.raises(DirNotFoundError):
+        dataset_dir = Path(tmp_dir + "/synthetic")
+        create_dataset(dataset_dir, coco=coco)
+        tfrecords_dir = Path(tmp_dir + "/somewhere/synthetic")
+        create_tfrecords(dataset_dir, tfrecords_dir)
+
 
 def test_csv_generator_transformer_explore_functions():
     """Tests the CSV data generate/transform/explore functions."""
