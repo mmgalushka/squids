@@ -1,6 +1,4 @@
-"""
-A module for converting a data source to TFRecords.
-"""
+"""A module for converting a data source to TFRecords."""
 from __future__ import annotations
 
 

@@ -1,6 +1,5 @@
-"""
-A module for converting a data source to TFRecords.
-"""
+"""A module for converting a data source to TFRecords."""
+
 from __future__ import annotations
 
 import os
@@ -8,7 +7,6 @@ import json
 import copy
 import csv
 from pathlib import Path
-from typing import Iterator
 
 import PIL.Image as Image
 import tensorflow as tf
@@ -25,6 +23,18 @@ from ..config import IMAGE_WIDTH, IMAGE_HEIGHT, DATASET_DIR, TFRECORDS_SIZE
 
 
 def is_csv_input(input_dir: Path) -> bool:
+    """
+    Tests if the input directory represents CSV dataset format.
+
+    Args:
+        input_dir (Path):
+            The input directory to test.
+
+    Returns:
+        status (bool):
+            Returns `True` if the input directory represents CSV dataset
+            format and `False` otherwise.
+    """
     return set(os.listdir(input_dir)) == set(
         [
             "images",
@@ -37,6 +47,18 @@ def is_csv_input(input_dir: Path) -> bool:
 
 
 def is_coco_input(input_dir: Path) -> bool:
+    """
+    Tests if the input directory represents COCO dataset format.
+
+    Args:
+        input_dir (Path):
+            The input directory to test.
+
+    Returns:
+        status (bool):
+            Returns `True` if the input directory represents COCO dataset
+            format and `False` otherwise.
+    """
     root_artifacts = os.listdir(input_dir)
     if "annotations" in root_artifacts:
         annotations_artifacts = os.listdir(input_dir / "annotations")
@@ -53,6 +75,38 @@ def is_coco_input(input_dir: Path) -> bool:
 
 
 class CategoriesMap:
+    """
+    A dictionary-like object for intelligently mapping categories.
+
+    The goal of this class is to remap user-specified categories for the
+    compact one-hot encoding.  Let's review a simple example. Assume, the
+    original data has images that include objects belonging to the two
+    categories: 15 and 20. If we do not remap these categories, then we
+    need to create one-hot with length `max(15,20) + 1 = 21` (plus one
+    is to allow one additional category "no object"). This creates
+    unnecessary overhead during the model training. The most intuitive
+    solution would be to remap the original categories to the following
+    `{15: 1, 20: 2}`. In this case, the one-hot encoding length would be
+    `max(1,2) + 1 = 3` .
+
+    To initiate remapping the `selected_categories` argument should be
+    defined. All selected category IDs will be sorted in ascending order
+    with the consequent re-assignment to the new IDs. For example, let's
+    assume the specified selected categories are `[12, 5, 3,  23]`, after
+    sorting this list will have the following  `[3, 5, 12, 23]` and the
+    remapping `{3: 1, 5: 2, 12: 3, 23: 4}`.
+
+    If the `selected_categories` argument is defined the following
+    operation `map[ORIGINAL_ID]` returns `NEW_ID` (remapped category ID).
+    If the `selected_categories` argument does not  defined the following
+    operation `map[ORIGINAL_ID]` returns `ORIGINAL_ID` (in other words
+    its remaps ID to itself).
+
+    Args:
+        selected_categories (list):
+            The list of categories to map.
+    """
+
     def __init__(self, selected_categories: list = []):
         self.__categories_mapping = {}
         if len(selected_categories) > 0:
@@ -64,12 +118,14 @@ class CategoriesMap:
                 )
 
     def __getitem__(self, category_id):
+        """Returns the remapped category ID."""
         if self.__categories_mapping:
             return self.__categories_mapping[category_id]
         else:
             return category_id
 
     def __contains__(self, category_id):
+        """Tests if the specified category ID in the map."""
         if self.__categories_mapping:
             return category_id in self.__categories_mapping
         else:
@@ -77,6 +133,16 @@ class CategoriesMap:
 
 
 class DatasetIterator:
+    """
+    The base class for dataset records iterator.
+
+    Args:
+        records (list):
+            The list with records to iterate.
+        image_dir (Path):
+            The base path for loading images.
+    """
+
     def __init__(self, records: list, image_dir: Path):
         self.__records = records
         self.__image_dir = image_dir
@@ -84,12 +150,15 @@ class DatasetIterator:
         self.__pointer = 0
 
     def __iter__(self):
+        """Returns the dataset records iterator."""
         return self
 
     def __len__(self):
+        """Returns a number of records in the dataset."""
         return self.__size
 
     def __next__(self):
+        """Returns the next record."""
         if self.__pointer >= self.__size:
             raise StopIteration
 
@@ -103,6 +172,19 @@ class DatasetIterator:
 
 
 class CsvIterator(DatasetIterator):
+    """
+    The CSV dataset iterator.
+
+    Args:
+        instance_file (Path):
+            The path to the `csv`-file with records to iterate.
+        selected_categories (list):
+            The list of category IDs on which iteration should take place.
+            If an image within a record does not contain a selected category
+            it's skipped. If the selected category IDs do not define, then
+            iterate goes via all images.
+    """
+
     def __init__(self, instance_file: Path, selected_categories: list):
         categories_map = CategoriesMap(selected_categories)
 
@@ -153,6 +235,19 @@ class CsvIterator(DatasetIterator):
 
 
 class CocoIterator(DatasetIterator):
+    """
+    The COCO dataset iterator.
+
+    Args:
+        instance_file (Path):
+            The path to the `json`-file with records to iterate.
+        selected_categories (list):
+            The list of category IDs on which iteration should take place.
+            If an image within a record does not contain a selected category
+            it's skipped. If the selected category IDs do not define, then
+            iterate goes via all images.
+    """
+
     def __init__(self, instance_file: Path, selected_categories: list):
         categories_map = CategoriesMap(selected_categories)
 
@@ -202,15 +297,35 @@ class CocoIterator(DatasetIterator):
 # ------------------------------------------------------------------------------
 
 
-def items_to_tfrecords(
-    output_dir: Path,
+def instances_to_tfrecords(
     instance_file: Path,
-    items: Iterator,
+    output_dir: Path,
+    items: DatasetIterator,
     size: int,
     image_width: int,
     image_height: int,
     verbose: bool,
 ):
+    """
+    Converse instances to tfrecords.
+
+    Args:
+        instance_file (Path):
+            The path to the instance file to read data from.
+        output_dir (Path):
+            The path to the output directory to save generated TFRecords.
+        items (DatasetIterator):
+            The CSV or COCO dataset iterator.
+        size (int):
+            The number of images per partion.
+        image_width (int):
+            The TFRecords image width resize to.
+        image_height (int):
+            The TFRecords image height resize to.
+        verbose (bool):
+            The flag to set verbose mode.
+    """
+
     def get_example(item):
         image_id = item["image"]["id"]
         img = item["image"]["data"]
@@ -297,9 +412,9 @@ def create_tfrecords(
 
     Args:
         dataset_dir (str):
-            The path to the data set to transform.
+            The path to the data set directory to transform.
         tfrecords_dir (str):
-            The path to the output directory for TFRecords.
+            The path to the output directory to save generated TFRecords.
         size (int):
             The number of images per partion.
         image_width (int):
@@ -331,9 +446,9 @@ def create_tfrecords(
 
     if is_csv_input(input_dir):
         for instance_file in input_dir.rglob("*.csv"):
-            items_to_tfrecords(
-                output_dir,
+            instances_to_tfrecords(
                 instance_file,
+                output_dir,
                 CsvIterator(instance_file, selected_categories),
                 size,
                 image_width,
@@ -342,15 +457,14 @@ def create_tfrecords(
             )
     elif is_coco_input(input_dir):
         for instance_file in (input_dir / "annotations").rglob("*.json"):
-            items_to_tfrecords(
-                output_dir,
+            instances_to_tfrecords(
                 instance_file,
+                output_dir,
                 CocoIterator(instance_file, selected_categories),
                 size,
                 image_width,
                 image_height,
                 verbose,
             )
-
     else:
         raise InvalidDatasetFormat()

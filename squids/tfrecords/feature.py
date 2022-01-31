@@ -1,6 +1,4 @@
-"""
-A module for handling TFRecords features.
-"""
+"""A module for handling TFRecords features."""
 
 from __future__ import annotations
 

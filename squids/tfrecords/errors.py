@@ -1,6 +1,4 @@
-"""
-A module for TFRecords related errors.
-"""
+"""A module for TFRecords related errors."""
 
 from __future__ import annotations
 
