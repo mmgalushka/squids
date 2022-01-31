@@ -1,6 +1,4 @@
-"""
-A module for handling image palette.
-"""
+"""A module for handling image palette."""
 
 from enum import Enum
 

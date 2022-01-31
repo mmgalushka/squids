@@ -10,7 +10,8 @@ class TFRecordsError(Exception):
 
 
 class DirNotFoundError(TFRecordsError):
-    """Raises if a directory does not exist.
+    """
+    Raises if a directory does not exist.
 
     Args:
         name (str):

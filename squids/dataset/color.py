@@ -1,12 +1,11 @@
-"""
-A module for handling shapes and image colors.
-"""
+"""A module for handling shapes and image colors."""
 
 import random
 
 
 class Color:
-    """A color.
+    """
+    A color.
 
     Args:
         r (int): The red color code between 0 and 255.

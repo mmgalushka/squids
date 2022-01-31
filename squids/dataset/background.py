@@ -1,6 +1,4 @@
-"""
-A module for handling image background.
-"""
+"""A module for handling image background."""
 
 from enum import Enum
 

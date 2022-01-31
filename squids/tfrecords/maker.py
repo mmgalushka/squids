@@ -107,7 +107,7 @@ class CategoriesMap:
             The list of categories to map.
     """
 
-    def __init__(self, selected_categories: list = []):
+    def __init__(self, selected_categories: list):
         self.__categories_mapping = {}
         if len(selected_categories) > 0:
             for new_category_id, old_category_id in enumerate(
@@ -408,7 +408,8 @@ def create_tfrecords(
     selected_categories: list = [],
     verbose: bool = False,
 ):
-    """This function transforms CSV or COCO dataset to TFRecords.
+    """
+    This function transforms CSV or COCO dataset to TFRecords.
 
     Args:
         dataset_dir (str):

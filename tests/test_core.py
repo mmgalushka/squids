@@ -145,7 +145,7 @@ def validate_tfrecord_artifacts(record_summary, record_image, image_id):
 
 
 def test_categories_map():
-    categories_map = CategoriesMap()
+    categories_map = CategoriesMap([])
     assert categories_map[1] == 1
     assert categories_map[2] == 2
     assert 2 in categories_map
