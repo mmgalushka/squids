@@ -4,7 +4,7 @@ Synthetic datasets can help you quickly validate your ideas during building ML m
 
 ## Usage
 
-The process of generating a synthetic dataset can be initiated by the Python `create_coco_dataset()` (see [PyDoc](#pydoc) for more information) function or via a command line.
+The process of generating a synthetic dataset can be initiated by the Python `create_dataset()` function (see [PyDoc](#pydoc) for more information)  or via a command line.
 
 <!-- Usage tab (Python|Shell)  -->
 
@@ -70,7 +70,7 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
     | instances_test.csv  | File   | Contains test records including image and annotations |
     | categories.json     | File   | Contains information about annotated categories |
 
-    All CSV files have the same structure, shown below. 
+    All CSV files have the same structure, shown below.
 
     | Column Name   | Column Description |
     |---------------|--------------------|
@@ -118,7 +118,7 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
     For example, a CSV file record has the following category IDs `[2, 1]`. It means that the first annotated object is the `triangle` (since its ID is `2`), and the second is the `rectangle` (since its ID is `1` respectively).
 
 === "COCO"
-    [COCO](https://cocodataset.org/#format-data), probably, is the most popular format for handling synthetic and real computer vision data. 
+    [COCO](https://cocodataset.org/#format-data), probably, is the most popular format for handling synthetic and real computer vision data.
 
     !!! Note
         The following description of the COCO format focuses only on the key points necessary to understand how this data is transformed to the TFRecords. If you would like to learn more about the COCO format we recommend reading the following [documentation](https://cocodataset.org/#format-data).
@@ -138,7 +138,7 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
 
     !!! Note
         The current folder is the folder from which you launched your Python application.
-        
+
     !!! Important
         To generate data in COCO format you need to set function argument `coco=True` or use the flag `--coco` in the command line.
 
@@ -151,8 +151,8 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
     | instances_train                  | Dir    | Contains all generated training images (annotated in instances_train.json) |
     | instances_val                    | Dir    | Contains all generated validation images (annotated in instances_val.json) |
     | instances_test                   | Dir    | Contains all generated test images (annotated in instances_test.json) |
-    
-    All JSON files have the same structure, shown below. 
+
+    All JSON files have the same structure, shown below.
 
     ```json
     {
@@ -217,7 +217,7 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
     ]
     ```
 
-    Each record contains information about an image it belongs to via the property `image_id`, bounding box coordinates `bbox`, segmentation polygon coordinates `segmentation`, and `category_id` to define what type of an object is segmented. 
+    Each record contains information about an image it belongs to via the property `image_id`, bounding box coordinates `bbox`, segmentation polygon coordinates `segmentation`, and `category_id` to define what type of an object is segmented.
 
      `categories` property contains a list of items with information about available object categories. Its example is shown below.
 

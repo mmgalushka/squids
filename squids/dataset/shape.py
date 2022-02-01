@@ -1,6 +1,4 @@
-"""
-A module for handling a shape on an image.
-"""
+"""A module for handling a shape on an image."""
 
 from random import randint
 
@@ -11,7 +9,8 @@ from .color import Color
 
 
 class Shape:
-    """A base shape to define geometrical figure.
+    """
+    A base shape to define geometrical figure.
 
     Args:
         polygon (Polygon): The collection of vertices for drawing a

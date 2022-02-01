@@ -1,6 +1,4 @@
-"""
-A module for handling a polygon on an image.
-"""
+"""A module for handling a polygon on an image."""
 
 from typing import List
 

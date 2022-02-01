@@ -1,7 +1,4 @@
-"""
-A module configuration constants.
-"""
-
+"""A module configuration constants."""
 
 IMAGE_WIDTH = 64
 """The width of synthetic and TFRecords images."""

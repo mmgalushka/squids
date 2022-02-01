@@ -1,8 +1,4 @@
-"""
-A module for manipulating images.
-"""
-
-from __future__ import annotations
+"""A module for manipulating images."""
 
 from random import randint, choice
 
@@ -25,7 +21,8 @@ def create_synthetic_image(
     image_background: Background,
     image_capacity: int,
 ) -> tuple:
-    """Returns a generated image with binding boxes and segments.
+    """
+    Returns a generated image with binding boxes and segments.
 
     Args:
         image_width (int): The image width in pixels.

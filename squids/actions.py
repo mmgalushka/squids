@@ -1,6 +1,4 @@
-"""
-A module for handling user actions.
-"""
+"""A module for handling user actions."""
 
 from .config import (
     IMAGE_WIDTH,
@@ -8,6 +6,7 @@ from .config import (
     IMAGE_CAPACITY,
     DATASET_DIR,
     DATASET_SIZE,
+    TFRECORDS_SIZE,
 )
 
 from .dataset import (
@@ -16,6 +15,9 @@ from .dataset import (
     Palette,
 )
 from .tfrecords import create_tfrecords, explore_tfrecords
+
+
+__all__ = ["generate", "transform", "explore"]
 
 
 def generate(subparsers):
@@ -118,11 +120,11 @@ def transform(subparsers):
     def run(args):
         create_tfrecords(
             dataset_dir=args.dataset_dir,
-            selected_categories=args.select_categories,
             tfrecords_dir=args.tfrecords_dir,
-            tfrecords_size=args.tfrecords_size,
-            tfrecords_image_width=args.tfrecords_image_width,
-            tfrecords_image_height=args.tfrecords_image_height,
+            size=args.size,
+            image_width=args.image_width,
+            image_height=args.image_height,
+            selected_categories=args.select_categories,
             verbose=args.verbose,
         )
 
@@ -141,7 +143,7 @@ def transform(subparsers):
         default=DATASET_DIR,
         help=(
             "a source dataset directory, if not defined, "
-            f"it will be selected as the './{DATASET_DIR}'"
+            f"it will be selected as the '{DATASET_DIR}'"
         ),
     )
 
@@ -155,29 +157,29 @@ def transform(subparsers):
         help=(
             "a TFRecords directory, if not defined, "
             "it will be created in the <DATASET_DIR> parent "
-            "under the name '<DATASET_DIR>-tfrecords"
+            "under the name '<DATASET_DIR>-tfrecords'"
         ),
     )
 
     parser.add_argument(
         "-s",
-        "--tfrecords-size",
+        "--size",
         metavar="NUMBER",
         type=int,
-        default=256,
-        help="a number of images per partion (default=256)",
+        default=TFRECORDS_SIZE,
+        help=f"a number of images per partition (default={TFRECORDS_SIZE})",
     )
 
     # --- image options ---------------
     parser.add_argument(
-        "--tfrecords-image-width",
+        "--image-width",
         metavar="PIXELS",
         type=int,
         default=IMAGE_WIDTH,
         help=f"a TFRecords image width resize to (default={IMAGE_WIDTH})",
     )
     parser.add_argument(
-        "--tfrecords-image-height",
+        "--image-height",
         metavar="PIXELS",
         type=int,
         default=IMAGE_HEIGHT,

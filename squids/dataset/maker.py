@@ -1,8 +1,4 @@
-"""
-A module for creating synthetic datasets.
-"""
-
-from __future__ import annotations
+"""A module for creating synthetic datasets."""
 
 import copy
 import json
@@ -52,7 +48,8 @@ def create_dataset(
     coco: bool = False,
     verbose: bool = False,
 ):
-    """This function generates dataset in CSV or COCO format.
+    """
+    This function generates dataset in CSV or COCO format.
 
     The input parameters for generating the dataset in CSV or COCO format
     are the same except for the `coco` flag. If the `coco` flag is `False`

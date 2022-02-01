@@ -1,10 +1,9 @@
-"""
-A module for handling a point on an image.
-"""
+"""A module for handling a point on an image."""
 
 
 class Point:
-    """A point.
+    """
+    A point.
 
     Args:
         x (int): The `x` coordinate.
@@ -29,7 +28,8 @@ class Point:
         return self.x != other.x or self.y != other.y
 
     def flatten(self) -> list:
-        """Returns a flattened representation of a point.
+        """
+        Returns a flattened representation of a point.
 
         Returns:
             The array `[x, y]` where `x, y` the point coordinates.

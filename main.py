@@ -2,8 +2,6 @@
 The SquiDS main module.
 """
 
-import os
-
 import sys
 import argparse
 
@@ -25,10 +23,15 @@ def main():
             parser.print_help()
         else:
             args = parser.parse_args(sys.argv[1:])
-            args.func(args)
+            try:
+                args.func(args)
+            except sds.TFRecordsError as err:
+                print(f"Error: {err}")
+                exit(1)
+
     else:
         parser.print_help()
-    exit(os.EX_OK)
+    exit(0)
 
 
 if __name__ == "__main__":

@@ -1,13 +1,12 @@
-"""
-A module for handling a bounding box on an image.
-"""
+"""A module for handling a bounding box on an image."""
 
 from .point import Point
 from .polygon import Polygon
 
 
 class BBox(Polygon):
-    """A bounding box.
+    """
+    A bounding box.
 
     Args:
         anchor (Point): The top-left point of the bounding box.
