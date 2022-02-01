@@ -1,7 +1,5 @@
 """A module for creating synthetic datasets."""
 
-from __future__ import annotations
-
 import copy
 import json
 import random

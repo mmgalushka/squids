@@ -1,5 +1,4 @@
 """A module for converting a data set to TFRecords."""
-from __future__ import annotations
 
 import os
 import glob

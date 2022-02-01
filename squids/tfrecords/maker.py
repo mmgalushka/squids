@@ -1,7 +1,5 @@
 """A module for converting a data source to TFRecords."""
 
-from __future__ import annotations
-
 import os
 import json
 import copy

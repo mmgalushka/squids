@@ -1,7 +1,5 @@
 """A module for handling TFRecords features."""
 
-from __future__ import annotations
-
 import numpy as np
 import tensorflow as tf
 from PIL import Image, ImageDraw

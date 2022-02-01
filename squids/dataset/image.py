@@ -1,7 +1,5 @@
 """A module for manipulating images."""
 
-from __future__ import annotations
-
 from random import randint, choice
 
 import PIL.Image

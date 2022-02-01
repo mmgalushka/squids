@@ -1,6 +1,4 @@
-"""
-A module for handling user actions.
-"""
+"""A module for handling user actions."""
 
 from .config import (
     IMAGE_WIDTH,
@@ -17,6 +15,9 @@ from .dataset import (
     Palette,
 )
 from .tfrecords import create_tfrecords, explore_tfrecords
+
+
+__all__ = ["generate", "transform", "explore"]
 
 
 def generate(subparsers):
