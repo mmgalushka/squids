@@ -32,7 +32,9 @@ def load_tfrecords(
             output schema.
         num_detecting_objects (int):
             The number of detecting objects per input image. It must greater
-            than 1.
+            than 0. To ignore the number of detecting objects and retrieve
+            the exact number of  annotated objects, set this argument to
+            `None`.
         batch_size (int):
             The batch size. It must greater than 0.
         steps_per_epoch (int):
@@ -44,11 +46,12 @@ def load_tfrecords(
             The flag to set a verbose mode.
 
     Returns:
-        dataset (TFRecordDataset):
-            The dataset to pass into tensorflow training function.
-        steps_per_epoch (int):
-            The number of steps per epoch provided or computed (if it was
-            not specified as the function argument).
+        (dataset, steps_per_epoch):
+        * `record_summaries` is the dataset to pass into tensorflow
+            training function.
+        * `steps_per_epoch` The number of steps per epoch provided
+            or computed (if it was not specified as the same as the
+            function argument).
 
     Raises:
         ValueError:
