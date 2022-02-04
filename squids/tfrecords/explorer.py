@@ -1,4 +1,4 @@
-"""A module for converting a data set to TFRecords."""
+"""A module for exploring TFRecords data set."""
 
 import os
 import glob
@@ -61,12 +61,12 @@ def explore_tfrecords(
     tfrecords_dir: str,
     image_id: int = None,
     output_dir: str = ".",
-    with_summary: bool = True,
+    with_categories: bool = True,
     with_bboxes: bool = True,
     with_segmentations: bool = True,
     return_artifacts: bool = False,
 ):
-    """Explores TFRecords.
+    """Explores individual or multiple TFRecord(s).
 
     This function allows listing a summary of all TFRecords as well as
     viewing the content of individual records such as an image together
@@ -79,16 +79,20 @@ def explore_tfrecords(
             The image ID to view.
         output_dir (str):
             The output directory where to store the produced artifacts such as
-            image content with superimposed binding boxes, masks, categories,
+            image content with overlaid binding boxes, masks, categories,
             etc.
+        with_categories (bool):
+            The flag to superimpose categories on an image, defined within
+            a record. If the flag is `True` categories are overlaid
+            to an image and `False` categories are discarded.
         with_bboxes (bool):
             The flag to superimpose bounding boxes on an image, defined within
-            a record. If the flag is `True` bounding boxes are superimposed
+            a record. If the flag is `True` bounding boxes are overlaid
             to an image and `False` boxes are discarded.
         with_segmentations (bool):
             The flag to superimpose segmentation masks on an image, defined
             within a record. If the flag is `True` segmentation masks are
-            superimposed to an image and `False` masks are discarded.
+            overlaid to an image and `False` masks are discarded.
         return_artifacts (bool):
             The flag (`True` value) enforces the function to return generated
             artifacts instead of output them to a console or store them in a
@@ -98,16 +102,13 @@ def explore_tfrecords(
             processing.
 
     Returns:
-        record_summaries (list):
-            The list with summary information about each record
-            (Returned if `image_id==None & return_artifacts==True` ).
-        record_summary (dict):
-            The list with summary information for the specified record
-            (Returned if `image_id!=None & return_artifacts==True`).
-        record_image (Image)
-            The image, which is stored within the specified record with
-            superimposed binding boxes, masks, and categories.
-            Returned if `image_id!=None & return_artifacts==True`
+        record_summaries | (record_summary, record_image):
+        * `record_summaries` is she list with summary information about each
+        record (if `image_id==None & return_artifacts==True`).
+        * `record_summary` is a dictionary with summary information for the
+        specified record (if `image_id!=None & return_artifacts==True`).
+        * `record_image` is a PIL The image with overlaid binding boxes, masks,
+        and categories (if `image_id!=None & return_artifacts==True`).
 
     Raises:
         TFRecordsDirNotFoundError:
@@ -135,6 +136,7 @@ def explore_tfrecords(
             Path(tfrecords_dir),
             image_id,
             Path(output_dir),
+            with_categories,
             with_bboxes,
             with_segmentations,
         )
@@ -193,6 +195,7 @@ def view_tfrecord(
     tfrecords_dir: Path,
     image_id: int,
     output_dir: Path,
+    with_categories: bool,
     with_bboxes: bool,
     with_segmentations: bool,
 ):
@@ -205,8 +208,10 @@ def view_tfrecord(
             The image ID to view.
         output_dir (Path):
             The output directory where to store the produced artifacts such as
-            image content with superimposed binding boxes, masks, categories,
+            image content with overlaid binding boxes, masks, categories,
             etc.
+        with_categories (bool):
+            The flag to superimpose categories on an image.
         with_bboxes (bool):
             The flag to superimpose bounding boxes on an image.
         with_segmentations (bool):
@@ -217,7 +222,7 @@ def view_tfrecord(
             The list with summary information for the specified record.
         record_image (Image):
             The image, which is stored within the specified record with
-            superimposed binding boxes, masks, and categories.
+            overlaid binding boxes, masks, and categories.
 
     Raises:
         TFRecordsDirNotFoundError:
@@ -293,18 +298,30 @@ def view_tfrecord(
                         0.7,
                     )
 
-            if with_bboxes:
-                draw = ImageDraw.Draw(record_image)
-                for bbox, onehot in zip(
-                    bboxes.numpy()[0],
-                    category_ids.numpy()[0],
-                ):
+            draw = ImageDraw.Draw(record_image)
+            for bbox, onehot in zip(
+                bboxes.numpy()[0],
+                category_ids.numpy()[0],
+            ):
+                category_id = onehot.argmax()
+                category_color = MASK_HIGHLIGHTING_COLORS[
+                    (category_id - 1) % len(MASK_HIGHLIGHTING_COLORS)
+                ]
 
-                    category_id = onehot.argmax()
-                    category_color = MASK_HIGHLIGHTING_COLORS[
-                        (category_id - 1) % len(MASK_HIGHLIGHTING_COLORS)
-                    ]
+                if with_categories:
+                    draw.rectangle(
+                        (bbox[0], bbox[1], (bbox[0] + 16), (bbox[1] - 10)),
+                        outline=str(category_color),
+                        fill=str(category_color),
+                    )
+                    draw.text(
+                        (bbox[0] + 3, bbox[1] - 10),
+                        str(onehot.argmax()),
+                        "white",
+                        font=ImageFont.load_default(),
+                    )
 
+                if with_bboxes:
                     draw.rectangle(
                         (
                             bbox[0],
@@ -313,18 +330,6 @@ def view_tfrecord(
                             (bbox[1] + bbox[3]),
                         ),
                         outline=str(category_color),
-                    )
-                    draw.rectangle(
-                        (bbox[0], bbox[1], (bbox[0] + 16), (bbox[1] - 10)),
-                        outline=str(category_color),
-                        fill=str(category_color),
-                    )
-
-                    draw.text(
-                        (bbox[0] + 3, bbox[1] - 10),
-                        str(onehot.argmax()),
-                        "white",
-                        font=ImageFont.load_default(),
                     )
 
             return record_summary, record_image
