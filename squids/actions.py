@@ -210,17 +210,14 @@ def explore(subparsers):
     cmd = "explore"
 
     def run(args):
-        try:
-            explore_tfrecords(
-                tfrecords_dir=args.tfrecords_dir,
-                image_id=args.image_id,
-                output_dir=args.output_dir,
-                with_summary=not args.no_summary,
-                with_bboxes=not args.no_bboxes,
-                with_segmentations=not args.no_segmentations,
-            )
-        except FileNotFoundError as err:
-            print("\nI/O Error:", err)
+        explore_tfrecords(
+            tfrecords_dir=args.tfrecords_dir,
+            image_id=args.image_id,
+            output_dir=args.output_dir,
+            with_categories=not args.no_categories,
+            with_bboxes=not args.no_bboxes,
+            with_segmentations=not args.no_segmentations,
+        )
 
     # ---------------------------------
     # Sets "explore" command options
@@ -236,6 +233,7 @@ def explore(subparsers):
         help="a TFRecords directory to explore",
     )
 
+    # --- record options --------------
     group = parser.add_argument_group("A record exploration options")
 
     group.add_argument(
@@ -246,7 +244,6 @@ def explore(subparsers):
         help="an image ID to select",
         default=None,
     )
-
     group.add_argument(
         "output_dir",
         metavar="OUTPUT_DIR",
@@ -255,21 +252,18 @@ def explore(subparsers):
         help="an output directory to save rendered image",
         default=".",
     )
-
     group.add_argument(
-        "--no-summary",
-        help="turn off the showing of image summary",
+        "--no-categories",
+        help="turn off showing of categories",
         action="store_true",
     )
-
     group.add_argument(
         "--no-bboxes",
-        help="turn off the showing of bounding boxes",
+        help="turn off showing of bounding boxes",
         action="store_true",
     )
-
     group.add_argument(
         "--no-segmentations",
-        help="turn off the showing of segmentations",
+        help="turn off showing of segmentations",
         action="store_true",
     )
