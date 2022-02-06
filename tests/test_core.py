@@ -399,24 +399,51 @@ def test_unknown_transformation():
 
 def test_reproducibility():
     """Tests generate/transform/explore functions."""
+
+    def read_data(dataset_dir, filename):
+        with open(dataset_dir / filename, "r") as file:
+            return file.read()
+
     with tempfile.TemporaryDirectory() as tmp_dir:
         dataset_orig_dir = Path(tmp_dir + "/synthetic_orig")
         create_dataset(dataset_orig_dir, dataset_size=100, random_state=42)
-
         dataset_same_dir = Path(tmp_dir + "/synthetic_same")
         create_dataset(dataset_same_dir, dataset_size=100, random_state=42)
-
         dataset_diff_dir = Path(tmp_dir + "/synthetic_diff")
         create_dataset(dataset_diff_dir, dataset_size=100, random_state=None)
-
-        def read_data(dataset_dir, filename):
-            with open(dataset_dir / filename, "r") as file:
-                return file.read()
 
         for kind in ["train", "val", "test"]:
             expected = read_data(dataset_orig_dir, f"instances_{kind}.csv")
             actual_same = read_data(dataset_same_dir, f"instances_{kind}.csv")
             actual_diff = read_data(dataset_diff_dir, f"instances_{kind}.csv")
+
+            assert actual_same == expected
+            assert actual_diff != expected
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        dataset_orig_dir = Path(tmp_dir + "/synthetic_orig")
+        create_dataset(
+            dataset_orig_dir, dataset_size=100, random_state=42, coco=True
+        )
+        dataset_same_dir = Path(tmp_dir + "/synthetic_same")
+        create_dataset(
+            dataset_same_dir, dataset_size=100, random_state=42, coco=True
+        )
+        dataset_diff_dir = Path(tmp_dir + "/synthetic_diff")
+        create_dataset(
+            dataset_diff_dir, dataset_size=100, random_state=None, coco=True
+        )
+
+        for kind in ["train", "val", "test"]:
+            expected = read_data(
+                dataset_orig_dir, f"annotations/instances_{kind}.json"
+            ).replace("_orig", "")
+            actual_same = read_data(
+                dataset_same_dir, f"annotations/instances_{kind}.json"
+            ).replace("_same", "")
+            actual_diff = read_data(
+                dataset_diff_dir, f"annotations/instances_{kind}.json"
+            ).replace("_diff", "")
 
             assert actual_same == expected
             assert actual_diff != expected
