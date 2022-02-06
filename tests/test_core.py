@@ -140,24 +140,6 @@ def validate_tfrecord_artifacts(record_summary, record_image, image_id):
 
 
 # ------------------------------------------------------------------------------
-# Core Tests
-# ------------------------------------------------------------------------------
-
-
-def test_categories_map():
-    categories_map = CategoriesMap([])
-    assert categories_map[1] == 1
-    assert categories_map[2] == 2
-    assert 2 in categories_map
-
-    categories_map = CategoriesMap([3, 4])
-    assert categories_map[3] == 1
-    assert categories_map[4] == 2
-    assert 4 in categories_map
-    assert 5 not in categories_map
-
-
-# ------------------------------------------------------------------------------
 # GTE Function Tests
 # ------------------------------------------------------------------------------
 
@@ -374,6 +356,19 @@ def test_coco_generator_transformer_explore_actions(capsys):
 # ------------------------------------------------------------------------------
 
 
+def test_categories_map():
+    categories_map = CategoriesMap([])
+    assert categories_map[1] == 1
+    assert categories_map[2] == 2
+    assert 2 in categories_map
+
+    categories_map = CategoriesMap([3, 4])
+    assert categories_map[3] == 1
+    assert categories_map[4] == 2
+    assert 4 in categories_map
+    assert 5 not in categories_map
+
+
 def test_no_tfrecords_found(capsys):
     """Tests no TFRecords found."""
     parser = argparse.ArgumentParser()
@@ -400,6 +395,31 @@ def test_unknown_transformation():
             dataset_dir = Path(tmp_dir + "/synthetic")
             # The dataset_dir does not contain either CSV or COCO data.
             create_tfrecords(dataset_dir)
+
+
+def test_reproducibility():
+    """Tests generate/transform/explore functions."""
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        dataset_orig_dir = Path(tmp_dir + "/synthetic_orig")
+        create_dataset(dataset_orig_dir, dataset_size=100, random_state=42)
+
+        dataset_same_dir = Path(tmp_dir + "/synthetic_same")
+        create_dataset(dataset_same_dir, dataset_size=100, random_state=42)
+
+        dataset_diff_dir = Path(tmp_dir + "/synthetic_diff")
+        create_dataset(dataset_diff_dir, dataset_size=100, random_state=None)
+
+        def read_data(dataset_dir, filename):
+            with open(dataset_dir / filename, "r") as file:
+                return file.read()
+
+        for kind in ["train", "val", "test"]:
+            expected = read_data(dataset_orig_dir, f"instances_{kind}.csv")
+            actual_same = read_data(dataset_same_dir, f"instances_{kind}.csv")
+            actual_diff = read_data(dataset_diff_dir, f"instances_{kind}.csv")
+
+            assert actual_same == expected
+            assert actual_diff != expected
 
 
 # ------------------------------------------------------------------------------

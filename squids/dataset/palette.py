@@ -5,10 +5,14 @@ from enum import Enum
 
 class Palette(str, Enum):
     COLOR = "color"
+    """Defines the palette with all possible RGB colors."""
     GRAY = "gray"
+    """Defines the palette with all grades between black and white."""
     BINARY = "binary"
+    """Defines the palette with just two colors black and white."""
 
     def __str__(self):
+        """Returns the string representation of this class."""
         return str(self.value)
 
     @staticmethod
