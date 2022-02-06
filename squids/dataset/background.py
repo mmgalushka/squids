@@ -5,9 +5,12 @@ from enum import Enum
 
 class Background(str, Enum):
     WHITE = "white"
+    """Defines the white background."""
     BLACK = "black"
+    """Defines the black background."""
 
     def __str__(self):
+        """Returns the string representation of this class."""
         return str(self.value)
 
     @staticmethod

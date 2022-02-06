@@ -46,6 +46,7 @@ def create_dataset(
     image_background: Background = Background.default(),
     image_capacity: int = IMAGE_CAPACITY,
     coco: bool = False,
+    random_state: int = None,
     verbose: bool = False,
 ):
     """
@@ -75,6 +76,10 @@ def create_dataset(
             The flag defines a type of generating dataset. If `False`
             to generate the CSV dataset, if `True` the COCO dataset
             respectively.
+        random_state (int):
+            The random state used for generating synthetic data. If it is
+            `None`  then every time synthetic data will be generated with
+            a new random value.
         verbose (bool):
             The flag to set verbose mode.
     """
@@ -87,6 +92,7 @@ def create_dataset(
             image_palette,
             image_background,
             image_capacity,
+            random_state,
             verbose,
         )
     else:
@@ -98,6 +104,7 @@ def create_dataset(
             image_palette,
             image_background,
             image_capacity,
+            random_state,
             verbose,
         )
 
@@ -110,6 +117,7 @@ def create_csv_dataset(
     image_palette: Palette,
     image_background: Background,
     image_capacity: int,
+    random_state: int,
     verbose: bool,
 ):
     """Generates CSV dataset.
@@ -129,9 +137,14 @@ def create_csv_dataset(
             The palette for generating images.
         image_capacity (int):
             The number of geometrical shapes per image.
+        random_state (int):
+            The random state used for generating synthetic data.
         verbose (bool):
             The flag to set verbose mode.
     """
+    if random_state is not None:
+        random.seed(random_state)
+
     output_dir = Path(dataset_dir)
     if output_dir.exists():
         rmtree(output_dir)
@@ -217,6 +230,7 @@ def create_coco_dataset(
     image_palette: Palette,
     image_background: Background,
     image_capacity: int,
+    random_state: int,
     verbose: bool,
 ):
     """Generates COCO dataset.
@@ -236,9 +250,14 @@ def create_coco_dataset(
             The palette for generating images.
         image_capacity (int):
             The number of geometrical shapes per image.
+        random_state (int):
+            The random state used for generating synthetic data.
         verbose (bool):
             The flag to set verbose mode.
     """
+    if random_state is not None:
+        random.seed(random_state)
+
     output_dir = Path(dataset_dir)
     if output_dir.exists():
         rmtree(output_dir)

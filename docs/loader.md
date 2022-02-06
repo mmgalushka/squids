@@ -23,7 +23,7 @@ val_generator, val_steps_per_epoch = load_tfrecords(
 ...
 model.fit(
     train_generator,
-    validation_data=val_generator, 
+    validation_data=val_generator,
     steps_per_epoch=train_steps_per_epoch,
     validation_steps=val_steps_per_epoch,
     ...

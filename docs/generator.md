@@ -16,30 +16,36 @@ The process of generating a synthetic dataset can be initiated by the Python `cr
     ```
 === "Shell"
     ```shell
-    ~$ python squids.main generate [-h] [-s NUMBER] [--coco] [--image-width PIXELS] [--image-height PIXELS]
-                                [--image-palette {gray,binary,color}] [--image-background {white,black}]
-                                [--image-capacity NUMBER] [-v]
-                                [DATASET_DIR]
+    ~$ python squids.main generate [-h] [-s NUMBER] [--coco] [--image-width PIXELS]
+                [--image-height PIXELS] [--image-palette {gray,color,binary}]
+                [--image-background {black,white}] [--image-capacity NUMBER]
+                [--random-state NUMBER] [-v]
+                [DATASET_DIR]
 
     positional arguments:
-    DATASET_DIR           a generating dataset directory, (default 'dataset/synthetic')
+        DATASET_DIR           a generating dataset directory, (default 'dataset/synthetic')
 
     optional arguments:
-    -h, --help            show this help message and exit
-    -s NUMBER, --dataset-size NUMBER
-                            a number of generated data samples (default=1000)
-    --coco                a flag to generate dataset in the COCO format
-    --image-width PIXELS  a generated image width (default=64)
-    --image-height PIXELS
-                            a generated image height (default=64)
-    --image-palette {gray,binary,color}
-                            a used image palette (default='color')
-    --image-background {white,black}
-                            a used image background (default='white')
-    --image-capacity NUMBER
-                            a number of shapes per image (default=3)
-    -v, --verbose         a flag to set verbose mode
+        -h, --help            show this help message and exit
+        -s NUMBER, --dataset-size NUMBER
+                                a number of generated data samples (default=1000)
+        --coco                a flag to generate dataset in the COCO format
+        --image-width PIXELS  a generated image width (default=64)
+        --image-height PIXELS
+                                a generated image height (default=64)
+        --image-palette {gray,color,binary}
+                                a used image palette (default='color')
+        --image-background {black,white}
+                                a used image background (default='white')
+        --image-capacity NUMBER
+                                a number of shapes per image (default=3)
+        --random-state NUMBER
+                                a random state to use (default=None)
+        -v, --verbose         a flag to set verbose mode
     ```
+
+!!! Note
+    It is important to reproduce exactly the same synthetic dataset for some machine learning experiments. To do that set the `random_state` function argument or the `--random-state` command-line option to a particular integer value. But default the random state has been set to `None`. It means creating a new dataset every time the function or command line is called.
 
 ## Outcome
 
@@ -242,7 +248,17 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
 
 ## PyDoc
 
+### Maker
+
 ::: squids.dataset.maker
     selection:
       members:
         - create_dataset
+
+### Palette
+
+::: squids.dataset.palette
+
+### Background
+
+::: squids.dataset.background

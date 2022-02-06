@@ -34,6 +34,7 @@ def generate(subparsers):
             image_background=args.image_background,
             image_capacity=args.image_capacity,
             coco=args.coco,
+            random_state=args.random_state,
             verbose=args.verbose,
         )
 
@@ -105,6 +106,13 @@ def generate(subparsers):
     )
 
     # --- system options --------------
+    parser.add_argument(
+        "--random-state",
+        metavar="NUMBER",
+        type=int,
+        default=None,
+        help="a random state to use (default=None)",
+    )
     parser.add_argument(
         "-v",
         "--verbose",
