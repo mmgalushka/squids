@@ -11,7 +11,7 @@ from .background import Background
 from .palette import Palette
 from .point import Point
 from .bbox import BBox
-from .shape import Rectangle, Triangle
+from .shape import Ellipse, Triangle, Rectangle
 
 
 def create_synthetic_image(
@@ -41,7 +41,7 @@ def create_synthetic_image(
     n = randint(1, image_capacity)
     for _ in range(n):
         # Picks a random shape.
-        shape = choice([Rectangle, Triangle])
+        shape = choice([Ellipse, Triangle, Rectangle])
 
         # Picks a random shape color.
         if image_palette in [Palette.COLOR, Palette.GRAY]:

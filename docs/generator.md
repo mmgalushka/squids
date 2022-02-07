@@ -92,15 +92,15 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
     |----------|-----------|--------|---------------|--------------|
     | 0 | image0.jpg | [[4, 11, 16, 32]] | [[10, 11, 20, 43, 4, 43]] | [2] |
     | 1 | image1.jpg | [[44, 17, 13, 23], [3, 2, 11, 9]] | [[48, 17, 57, 40, 44, 40], [3, 2, 14, 2, 14, 1... | [2, 1] |
-    | 2 | image2.jpg | [[2, 46, 21, 8], [21, 6, 8, 26]] | [[2, 46, 23, 46, 23, 54, 2, 54], [29, 6, 29, 3... | [1, 2] |
+    | 2 | image2.jpg | [[2, 46, 21, 8], [21, 6, 8, 26]] | [[2, 46, 23, 46, 23, 54, 2, 54], [29, 6, 29, 3... | [1, 3] |
     | 3 | image3.jpg | [[11, 31, 17, 21], [0, 31, 18, 31]] | [[24, 31, 28, 52, 11, 52], [0, 31, 18, 31, 18,... | [2, 1] |
-    | 4 | image4.jpg | [[27, 21, 25, 7], [7, 32, 24, 27]] | [[38, 21, 52, 28, 27, 28], [7, 32, 31, 32, 31,... | [2, 1] |
+    | 4 | image4.jpg | [[27, 21, 25, 7], [7, 32, 24, 27]] | [[38, 21, 52, 28, 27, 28], [7, 32, 31, 32, 31,... | [2, 3] |
     ... | ... | ... | ... | ... | ... |
     | 991 | image991.jpg | [[21, 5, 30, 26], [3, 12, 26, 27]] | [[21, 5, 51, 5, 51, 31, 21, 31], [20, 12, 29, ... | [1, 2] |
     | 993 | image993.jpg | [[37, 37, 18, 26]] | [[49, 37, 55, 63, 37, 63]] | [2] |
     | 994 | image994.jpg | [[5, 43, 9, 17]] | [[5, 43, 14, 43, 14, 60, 5, 60]] | [1] |
     | 995 | image995.jpg | [[1, 47, 27, 10]] | [[1, 47, 28, 47, 28, 57, 1, 57]] | [1] |
-    | 997 | image997.jpg | [[52, 22, 7, 30], [10, 26, 17, 15]] | [[55, 22, 59, 52, 52, 52], [12, 26, 27, 41, 10... | [2, 2] |
+    | 997 | image997.jpg | [[52, 22, 7, 30], [10, 26, 17, 15]] | [[55, 22, 59, 52, 52, 52], [12, 26, 27, 41, 10... | [2, 3] |
 
     Information about each category ID in the `category_ids` column is defined in the `categories.json` file.
 
@@ -109,19 +109,24 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
         "categories": [
             {
                 "id": 1,
-                "name": "rectangle",
+                "name": "ellipse",
                 "supercategory": "shape"
             },
             {
                 "id": 2,
                 "name": "triangle",
                 "supercategory": "shape"
+            },
+            {
+                "id": 3,
+                "name": "rectangle",
+                "supercategory": "shape"
             }
         ]
     }
     ```
 
-    For example, a CSV file record has the following category IDs `[2, 1]`. It means that the first annotated object is the `triangle` (since its ID is `2`), and the second is the `rectangle` (since its ID is `1` respectively).
+    For example, a CSV file record has the following category IDs `[3, 2]`. It means that the first annotated object is the `rectangle` (since its ID is `3`), and the second is the `triangle` (since its ID is `2` respectively).
 
 === "COCO"
     [COCO](https://cocodataset.org/#format-data), probably, is the most popular format for handling synthetic and real computer vision data.
@@ -229,18 +234,21 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
 
     ```json
     "categories": [
-        ...,
         {
-            "supercategory": "shape",
             "id": 1,
-            "name": "rectangle"
+            "name": "ellipse",
+            "supercategory": "shape"
         },
         {
-            "supercategory": "shape",
             "id": 2,
-            "name": "triangle"
+            "name": "triangle",
+            "supercategory": "shape"
         },
-        ...
+        {
+            "id": 3,
+            "name": "rectangle",
+            "supercategory": "shape"
+        }
     ]
     ```
 
