@@ -60,7 +60,7 @@ The constructed data generator defines the model input data `X` as a 3D image ar
 
 #### Example of "C" Configuration
 
-This is an example where a model designed to predict categories of shapes within an image.  The output schema is `"C"`. The character `C` indicates that this model output contains just categories one-hot encoding  `(N, 4)`, where `4` stands for 3 possible categories ("circle", "triangle", and "rectangle") plus "no object" category. See the image below for more details.
+This is an example where a model designed to predict categories of shapes within an image.  The output schema is `"C"`. The character `C` indicates that this model output contains just categories one-hot encoding  `(N, 4)`, where `4` stands for 3 possible categories ("ellipse", "triangle", and "rectangle") plus "no object" category. See the image below for more details.
 
 ![C_output_schema_example](images/output_schema_c.png)
 

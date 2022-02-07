@@ -10,7 +10,7 @@ from shutil import rmtree
 from tqdm import tqdm
 
 from .image import create_synthetic_image
-from .shape import Rectangle, Triangle
+from .shape import Ellipse, Triangle, Rectangle
 from .palette import Palette
 from .background import Background
 
@@ -25,13 +25,18 @@ from ..config import (
 SHAPES_CATEGORIES = [
     {
         "supercategory": "shape",
-        "id": Rectangle.category_id,
-        "name": Rectangle.category_name,
+        "id": Ellipse.category_id,
+        "name": Ellipse.category_name,
     },
     {
         "supercategory": "shape",
         "id": Triangle.category_id,
         "name": Triangle.category_name,
+    },
+    {
+        "supercategory": "shape",
+        "id": Rectangle.category_id,
+        "name": Rectangle.category_name,
     },
 ]
 """The common shapes categories."""

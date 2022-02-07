@@ -78,7 +78,7 @@ def validate_tfrecords_stdout(stdout, kind):
     assert (
         len(
             re.findall(
-                "\\d+\\s\\((1|2|1,2)\\)",
+                "\\d+\\s\\((1|2|3|1,2|1,3|2,3|1,2,3)\\)",
                 stdout,
             )
         )
@@ -96,7 +96,7 @@ def validate_tfrecords_artifacts(record_summaries):
     assert len(record_summaries) > 0
     for record_summary in record_summaries:
         assert re.search(
-            "\\d+\\s\\((1|2|1,2)\\)",
+            "\\d+\\s\\((1|2|3|1,2|1,3|2,3|1,2,3)\\)",
             record_summary,
         )
 
@@ -445,6 +445,17 @@ def test_reproducibility():
                 dataset_diff_dir, f"annotations/instances_{kind}.json"
             ).replace("_diff", "")
 
+            # Removes time stamps.
+            expected = re.sub(
+                r"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}", "", expected
+            )
+            actual_same = re.sub(
+                r"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}", "", actual_same
+            )
+            actual_diff = re.sub(
+                r"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}", "", actual_diff
+            )
+
             assert actual_same == expected
             assert actual_diff != expected
 
@@ -515,7 +526,7 @@ def test_data_loader(capsys):
         for X, y in dataset:
 
             assert X.shape == (128, 64, 64, 3)
-            assert y.shape == (128, 10, 3)
+            assert y.shape == (128, 10, 4)
             break
 
         # ----------------------------------------
@@ -527,7 +538,7 @@ def test_data_loader(capsys):
         assert steps_per_epoch > 0
         for X, y in dataset:
             assert X.shape == (128, 64, 64, 3)
-            assert y.shape == (128, 10, 4096 + 4 + 3)
+            assert y.shape == (128, 10, 4096 + 4 + 4)
             break
 
         # ----------------------------------------
@@ -540,7 +551,7 @@ def test_data_loader(capsys):
         for Xi, (Xo, y) in dataset:
             assert Xi.shape == (128, 64, 64, 3)
             assert Xo.shape == (128, 64, 64, 3)
-            assert y.shape == (128, 10, 4096 + 4 + 3)
+            assert y.shape == (128, 10, 4096 + 4 + 4)
             break
 
         dataset, steps_per_epoch = load_tfrecords(
@@ -550,5 +561,5 @@ def test_data_loader(capsys):
         for Xi, (yb, yc) in dataset:
             assert X.shape == (128, 64, 64, 3)
             assert yb.shape == (128, 10, 4)
-            assert yc.shape == (128, 10, 3)
+            assert yc.shape == (128, 10, 4)
             break
