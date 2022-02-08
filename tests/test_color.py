@@ -17,6 +17,8 @@ def test_color_flatten():
     """Tests the `random` method."""
     c = Color.random()
     assert len(str(c)) == 7
+    c = Color.random(rgb=True)
+    assert len(str(c)) == 7
 
 
 def test_color_str():

@@ -152,7 +152,7 @@ def core_function_testscript(coco):
         # -----------------------------
         dataset_dir = Path(tmp_dir + "/synthetic")
         dataset_dir.mkdir()  # this tests code which deletes old dataser;
-        create_dataset(dataset_dir, coco=coco)
+        create_dataset(dataset_dir, coco=coco, random_state=42)
 
         if coco:
             validate_coco_generator(dataset_dir)
