@@ -17,7 +17,7 @@ The process of generating a synthetic dataset can be initiated by the Python `cr
 === "Shell"
     ```shell
     ~$ python squids.main generate [-h] [-s NUMBER] [--coco] [--image-width PIXELS]
-                [--image-height PIXELS] [--image-palette {gray,color,binary}]
+                [--image-height PIXELS] [--image-palette {gray,color,binary,rgb}]
                 [--image-background {black,white}] [--image-capacity NUMBER]
                 [--random-state NUMBER] [-v]
                 [DATASET_DIR]
@@ -33,7 +33,7 @@ The process of generating a synthetic dataset can be initiated by the Python `cr
         --image-width PIXELS  a generated image width (default=64)
         --image-height PIXELS
                                 a generated image height (default=64)
-        --image-palette {gray,color,binary}
+        --image-palette {gray,color,binary,rgb}
                                 a used image palette (default='color')
         --image-background {black,white}
                                 a used image background (default='white')
@@ -44,8 +44,35 @@ The process of generating a synthetic dataset can be initiated by the Python `cr
         -v, --verbose         a flag to set verbose mode
     ```
 
+### Image Size
+
+All generated synthetic images have the same size. The image size is defined by two parameters: `image_width` and `image_height` (command-line options `--image-width` and `--image-height`).
+
 !!! Note
-    It is important to reproduce exactly the same synthetic dataset for some machine learning experiments. To do that set the `random_state` function argument or the `--random-state` command-line option to a particular integer value. But default the random state has been set to `None`. It means creating a new dataset every time the function or command line is called.
+    The inage size can be changed when transforming to TFRecords (all annotations are going to be rescaled accordingly).
+
+### Image Capacity
+
+Each synthetic image is a collection of different geometrical shapes: ellipses,  rectangles, and triangles. The maximum number of geometrical shapes is defined by the parameter `image_capacity` (command-line options `--image-capacity`). For example, if the image capacity is set to 3, means that synthetic images can have 1, 2, or 3 different geometrical shapes (ellipses,  rectangles, and triangles).
+
+### Image Style
+
+Images can be generated with different color profiles which are defined by two parameters `image_palette` and `image_background` (command-line options `--image-palette` and `--image-background`). The following table explains possible profiles.
+
+| image_palette    | image_background  | Generated shapes                               |
+|:----------------:|:-----------------:|------------------------------------------------|
+| COLOR            | WHITE             | Any color shape on white background            |
+| RGB              | WHITE             | Red/green/blue color shape on white background |
+| GRAY             | WHITE             | Any gray-scale shape on white background       |
+| BINARY           | WHITE             | Any black shape on white background            |
+| COLOR            | BLACK             | Any color shape on black background            |
+| RGB              | BLACK             | Red/green/blue color shape on black background |
+| GRAY             | BLACK             | Any gray-scale shape on black background       |
+| BINARY           | BLACK             | Any white shape on black background            |
+
+### Dataset Reproducibility
+
+It is important to reproduce exactly the same synthetic dataset for some machine learning experiments. To do that set the `random_state` (command-line option `--random-state`) to a particular integer value. But default the random state has been set to `None`. It means creating a new dataset every time the function or command line is called.
 
 ## Outcome
 

@@ -6,6 +6,8 @@ from enum import Enum
 class Palette(str, Enum):
     COLOR = "color"
     """Defines the palette with all possible RGB colors."""
+    RGB = "rgb"
+    """Defines the palette with three contrasting red/green/blue colors."""
     GRAY = "gray"
     """Defines the palette with all grades between black and white."""
     BINARY = "binary"

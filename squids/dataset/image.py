@@ -44,8 +44,8 @@ def create_synthetic_image(
         shape = choice([Ellipse, Triangle, Rectangle])
 
         # Picks a random shape color.
-        if image_palette in [Palette.COLOR, Palette.GRAY]:
-            color = Color.random()
+        if image_palette in [Palette.COLOR, Palette.RGB, Palette.GRAY]:
+            color = Color.random(rgb=image_palette == Palette.RGB)
         else:
             if image_background == Background.WHITE:
                 color = BLACK_COLOR
