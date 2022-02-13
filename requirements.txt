@@ -7,7 +7,7 @@ pytest
 pytest-cov
 setuptools
 pre-commit
-tensorflow
+tensorflow==2.4.0
 PyYAML
 Pillow
 numpy
@@ -16,6 +16,7 @@ tqdm
 tabulate
 ipykernel
 notebook
+matplotlib
 mkdocs
 mkdocstrings
 mkdocs-material

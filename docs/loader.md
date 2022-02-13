@@ -41,7 +41,10 @@ The number of detecting objects `num_detecting_objects` is probably a self-expla
 For instance, when fitting in a simple classification model predicting "Cat or Dog" in an image, set  `num_detecting_objects=1`. Assuming that the supplying data have just one object annotation per image.
 
 !!! Important
-    To ignore the number of detecting objects and retrieve the exact number of annotated objects, set this argument to `None`.
+    The `num_detecting_objects==None` retrieves the exact number of annotated objects.
+
+!!! Important
+    The `num_detecting_objects==1` is a special case. Effective it makes this task as simple image classification, single object localization, or mask detection. In this case, the 2D output is squeezed to 1D. For example, let assume the `num_detecting_objects==1` when we predict object category. It makes this task as image classification where one-hot encoding `[[0, 1, 0, 0]]` (2D tensor) should be transformed to `[0, 1, 0, 0]` (1D tensor).
 
 ### Output Schema
 

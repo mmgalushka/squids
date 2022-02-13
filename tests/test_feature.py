@@ -210,12 +210,20 @@ def test_features_to_items():
             IMAGE_HEIGHT,
             IMAGE_CHANNELS,
         )
-        assert actual_bboxes.shape == (expected_num_detecting_objects, 4)
-        assert actual_masks.shape == (
-            expected_num_detecting_objects,
-            IMAGE_WIDTH * IMAGE_HEIGHT,
-        )
-        assert actual_category_onehot.shape == (
-            expected_num_detecting_objects,
-            3,
-        )
+
+        # The number of detecting objects equal to 1 is a special case.
+        # In this case, the 2D array is squeezed to 1D.
+        if expected_num_detecting_objects == 1:
+            assert actual_bboxes.shape == 4
+            assert actual_masks.shape == IMAGE_WIDTH * IMAGE_HEIGHT
+            assert actual_category_onehot.shape == 3
+        else:
+            assert actual_bboxes.shape == (expected_num_detecting_objects, 4)
+            assert actual_masks.shape == (
+                expected_num_detecting_objects,
+                IMAGE_WIDTH * IMAGE_HEIGHT,
+            )
+            assert actual_category_onehot.shape == (
+                expected_num_detecting_objects,
+                3,
+            )
