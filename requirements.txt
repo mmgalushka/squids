@@ -7,7 +7,7 @@ pytest
 pytest-cov
 setuptools
 pre-commit
-tensorflow==2.4.0
+tensorflow
 PyYAML
 Pillow
 numpy
