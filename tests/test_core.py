@@ -20,6 +20,13 @@ from squids.tfrecords.loader import load_tfrecords
 from squids.tfrecords.explorer import explore_tfrecords
 from squids.actions import generate, transform, explore
 from squids.tfrecords.errors import DirNotFoundError, IdentifierNotFoundError
+from squids.config import (
+    IMAGE_WIDTH,
+    IMAGE_HEIGHT,
+    IMAGE_CHANNELS,
+    BATCH_SIZE,
+    NUM_DETECTING_OBJECTS,
+)
 
 # ------------------------------------------------------------------------------
 # Helper Functions
@@ -78,7 +85,7 @@ def validate_tfrecords_stdout(stdout, kind):
     assert (
         len(
             re.findall(
-                "\\d+\\s\\((1|2|3|1,2|1,3|2,3|1,2,3)\\)",
+                "\\d+\\s\\{(1|2|3|1,2|1,3|2,3|1,2,3)\\}",
                 stdout,
             )
         )
@@ -91,12 +98,18 @@ def validate_tfrecords_stdout(stdout, kind):
     )
 
 
-def validate_tfrecords_artifacts(record_summaries):
+def validate_tfrecords_artifacts(record_ids, record_summaries):
+    assert type(record_ids) == list
     assert type(record_summaries) == list
+
+    assert len(record_ids) > 0
     assert len(record_summaries) > 0
-    for record_summary in record_summaries:
+    assert len(record_ids) == len(record_summaries)
+
+    for record_id, record_summary in zip(record_ids, record_summaries):
+        assert record_id >= 0
         assert re.search(
-            "\\d+\\s\\((1|2|3|1,2|1,3|2,3|1,2,3)\\)",
+            "\\{(1|2|3|1,2|1,3|2,3|1,2,3)\\}",
             record_summary,
         )
 
@@ -112,9 +125,9 @@ def validate_tfrecord_stdout(stdout, image_id, image_output_dir):
     # Tests a record summary.
     assert re.search("Property\\s+Value", stdout)
     assert re.search(f"image_id\\s+{image_id}", stdout)
-    assert re.search("image_shape\\s+\\(\\d+, \\d+, \\d+\\)", stdout)
-    assert re.search("number_labeled_objects\\s+\\d+", stdout)
-    assert re.search("available_category_ids\\s+\\{[\\d+(,\\s)?]+\\}", stdout)
+    assert re.search("image_size\\s+\\(\\d+, \\d+\\)", stdout)
+    assert re.search("number_of_objects\\s+\\d+", stdout)
+    assert re.search("available_categories\\s+\\{[\\d+(,\\s)?]+\\}", stdout)
     assert re.search(
         f"Image saved to {str(image_output_dir)}/{image_id}.png", stdout
     )
@@ -128,10 +141,10 @@ def validate_tfrecord_artifacts(record_summary, record_image, image_id):
     assert type(record_summary) == dict
     assert record_summary["image_id"] == image_id
     assert re.search("\\d+", str(record_summary["image_id"]))
-    assert re.search("\\d+, \\d+, \\d+", str(record_summary["image_shape"]))
-    assert re.search("\\d+", str(record_summary["number_labeled_objects"]))
+    assert re.search("\\(\\d+, \\d+\\)", str(record_summary["image_size"]))
+    assert re.search("\\d+", str(record_summary["number_of_objects"]))
     assert re.search(
-        "\\{(\\d+(,\\s)?)+\\}", str(record_summary["available_category_ids"])
+        "\\{(\\d+(,\\s)?)+\\}", str(record_summary["available_categories"])
     )
 
     # Tests a record image.
@@ -172,16 +185,16 @@ def core_function_testscript(coco):
         # -------------------
         image_id = None
         for kind in ["train", "val", "test"]:
-            record_summaries = explore_tfrecords(
+            record_ids, record_summaries = explore_tfrecords(
                 Path(tmp_dir + f"/synthetic-tfrecords/instances_{kind}"),
                 return_artifacts=True,
             )
 
-            validate_tfrecords_artifacts(record_summaries)
+            validate_tfrecords_artifacts(record_ids, record_summaries)
 
             # Grabs image ID for exploring individual records.
             if kind == "train":
-                image_id = int(record_summaries[0].split(" ")[0])
+                image_id = record_ids[0]
 
         with pytest.raises(DirNotFoundError):
             record_summaries = explore_tfrecords(
@@ -193,7 +206,7 @@ def core_function_testscript(coco):
         # Explores single TFRecord.
         # -------------------------
         assert image_id is not None
-        record_summary, record_image = explore_tfrecords(
+        record_image, record_summary = explore_tfrecords(
             Path(tmp_dir + "/synthetic-tfrecords/instances_train"),
             image_id,
             tfrecords_dir,
@@ -319,7 +332,7 @@ def core_action_testscript(capsys, coco):
             # Grabs image ID for exploring individual records.
             if kind == "train":
                 image_id = re.search(
-                    "(\\d+)\\s\\((1|2|1,2)\\)",
+                    "(\\d+)\\s\\{(1|2|1,2|1,3|2,3|1,2,3)\\}",
                     stdout,
                 ).group(1)
 
@@ -525,8 +538,13 @@ def test_data_loader(capsys):
         assert steps_per_epoch > 0
         for X, y in dataset:
 
-            assert X.shape == (128, 64, 64, 3)
-            assert y.shape == (128, 10, 4)
+            assert X.shape == (
+                BATCH_SIZE,
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT,
+                IMAGE_CHANNELS,
+            )
+            assert y.shape == (BATCH_SIZE, NUM_DETECTING_OBJECTS, 4)
             break
 
         # ----------------------------------------
@@ -537,8 +555,17 @@ def test_data_loader(capsys):
         )
         assert steps_per_epoch > 0
         for X, y in dataset:
-            assert X.shape == (128, 64, 64, 3)
-            assert y.shape == (128, 10, 4096 + 4 + 4)
+            assert X.shape == (
+                BATCH_SIZE,
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT,
+                IMAGE_CHANNELS,
+            )
+            assert y.shape == (
+                BATCH_SIZE,
+                NUM_DETECTING_OBJECTS,
+                IMAGE_WIDTH * IMAGE_HEIGHT + 4 + 4,
+            )
             break
 
         # ----------------------------------------
@@ -549,9 +576,23 @@ def test_data_loader(capsys):
         )
         assert steps_per_epoch > 0
         for Xi, (Xo, y) in dataset:
-            assert Xi.shape == (128, 64, 64, 3)
-            assert Xo.shape == (128, 64, 64, 3)
-            assert y.shape == (128, 10, 4096 + 4 + 4)
+            assert Xi.shape == (
+                BATCH_SIZE,
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT,
+                IMAGE_CHANNELS,
+            )
+            assert Xo.shape == (
+                BATCH_SIZE,
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT,
+                IMAGE_CHANNELS,
+            )
+            assert y.shape == (
+                BATCH_SIZE,
+                NUM_DETECTING_OBJECTS,
+                IMAGE_WIDTH * IMAGE_HEIGHT + 4 + 4,
+            )
             break
 
         dataset, steps_per_epoch = load_tfrecords(
@@ -559,7 +600,12 @@ def test_data_loader(capsys):
         )
         assert steps_per_epoch > 0
         for Xi, (yb, yc) in dataset:
-            assert X.shape == (128, 64, 64, 3)
-            assert yb.shape == (128, 10, 4)
-            assert yc.shape == (128, 10, 4)
+            assert X.shape == (
+                BATCH_SIZE,
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT,
+                IMAGE_CHANNELS,
+            )
+            assert yb.shape == (BATCH_SIZE, NUM_DETECTING_OBJECTS, 4)
+            assert yc.shape == (BATCH_SIZE, NUM_DETECTING_OBJECTS, 4)
             break

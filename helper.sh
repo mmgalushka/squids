@@ -43,7 +43,8 @@ action_init(){
     python3 -m venv .venv
     source .venv/bin/activate
 
-    pip3 install -r requirements.txt --no-cache
+    # pip3 install -r requirements.txt --no-cache
+    pip3 install -r requirements.txt ${@}
 }
 
 action_test(){
@@ -107,7 +108,7 @@ action_build(){
 case $1 in
     # Repository system command;
     init)
-        action_init
+        action_init ${@:2}
     ;;
     test)
         action_test ${@:2}

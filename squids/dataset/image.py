@@ -43,10 +43,13 @@ def create_synthetic_image(
         # Picks a random shape.
         shape = choice([Ellipse, Triangle, Rectangle])
 
-        # Picks a random shape color.
-        if image_palette in [Palette.COLOR, Palette.RGB, Palette.GRAY]:
-            color = Color.random(rgb=image_palette == Palette.RGB)
-        else:
+        # Picks a random shape color. To maintain the data reproducibility
+        # property of this library, we need to be consistent in using a
+        # "random-based" operation. In case the request to use binary-color
+        # data we still need to call the function for generating random
+        # color and ignore it afterward.
+        color = Color.random(rgb=image_palette == Palette.RGB)
+        if image_palette == Palette.BINARY:
             if image_background == Background.WHITE:
                 color = BLACK_COLOR
             else:

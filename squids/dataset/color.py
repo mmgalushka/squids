@@ -3,6 +3,27 @@
 import random
 
 
+MAX_CHANNEL_VALUE = 225
+"""The maximum channel value for generating a color."""
+
+RANDOM_COLOR_CHOICES = [
+    (
+        random.randint(1, MAX_CHANNEL_VALUE),
+        random.randint(1, MAX_CHANNEL_VALUE),
+        random.randint(1, MAX_CHANNEL_VALUE),
+    )
+    for _ in range(100)
+]
+"""The randomly generated colors choices for geometrical shapes."""
+
+RGB_COLOR_CHOICES = [
+    (MAX_CHANNEL_VALUE, 0, 0),
+    (0, MAX_CHANNEL_VALUE, 0),
+    (0, 0, MAX_CHANNEL_VALUE),
+]
+"""The predefined read/green/blue choices for geometrical shapes."""
+
+
 class Color:
     """
     A color.
@@ -23,8 +44,6 @@ class Color:
         self.green = g
         self.blue = b
 
-    __GRADIENTS = list(range(25, 255, 25))
-
     def __str__(self):
         return "#%02x%02x%02x" % (self.red, self.green, self.blue)
 
@@ -41,15 +60,9 @@ class Color:
             The generated rundom color.
         """
         if rgb:
-            return random.choice(
-                [Color(204, 0, 0), Color(0, 204, 0), Color(0, 0, 204)]
-            )
+            return Color(*random.choice(RGB_COLOR_CHOICES))
         else:
-            return Color(
-                random.choice(Color.__GRADIENTS),
-                random.choice(Color.__GRADIENTS),
-                random.choice(Color.__GRADIENTS),
-            )
+            return Color(*random.choice(RANDOM_COLOR_CHOICES))
 
     @staticmethod
     def from_hex(code: str):

@@ -206,6 +206,18 @@ def features_to_items(
             masks = tf.slice(masks, [0, 0], [num_detecting_objects, mask_size])
             category_ids = tf.slice(category_ids, [0], [num_detecting_objects])
 
+    # The `num_detecting_objects==1` is a special case. Effective it
+    # makes this task as simple image classification, single object
+    # localization, or mask detection. In this case, the 2D output is
+    # squeezed to 1D. For example, let assume the `num_detecting_objects==1`
+    # when we predict object category. It makes this task as image
+    # classification where one-hot encoding `[[0, 1, 0, 0]]` (2D tensor)
+    # should be transformed to `[0, 1, 0, 0]` (1D tensor).
+    if num_detecting_objects == 1:
+        bboxes = tf.squeeze(bboxes)
+        masks = tf.squeeze(masks)
+        category_ids = tf.squeeze(category_ids)
+
     bboxes = tf.cast(bboxes, dtype=tf.float32)
     masks = tf.cast(masks, dtype=tf.float32)
     # +1: to the categories_number to allow "no object" category with ID == 0

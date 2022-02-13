@@ -102,13 +102,18 @@ def explore_tfrecords(
             processing.
 
     Returns:
-        record_summaries | (record_summary, record_image):
-        * `record_summaries` is she list with summary information about each
-        record (if `image_id==None & return_artifacts==True`).
-        * `record_summary` is a dictionary with summary information for the
-        specified record (if `image_id!=None & return_artifacts==True`).
-        * `record_image` is a PIL The image with overlaid binding boxes, masks,
-        and categories (if `image_id!=None & return_artifacts==True`).
+        (record_ids, record_summaries) | (record_image, record_summary):
+        * These values are returned if `image_id==None & return_artifacts
+            ==True`, where:
+            - `record_ids` - a list of records identifiers;
+            - `record_summaries` - a list of summary information about each
+            record
+        * These values are returned if `image_id!=None &  return_artifacts
+            ==True`, where:
+            - `record_image` - a PIL image with overlays of binding boxes,
+            masks, and categories;
+            - `record_summary`- a dictionary with summary information about
+            the selected record;
 
     Raises:
         TFRecordsDirNotFoundError:
@@ -119,20 +124,26 @@ def explore_tfrecords(
             If the record with the specified image ID has not been found.
     """
     if image_id is None:
-        record_summaries = list_tfrecords(Path(tfrecords_dir))
+        record_ids, record_summaries = list_tfrecords(Path(tfrecords_dir))
         if return_artifacts:
-            return record_summaries
+            return record_ids, record_summaries
 
         cli = cmd.Cmd()
         print(f"\n{tfrecords_dir}")
         if len(record_summaries) > 0:
-            cli.columnize(record_summaries)
-            print(f"Total {len(record_summaries)} records")
+            record_info = [
+                f"{str(record_id)} {record_summary}"
+                for record_id, record_summary in zip(
+                    record_ids, record_summaries
+                )
+            ]
+            cli.columnize(record_info)
+            print(f"Total {len(record_info)} records")
         else:
             cli.columnize(os.listdir(tfrecords_dir))
             print("No tfrecords has found")
     else:
-        record_summary, record_image = view_tfrecord(
+        record_image, record_summary = view_tfrecord(
             Path(tfrecords_dir),
             image_id,
             Path(output_dir),
@@ -142,7 +153,7 @@ def explore_tfrecords(
         )
 
         if return_artifacts:
-            return record_summary, record_image
+            return record_image, record_summary
 
         print(
             tabulate(
@@ -163,8 +174,10 @@ def list_tfrecords(tfrecords_dir: Path):
             The directory containing TFRecords parts.
 
     Returns:
+        record_ids (list):
+            The list of record identifiers (same as image identifiers).
         record_summaries (list):
-            The list with summary information about each record.
+            The list of record summaries.
 
     Raises:
         TFRecordsDirNotFoundError:
@@ -173,22 +186,22 @@ def list_tfrecords(tfrecords_dir: Path):
     if not tfrecords_dir.is_dir():
         raise DirNotFoundError("exploring TFRecords", tfrecords_dir)
 
+    record_ids = []
     record_summaries = []
     tfrecord_files = glob.glob(str(tfrecords_dir / "part-*.tfrecord"))
     if len(tfrecord_files) > 0:
         batch = get_tfrecords_dataset(tfrecords_dir)
-        for image_id, _, _, _, category_onehots in batch:
+        for record_id, _, _, _, onehots in batch:
+            record_ids.append(record_id.numpy()[0])
+
             category_ids = [
                 np.argmax(category_onehot)
-                for category_onehot in category_onehots.numpy()[0]
+                for category_onehot in onehots.numpy()[0]
             ]
             record_summaries.append(
-                str(image_id.numpy()[0])
-                + " ("
-                + ",".join(map(str, set(category_ids)))
-                + ")"
+                "{" + ",".join(map(str, set(category_ids))) + "}"
             )
-    return record_summaries
+    return record_ids, record_summaries
 
 
 def view_tfrecord(
@@ -218,11 +231,11 @@ def view_tfrecord(
             The flag to superimpose segmentation masks on an image.
 
     Returns:
-        record_summary (dict):
-            The list with summary information for the specified record.
-        record_image (Image):
+        record_image (PIL.Image):
             The image, which is stored within the specified record with
             overlaid binding boxes, masks, and categories.
+        record_summary (dict):
+            The list with summary information for the specified record.
 
     Raises:
         TFRecordsDirNotFoundError:
@@ -238,58 +251,33 @@ def view_tfrecord(
         raise DirNotFoundError("output", output_dir)
 
     batch = get_tfrecords_dataset(tfrecords_dir)
-    for record_id, image, bboxes, segmentations, category_ids in batch:
+    for record_id, image_data, bboxes, masks, onehots in batch:
+        record_id = record_id.numpy()[0]
+
         if record_id == image_id:
             record_image = Image.fromarray(
-                tf.squeeze(image * 255, [0]).numpy().astype("uint8"), "RGB"
+                tf.squeeze(image_data * 255, [0]).numpy().astype("uint8"),
+                "RGB",
             )
-            record_image_size = record_image.size
-            record_image_shape = (
-                record_image_size[0],
-                record_image_size[1],
-                3,
-            )
-
-            total_labeled_objects = len(category_ids.numpy()[0])
-            available_categories_set = set(
-                [
-                    np.argmax(category_onehot)
-                    for category_onehot in category_ids.numpy()[0]
-                ]
-            )
-
-            record_summary = {
-                "image_id": image_id,
-                "image_shape": record_image_shape,
-                "number_labeled_objects": total_labeled_objects,
-                "available_category_ids": available_categories_set,
-            }
+            bboxes = bboxes.numpy()[0]
+            masks = masks.numpy()[0]
+            onehots = onehots.numpy()[0]
 
             if with_segmentations:
-                for mask, onehot in zip(
-                    segmentations.numpy()[0],
-                    category_ids.numpy()[0],
-                ):
-
+                for mask, onehot in zip(masks, onehots):
                     category_id = onehot.argmax()
                     category_color = MASK_HIGHLIGHTING_COLORS[
                         (category_id - 1) % len(MASK_HIGHLIGHTING_COLORS)
                     ]
 
                     blend_image = Image.new(
-                        "RGBA", record_image_size, str(category_color)
+                        "RGBA", record_image.size, str(category_color)
                     )
 
                     mask_image = Image.fromarray(
-                        (
-                            mask.reshape(
-                                (
-                                    record_image_size[0],
-                                    record_image_size[1],
-                                )
-                            )
-                            * 255.0
-                        ).astype("uint8"),
+                        (mask.reshape(record_image.size) * 255.0).astype(
+                            "uint8"
+                        ),
                     ).convert("L")
 
                     record_image = Image.blend(
@@ -299,23 +287,29 @@ def view_tfrecord(
                     )
 
             draw = ImageDraw.Draw(record_image)
-            for bbox, onehot in zip(
-                bboxes.numpy()[0],
-                category_ids.numpy()[0],
-            ):
+            for bbox, onehot in zip(bboxes, onehots):
                 category_id = onehot.argmax()
                 category_color = MASK_HIGHLIGHTING_COLORS[
                     (category_id - 1) % len(MASK_HIGHLIGHTING_COLORS)
                 ]
 
                 if with_categories:
+                    ax, ay, h = bbox[0], bbox[1], bbox[3]
+                    if ay - 10 > 0:
+                        bx, by = ax + 16, ay - 10
+                        tx, ty = ax + 3, ay - 10
+                    else:
+                        ay += h
+                        bx, by = ax + 16, ay + 10
+                        tx, ty = ax + 3, ay - 1
+
                     draw.rectangle(
-                        (bbox[0], bbox[1], (bbox[0] + 16), (bbox[1] - 10)),
+                        (ax, ay, bx, by),
                         outline=str(category_color),
                         fill=str(category_color),
                     )
                     draw.text(
-                        (bbox[0] + 3, bbox[1] - 10),
+                        (tx, ty),
                         str(onehot.argmax()),
                         "white",
                         font=ImageFont.load_default(),
@@ -332,5 +326,17 @@ def view_tfrecord(
                         outline=str(category_color),
                     )
 
-            return record_summary, record_image
+            number_of_objects = len(onehots)
+            available_categories = set(
+                [np.argmax(onehot) for onehot in onehots]
+            )
+
+            record_summary = {
+                "image_id": record_id,
+                "image_size": record_image.size,
+                "number_of_objects": number_of_objects,
+                "available_categories": available_categories,
+            }
+
+            return record_image, record_summary
     raise IdentifierNotFoundError(image_id, tfrecords_dir)
