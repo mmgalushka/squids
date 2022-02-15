@@ -77,6 +77,6 @@ def create_synthetic_image(
         draw.polygon(shape.polygon.flatten(), fill=str(shape.color))
 
     if image_palette == Palette.GRAY:
-        image = PIL.ImageOps.grayscale(image)
+        image = PIL.ImageOps.grayscale(image).convert('RGB')
 
     return image, shapes

@@ -85,7 +85,7 @@ def validate_tfrecords_stdout(stdout, kind):
     assert (
         len(
             re.findall(
-                "\\d+\\s\\{(1|2|3|1,2|1,3|2,3|1,2,3)\\}",
+                "\\d+\\s\\{(1|2|3|1, 2|1, 3|2, 3|1, 2, 3)\\}",
                 stdout,
             )
         )
@@ -108,9 +108,10 @@ def validate_tfrecords_artifacts(record_ids, record_summaries):
 
     for record_id, record_summary in zip(record_ids, record_summaries):
         assert record_id >= 0
+        assert len(record_summaries) > 0
         assert re.search(
-            "\\{(1|2|3|1,2|1,3|2,3|1,2,3)\\}",
-            record_summary,
+            "\\{(1|2|3|1, 2|1, 3|2, 3|1, 2, 3)\\}",
+            str(set(record_summary)),
         )
 
 
@@ -164,7 +165,7 @@ def core_function_testscript(coco):
         # Generates and checks dataset.
         # -----------------------------
         dataset_dir = Path(tmp_dir + "/synthetic")
-        dataset_dir.mkdir()  # this tests code which deletes old dataser;
+        dataset_dir.mkdir()  # this tests code which deletes old dataset;
         create_dataset(dataset_dir, coco=coco, random_state=42)
 
         if coco:
@@ -175,8 +176,9 @@ def core_function_testscript(coco):
         # ------------------------------------
         # Transforms dataset to the TFRecords.
         # ------------------------------------
-        create_tfrecords(dataset_dir)
         tfrecords_dir = Path(tmp_dir + "/synthetic-tfrecords")
+        tfrecords_dir.mkdir()  # this tests code which deletes old TFRecords;
+        create_tfrecords(dataset_dir)
 
         validate_transformer(tfrecords_dir)
 

@@ -4,6 +4,7 @@ import os
 import glob
 import cmd
 from pathlib import Path
+from collections import Counter
 
 import PIL.Image as Image
 import PIL.ImageDraw as ImageDraw
@@ -105,9 +106,9 @@ def explore_tfrecords(
         (record_ids, record_summaries) | (record_image, record_summary):
         * These values are returned if `image_id==None & return_artifacts
             ==True`, where:
-            - `record_ids` - a list of records identifiers;
-            - `record_summaries` - a list of summary information about each
-            record
+            - `record_ids` - a list<int> of records identifiers;
+            - `record_summaries` - a list<Counter> of summary information
+            about each record;
         * These values are returned if `image_id!=None &  return_artifacts
             ==True`, where:
             - `record_image` - a PIL image with overlays of binding boxes,
@@ -132,7 +133,7 @@ def explore_tfrecords(
         print(f"\n{tfrecords_dir}")
         if len(record_summaries) > 0:
             record_info = [
-                f"{str(record_id)} {record_summary}"
+                f"{str(record_id)} {set(record_summary)}"
                 for record_id, record_summary in zip(
                     record_ids, record_summaries
                 )
@@ -175,9 +176,9 @@ def list_tfrecords(tfrecords_dir: Path):
 
     Returns:
         record_ids (list):
-            The list of record identifiers (same as image identifiers).
+            The list<int> of record identifiers (same as image identifiers).
         record_summaries (list):
-            The list of record summaries.
+            The list<Counter> of record summaries.
 
     Raises:
         TFRecordsDirNotFoundError:
@@ -194,13 +195,12 @@ def list_tfrecords(tfrecords_dir: Path):
         for record_id, _, _, _, onehots in batch:
             record_ids.append(record_id.numpy()[0])
 
-            category_ids = [
-                np.argmax(category_onehot)
-                for category_onehot in onehots.numpy()[0]
-            ]
-            record_summaries.append(
-                "{" + ",".join(map(str, set(category_ids))) + "}"
-            )
+            category_ids = Counter([
+                np.argmax(onehot)
+                for onehot in onehots.numpy()[0]
+            ])
+
+            record_summaries.append(category_ids)
     return record_ids, record_summaries
 
 
