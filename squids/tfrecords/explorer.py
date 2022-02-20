@@ -62,9 +62,9 @@ def explore_tfrecords(
     tfrecords_dir: str,
     image_id: int = None,
     output_dir: str = ".",
-    with_categories: bool = True,
-    with_bboxes: bool = True,
-    with_segmentations: bool = True,
+    with_categories: bool = False,
+    with_bboxes: bool = False,
+    with_segmentations: bool = False,
     return_artifacts: bool = False,
 ):
     """Explores individual or multiple TFRecord(s).
@@ -195,10 +195,9 @@ def list_tfrecords(tfrecords_dir: Path):
         for record_id, _, _, _, onehots in batch:
             record_ids.append(record_id.numpy()[0])
 
-            category_ids = Counter([
-                np.argmax(onehot)
-                for onehot in onehots.numpy()[0]
-            ])
+            category_ids = Counter(
+                [np.argmax(onehot) for onehot in onehots.numpy()[0]]
+            )
 
             record_summaries.append(category_ids)
     return record_ids, record_summaries

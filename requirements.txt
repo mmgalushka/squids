@@ -13,6 +13,7 @@ Pillow
 numpy
 tqdm
 tabulate
+hungarian-loss
 ipykernel
 notebook
 matplotlib
