@@ -222,9 +222,9 @@ def explore(subparsers):
             tfrecords_dir=args.tfrecords_dir,
             image_id=args.image_id,
             output_dir=args.output_dir,
-            with_categories=not args.no_categories,
-            with_bboxes=not args.no_bboxes,
-            with_segmentations=not args.no_segmentations,
+            with_categories=args.no_categories,
+            with_bboxes=args.no_bboxes,
+            with_segmentations=args.no_segmentations,
         )
 
     # ---------------------------------
@@ -263,15 +263,15 @@ def explore(subparsers):
     group.add_argument(
         "--no-categories",
         help="turn off showing of categories",
-        action="store_true",
+        action="store_false",
     )
     group.add_argument(
         "--no-bboxes",
         help="turn off showing of bounding boxes",
-        action="store_true",
+        action="store_false",
     )
     group.add_argument(
         "--no-segmentations",
         help="turn off showing of segmentations",
-        action="store_true",
+        action="store_false",
     )

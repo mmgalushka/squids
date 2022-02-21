@@ -27,5 +27,5 @@ OUTPUT_SCHEMA = "B"
 NUM_DETECTING_OBJECTS = 10
 """The number of detecting objects per image."""
 
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 """The number of samples per batch."""

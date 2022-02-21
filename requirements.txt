@@ -11,9 +11,9 @@ tensorflow
 PyYAML
 Pillow
 numpy
-pandas
 tqdm
 tabulate
+hungarian-loss
 ipykernel
 notebook
 matplotlib

@@ -5,6 +5,7 @@ import json
 import copy
 import csv
 from pathlib import Path
+from shutil import rmtree
 
 import PIL.Image as Image
 import tensorflow as tf
@@ -441,6 +442,9 @@ def create_tfrecords(
         output_dir = Path(tfrecords_dir)
         if not output_dir.parent.exists():
             raise DirNotFoundError("parent (to output)", output_dir.parent)
+
+    if output_dir.exists():
+        rmtree(output_dir)
     output_dir.mkdir(exist_ok=True)
 
     if is_csv_input(input_dir):

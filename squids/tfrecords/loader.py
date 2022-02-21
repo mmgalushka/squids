@@ -1,8 +1,7 @@
 """A module for converting a data source to TFRecords."""
 
+import os
 import glob
-
-from pathlib import Path
 from math import ceil
 
 import tensorflow as tf
@@ -13,7 +12,7 @@ from ..config import OUTPUT_SCHEMA, NUM_DETECTING_OBJECTS, BATCH_SIZE
 
 
 def load_tfrecords(
-    tfrecords_dir: Path,
+    tfrecords_dir: str,
     output_schema: str = OUTPUT_SCHEMA,
     num_detecting_objects: int = NUM_DETECTING_OBJECTS,
     batch_size: int = BATCH_SIZE,
@@ -23,7 +22,7 @@ def load_tfrecords(
     """Returns TFRecord dataset and the number of steps per epoch.
 
     Args:
-        tfrecords_dir (Path):
+        tfrecords_dir (str):
             The path to directory with TFRecords.
         output_schema (str):
             The output schema defines the format of output data (default is
@@ -112,7 +111,10 @@ def load_tfrecords(
         y = []
         for pack in buffer:
             if len(pack) > 1:
-                y.append(tf.concat(pack, axis=1))
+                if num_detecting_objects > 1:
+                    y.append(tf.concat(pack, axis=1))
+                else:
+                    y.append(tf.concat(pack, axis=0))
             else:
                 y.append(pack[0])
 
@@ -121,7 +123,7 @@ def load_tfrecords(
         else:
             return X, *y
 
-    tfrecord_files = glob.glob(str(tfrecords_dir / "part-*.tfrecord"))
+    tfrecord_files = glob.glob(os.path.join(tfrecords_dir, "part-*.tfrecord"))
 
     AUTOTUNE = tf.data.experimental.AUTOTUNE
     dataset = tf.data.TFRecordDataset(tfrecord_files)

@@ -17,8 +17,8 @@
 # Except notebooks
 
 !notebooks/
-!notebooks/**/
-!notebooks/**/*.ipynb
+!notebooks/*.ipynb
+!notebooks/*.py
 
 # Except test SquiDS modules
 

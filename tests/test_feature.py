@@ -92,12 +92,22 @@ def test_features_to_items():
     expected_image_id = 123
     expected_image = Image.new(mode="RGB", size=(IMAGE_WIDTH, IMAGE_HEIGHT))
     expected_image_arr = np.array(expected_image)
-    expected_bboxes = [[1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0]]
+    expected_bboxes = [
+        [1.0, 2.0, 3.0, 4.0],
+        [1.0, 2.0, 3.0, 4.0],
+        [1.0, 2.0, 3.0, 4.0],
+    ]
     expected_segmentations = [
+        [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
         [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
         [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
     ]
     expected_masks = [
+        Image.new(
+            "1",
+            (IMAGE_WIDTH, IMAGE_HEIGHT),
+            0,
+        ),
         Image.new(
             "1",
             (IMAGE_WIDTH, IMAGE_HEIGHT),
@@ -121,13 +131,20 @@ def test_features_to_items():
         fill=1,
         outline=1,
     )
+    drawing = ImageDraw.Draw(expected_masks[2])
+    drawing.polygon(
+        expected_segmentations[2],
+        fill=1,
+        outline=1,
+    )
     expected_masks = [
         np.array(expected_masks[0]).flatten().astype("byte"),
         np.array(expected_masks[1]).flatten().astype("byte"),
+        np.array(expected_masks[2]).flatten().astype("byte"),
     ]
-    expected_category_ids = [1, 2]
-    expected_category_onehot = [[0, 1, 0], [0, 0, 1]]
-    expected_category_max_id = 2
+    expected_category_ids = [1, 2, 3]
+    expected_category_onehot = [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    expected_category_max_id = 3
 
     features = {
         "image/id": tf.constant([expected_image_id], tf.int64),
@@ -135,7 +152,7 @@ def test_features_to_items():
         "image/data": tf.constant(
             [np.array(expected_image).tostring()], tf.string
         ),
-        "annotations/number": [2],
+        "annotations/number": [3],
         "bboxes/data": tf.constant(
             np.array(expected_bboxes).flatten(), tf.float32
         ),
@@ -145,6 +162,7 @@ def test_features_to_items():
                     (
                         expected_masks[0],
                         expected_masks[1],
+                        expected_masks[2],
                     )
                 ).tostring()
             ],
@@ -180,14 +198,14 @@ def test_features_to_items():
         tf.reduce_sum(tf.abs(actual_bboxes - expected_bboxes)), EPS
     )
     assert actual_masks.shape == (
-        2,
+        3,
         IMAGE_WIDTH * IMAGE_HEIGHT,
     )
     assert tf.math.less(
         tf.reduce_sum(tf.abs(actual_masks - expected_masks)),
         EPS,
     )
-    assert actual_category_onehot.shape == (2, 3)
+    assert actual_category_onehot.shape == (3, 4)
     assert tf.math.less(
         tf.reduce_sum(
             tf.abs(actual_category_onehot - expected_category_onehot)
@@ -216,7 +234,7 @@ def test_features_to_items():
         if expected_num_detecting_objects == 1:
             assert actual_bboxes.shape == 4
             assert actual_masks.shape == IMAGE_WIDTH * IMAGE_HEIGHT
-            assert actual_category_onehot.shape == 3
+            assert actual_category_onehot.shape == 4
         else:
             assert actual_bboxes.shape == (expected_num_detecting_objects, 4)
             assert actual_masks.shape == (
@@ -225,5 +243,5 @@ def test_features_to_items():
             )
             assert actual_category_onehot.shape == (
                 expected_num_detecting_objects,
-                3,
+                4,
             )

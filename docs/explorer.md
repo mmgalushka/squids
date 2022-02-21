@@ -44,41 +44,42 @@ This process helps to explore a collection of TFRecords as well as each record i
 The result of using this command for exploring all TFRecords is shown below.
 
     ```text
-    dataset/synthetic-tfrecords/instances_train (3 parts)
-    732 (2)    865 (1)    370 (2)    524 (1,2)  664 (2)    82 (1)     237 (2)
-    733 (1)    866 (1,2)  371 (1)    525 (2)    665 (1,2)  83 (2)     239 (1)
-    734 (2)    871 (2)    372 (1)    526 (1,2)  666 (2)    84 (2)     240 (2)
-    735 (1,2)  872 (2)    373 (1,2)  527 (1)    667 (2)    85 (2)     242 (2)
-    736 (2)    874 (1)    378 (1,2)  528 (1)    668 (1,2)  88 (1)     245 (2)
-    737 (2)    875 (2)    379 (2)    529 (1)    671 (2)    94 (2)     246 (1,2)
-    738 (1,2)  876 (1,2)  381 (1)    530 (2)    673 (1)    95 (1)     247 (1)
-    739 (1)    877 (2)    382 (1)    532 (1)    674 (1,2)  96 (1,2)   248 (1)
-    742 (2)    878 (1)    383 (1,2)  533 (2)    675 (1)    97 (2)     250 (2)
-    743 (2)    880 (2)    384 (1,2)  534 (1)    676 (2)    98 (1)     251 (2)
-    744 (2)    881 (1,2)  385 (1,2)  537 (1,2)  677 (1,2)  99 (2)     252 (1)
-    746 (2)    883 (1)    387 (1)    539 (2)    678 (1,2)  100 (1)    253 (2)
-    747 (2)    884 (1)    388 (1,2)  540 (1,2)  679 (1,2)  101 (2)    255 (1,2)
-    748 (1)    885 (1,2)  390 (1)    541 (1)    680 (1)    103 (2)    256 (1)
-    750 (1)    886 (1)    392 (1)    543 (1,2)  681 (2)    104 (1,2)  257 (1)
-    751 (1,2)  887 (2)    394 (2)    544 (1)    682 (1,2)  105 (1,2)  258 (2)
-    752 (2)    888 (1)    395 (2)    545 (1,2)  685 (2)    106 (1)    259 (1)
-    754 (1,2)  889 (1,2)  396 (1)    548 (1)    686 (1,2)  109 (1)    260 (2)
-    755 (2)    891 (1)    398 (2)    549 (1)    688 (1)    110 (2)    261 (1,2)
-    756 (1)    892 (1,2)  399 (1)    550 (1)    689 (1)    111 (2)    262 (1)
-    757 (2)    896 (2)    400 (1,2)  551 (1)    690 (2)    112 (2)    263 (1,2)
-    758 (2)    897 (1,2)  401 (1)    552 (1,2)  691 (1)    113 (1,2)  264 (2)
-    759 (2)    899 (1)    403 (1)    553 (1)    692 (1,2)  116 (1,2)  265 (1)
-    860 (1)    999 (2)    514 (1,2)  660 (2)    78 (2)     232 (1)
-    861 (2)    365 (2)    516 (2)    661 (2)    79 (1,2)   233 (2)
-    862 (1,2)  368 (2)    518 (2)    662 (1)    80 (2)     234 (2)
-    863 (2)    369 (1)    523 (1,2)  663 (2)    81 (1,2)   235 (1,2)
+    dataset/synthetic-tfrecords/instances_train
+    725 {1}      891 {1,2,3}  421 {1,3}    580 {2}      29 {3}       194 {1}
+    726 {2}      892 {3}      422 {1,2}    581 {3}      30 {1,2}     195 {1,3}
+    727 {3}      893 {3}      423 {1,3}    582 {1}      33 {1}       196 {2}
+    728 {2,3}    894 {2}      424 {1,3}    583 {1,2,3}  34 {2}       197 {1}
+    729 {1,2}    895 {2,3}    426 {1}      584 {1}      36 {1}       198 {1,2}
+    730 {3}      896 {1,3}    427 {3}      585 {3}      37 {3}       199 {2}
+    731 {1,2}    897 {1}      428 {1}      586 {1,2}    38 {3}       200 {2}
+    733 {2}      898 {2}      429 {2,3}    587 {1}      39 {1}       201 {2,3}
+    734 {2,3}    899 {1}      431 {2,3}    590 {3}      40 {3}       202 {2,3}
+    735 {1,2}    900 {1}      432 {3}      591 {3}      42 {1}       203 {1,3}
+    737 {1,2,3}  902 {3}      433 {1,3}    592 {3}      43 {1,2}     205 {2,3}
+    739 {2}      904 {2,3}    434 {2}      593 {1}      44 {1,2}     206 {3}
+    740 {2}      905 {2,3}    435 {3}      596 {3}      45 {2,3}     207 {2}
+    741 {1,2}    906 {1,2}    436 {2}      597 {3}      46 {1}       209 {1,2}
+    743 {2}      908 {1,3}    438 {3}      599 {2}      47 {1,3}     210 {1,3}
+    744 {2}      910 {2,3}    439 {3}      600 {2,3}    49 {1,2}     211 {2,3}
+    745 {1}      911 {1,2}    440 {1}      602 {3}      50 {1,2,3}   213 {2}
+    746 {2,3}    912 {1,2}    443 {2,3}    603 {1}      51 {1,2}     214 {2}
+    747 {1,2}    913 {3}      444 {3}      604 {3}      54 {3}       215 {1}
+    748 {1,3}    914 {2,3}    445 {1,3}    605 {3}      55 {3}       217 {2}
+    749 {1,2}    915 {1,3}    446 {2,3}    607 {3}      56 {3}       218 {2,3}
+    750 {1,2}    917 {1,2}    447 {1}      608 {1}      58 {2,3}     219 {1}
+    751 {2,3}    918 {1,2}    449 {1,2,3}  611 {1,2}    59 {1,2,3}   220 {3}
+    ...          ...          ...          ...          ...          ...
+    886 {1,2}    416 {2,3}    576 {1,2}    23 {3}       189 {1,2}    366 {1}
+    887 {1,3}    417 {1,3}    577 {2}      24 {2,3}     190 {2,3}    367 {1}
+    888 {1}      419 {2,3}    578 {1,2}    27 {2}       192 {1,3}
+    890 {1,3}    420 {1}      579 {2}      28 {3}       193 {1,2}
     Total 715 records
     ```
 
-From the output, you can observe the number of TFRecords parts, the total number of images contained with these records, the listing of all images IDs combined with indicators categories present for each image. For example, if we have the following line `123 (1,2)`, it means that the image with ID `123` has 1 or more objects of category `1` and 1 or more objects of category `2`. This should help you pick a specific image including a specific set of categories.
+From the output, you can observe the total number of images contained with these records, the listing of all images IDs combined with indicators categories present for each image. For example, if we have the following line `737 {1,2,3}`, it means that the image with ID `123` has 1 or more objects of category `1`, 1 or more objects of category `2` and 1 or more objects of category `3` respectively. This should help you pick a specific image including a specific set of categories.
 
 !!! Note
-    If you use  function `explore_tfrecords` with `return_artifacts==True` it returns a list of record summaries such as `["732 (2)", "733 (1)", "734 (2)", "735 (1,2)", ...]`. You can apply your own style to its visualization.
+    If you use  function `explore_tfrecords` with `return_artifacts==True` it returns a list of record IDs `[..., 737, 739, 740, 741, ...]` and summaries such as `[..., "{1,2,3}", "{2}", "{2}", "{1,2}", ...]`. You can apply your own style to its visualization.
 
 ### Exploring Individual Record
 
@@ -87,11 +88,11 @@ The individual record exploration produces the following output to the console a
     ```text
     Property                  Value
     ------------------------  -----------
-    Image ID                  735
+    Image ID                  737
     Image Shape               (64, 64, 3)
     Total Labeled Objects     2
-    Available Categories Set  {1, 2}
-    Image saved to ./735.png
+    Available Categories Set  {1, 2, 3}
+    Image saved to ./737.png
     ```
 
 The output contains information about the image identifier its shape, number of annotated objects, and their categories. Also, all information about bounding boxes, segmentation, and categories are overlaid to the image, which example is shown below.
@@ -99,7 +100,7 @@ The output contains information about the image identifier its shape, number of 
 ![image with overlays](images/image_with_overlays.png)
 
 !!! Note
-    If you use  function `explore_tfrecords` with `return_artifacts==True` it returns two arguments: the first is a dictionary with the record summaries such as `{"image_id": 757, "image_shape": "(64, 64, 3)", ...}` and the second is a PIL image with overlays of categories, bounding boxes and masks.
+    If you use  function `explore_tfrecords` with `return_artifacts==True` it returns two arguments: the first is a PIL image with overlays of categories, bounding boxes and masks and the second is a dictionary with the record summaries such as `{"image_id": 757, "image_shape": "(64, 64, 3)", ...}`.
 
 ## PyDoc
 
