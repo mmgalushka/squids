@@ -16,6 +16,11 @@ plugins:
           show_root_heading: false
           show_source: false
           heading_level: 4
+        setup_commands:
+          - import sys
+          - sys.path.append('../')
+        selection:
+          new_path_syntax: true
     watch:
       - squids
 
