@@ -18,7 +18,7 @@ Note that this PIP install is not yet available, since documentation is prepared
 
 ## Capability
 
-This project gives you the following capabilities:
+This project gives you the following capabilities
 
 * [Generate synthetic dataset in CSV and COCO formats](generator.md);
 * [Transform dataset in either format to TFRecords](transformer.md);
