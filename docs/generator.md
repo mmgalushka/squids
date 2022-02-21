@@ -59,16 +59,16 @@ Each synthetic image is a collection of different geometrical shapes: ellipses, 
 
 Images can be generated with different color profiles which are defined by two parameters `image_palette` and `image_background` (command-line options `--image-palette` and `--image-background`). The following table explains possible profiles.
 
-| image_palette    | image_background  | Generated shapes                               |
-|:----------------:|:-----------------:|------------------------------------------------|
-| COLOR            | WHITE             | Any color shape on white background            |
-| RGB              | WHITE             | Red/green/blue color shape on white background |
-| GRAY             | WHITE             | Any gray-scale shape on white background       |
-| BINARY           | WHITE             | Any black shape on white background            |
-| COLOR            | BLACK             | Any color shape on black background            |
-| RGB              | BLACK             | Red/green/blue color shape on black background |
-| GRAY             | BLACK             | Any gray-scale shape on black background       |
-| BINARY           | BLACK             | Any white shape on black background            |
+| image_palette    | image_background  | Generated shapes                               | Example |
+|:----------------:|:-----------------:|------------------------------------------------|---------|
+| COLOR            | WHITE             | Any color shape on white background            | ![example color on white](images/color_on_white.png) |
+| RGB              | WHITE             | Red/green/blue color shape on white background | ![example RGB on white](images/rgb_on_white.png) |
+| GRAY             | WHITE             | Any gray-scale shape on white background       | ![example gray on white](images/gray_on_white.png) |
+| BINARY           | WHITE             | Any black shape on white background            | ![example binary on white](images/binary_on_white.png) |
+| COLOR            | BLACK             | Any color shape on black background            | ![example color on black](images/color_on_black.png) |
+| RGB              | BLACK             | Red/green/blue color shape on black background | ![example RGB on black](images/rgb_on_black.png) |
+| GRAY             | BLACK             | Any gray-scale shape on black background       | ![example gray on black](images/gray_on_black.png) |
+| BINARY           | BLACK             | Any white shape on black background            | ![example binary on black](images/binary_on_black.png) |
 
 ### Dataset Reproducibility
 
