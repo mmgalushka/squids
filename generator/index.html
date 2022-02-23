@@ -1,0 +1,1643 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../images/logo.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+    
+    
+      
+        <title>Generator - SquiDS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#generate-dataset" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SquiDS" class="md-header__button md-logo" aria-label="SquiDS" data-md-component="logo">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SquiDS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Generator
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mmgalushka/squids/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SquiDS" class="md-nav__button md-logo" aria-label="SquiDS" data-md-component="logo">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    SquiDS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mmgalushka/squids/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Generator
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Generator
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#image-size" class="md-nav__link">
+    Image Size
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image-capacity" class="md-nav__link">
+    Image Capacity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image-style" class="md-nav__link">
+    Image Style
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataset-reproducibility" class="md-nav__link">
+    Dataset Reproducibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outcome" class="md-nav__link">
+    Outcome
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pydoc" class="md-nav__link">
+    PyDoc
+  </a>
+  
+    <nav class="md-nav" aria-label="PyDoc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maker" class="md-nav__link">
+    Maker
+  </a>
+  
+    <nav class="md-nav" aria-label="Maker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.maker" class="md-nav__link">
+    squids.dataset.maker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.maker.create_dataset" class="md-nav__link">
+    create_dataset()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#palette" class="md-nav__link">
+    Palette
+  </a>
+  
+    <nav class="md-nav" aria-label="Palette">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette" class="md-nav__link">
+    squids.dataset.palette
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette" class="md-nav__link">
+    Palette
+  </a>
+  
+    <nav class="md-nav" aria-label="Palette">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette.BINARY" class="md-nav__link">
+    BINARY
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette.COLOR" class="md-nav__link">
+    COLOR
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette.GRAY" class="md-nav__link">
+    GRAY
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette.RGB" class="md-nav__link">
+    RGB
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#background" class="md-nav__link">
+    Background
+  </a>
+  
+    <nav class="md-nav" aria-label="Background">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.background" class="md-nav__link">
+    squids.dataset.background
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.background.Background" class="md-nav__link">
+    Background
+  </a>
+  
+    <nav class="md-nav" aria-label="Background">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.background.Background.BLACK" class="md-nav__link">
+    BLACK
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.background.Background.WHITE" class="md-nav__link">
+    WHITE
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transformer/" class="md-nav__link">
+        Transformer
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../explorer/" class="md-nav__link">
+        Explorer
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loader/" class="md-nav__link">
+        Loader
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#image-size" class="md-nav__link">
+    Image Size
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image-capacity" class="md-nav__link">
+    Image Capacity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image-style" class="md-nav__link">
+    Image Style
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataset-reproducibility" class="md-nav__link">
+    Dataset Reproducibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outcome" class="md-nav__link">
+    Outcome
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pydoc" class="md-nav__link">
+    PyDoc
+  </a>
+  
+    <nav class="md-nav" aria-label="PyDoc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#maker" class="md-nav__link">
+    Maker
+  </a>
+  
+    <nav class="md-nav" aria-label="Maker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.maker" class="md-nav__link">
+    squids.dataset.maker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.maker.create_dataset" class="md-nav__link">
+    create_dataset()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#palette" class="md-nav__link">
+    Palette
+  </a>
+  
+    <nav class="md-nav" aria-label="Palette">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette" class="md-nav__link">
+    squids.dataset.palette
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette" class="md-nav__link">
+    Palette
+  </a>
+  
+    <nav class="md-nav" aria-label="Palette">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette.BINARY" class="md-nav__link">
+    BINARY
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette.COLOR" class="md-nav__link">
+    COLOR
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette.GRAY" class="md-nav__link">
+    GRAY
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.palette.Palette.RGB" class="md-nav__link">
+    RGB
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#background" class="md-nav__link">
+    Background
+  </a>
+  
+    <nav class="md-nav" aria-label="Background">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.background" class="md-nav__link">
+    squids.dataset.background
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.background.Background" class="md-nav__link">
+    Background
+  </a>
+  
+    <nav class="md-nav" aria-label="Background">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.background.Background.BLACK" class="md-nav__link">
+    BLACK
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.dataset.background.Background.WHITE" class="md-nav__link">
+    WHITE
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+<a href="https://github.com/mmgalushka/squids/edit/master/docs/generator.md" title="Edit this page" class="md-content__button md-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+</a>
+
+
+
+<h1 id="generate-dataset">Generate Dataset</h1>
+<p>Synthetic datasets can help you quickly validate your ideas during building ML models. This data may also allow you to write unit tests for your ML model without exposing original images. Check our use-cases sections to learn more about how you can use synthetic data in your project.</p>
+<h2 id="usage">Usage</h2>
+<p>The process of generating a synthetic dataset can be initiated by the Python <code>create_dataset()</code> function (see <a href="#pydoc">PyDoc</a> for more information)  or via a command line.</p>
+<!-- Usage tab (Python|Shell)  -->
+
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Python</label><label for="__tabbed_1_2">Shell</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">squids</span> <span class="kn">import</span> <span class="n">create_dataset</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">create_dataset</span><span class="p">()</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>~$ python squids.main generate <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-s NUMBER<span class="o">]</span> <span class="o">[</span>--coco<span class="o">]</span> <span class="o">[</span>--image-width PIXELS<span class="o">]</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>            <span class="o">[</span>--image-height PIXELS<span class="o">]</span> <span class="o">[</span>--image-palette <span class="o">{</span>gray,color,binary,rgb<span class="o">}]</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>            <span class="o">[</span>--image-background <span class="o">{</span>black,white<span class="o">}]</span> <span class="o">[</span>--image-capacity NUMBER<span class="o">]</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>            <span class="o">[</span>--random-state NUMBER<span class="o">]</span> <span class="o">[</span>-v<span class="o">]</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>            <span class="o">[</span>DATASET_DIR<span class="o">]</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>positional arguments:
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    DATASET_DIR           a generating dataset directory, <span class="o">(</span>default <span class="s1">&#39;dataset/synthetic&#39;</span><span class="o">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>optional arguments:
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    -h, --help            show this <span class="nb">help</span> message and <span class="nb">exit</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    -s NUMBER, --dataset-size NUMBER
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>                            a number of generated data samples <span class="o">(</span><span class="nv">default</span><span class="o">=</span><span class="m">1000</span><span class="o">)</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    --coco                a flag to generate dataset <span class="k">in</span> the COCO format
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    --image-width PIXELS  a generated image width <span class="o">(</span><span class="nv">default</span><span class="o">=</span><span class="m">64</span><span class="o">)</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    --image-height PIXELS
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                            a generated image height <span class="o">(</span><span class="nv">default</span><span class="o">=</span><span class="m">64</span><span class="o">)</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    --image-palette <span class="o">{</span>gray,color,binary,rgb<span class="o">}</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>                            a used image palette <span class="o">(</span><span class="nv">default</span><span class="o">=</span><span class="s1">&#39;color&#39;</span><span class="o">)</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    --image-background <span class="o">{</span>black,white<span class="o">}</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>                            a used image background <span class="o">(</span><span class="nv">default</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="o">)</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>    --image-capacity NUMBER
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>                            a number of shapes per image <span class="o">(</span><span class="nv">default</span><span class="o">=</span><span class="m">3</span><span class="o">)</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>    --random-state NUMBER
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>                            a random state to use <span class="o">(</span><span class="nv">default</span><span class="o">=</span>None<span class="o">)</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    -v, --verbose         a flag to <span class="nb">set</span> verbose mode
+</code></pre></div>
+</div>
+</div>
+</div>
+<h3 id="image-size">Image Size</h3>
+<p>All generated synthetic images have the same size. The image size is defined by two parameters: <code>image_width</code> and <code>image_height</code> (command-line options <code>--image-width</code> and <code>--image-height</code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The inage size can be changed when transforming to TFRecords (all annotations are going to be rescaled accordingly).</p>
+</div>
+<h3 id="image-capacity">Image Capacity</h3>
+<p>Each synthetic image is a collection of different geometrical shapes: ellipses,  rectangles, and triangles. The maximum number of geometrical shapes is defined by the parameter <code>image_capacity</code> (command-line options <code>--image-capacity</code>). For example, if the image capacity is set to 3, means that synthetic images can have 1, 2, or 3 different geometrical shapes (ellipses,  rectangles, and triangles).</p>
+<h3 id="image-style">Image Style</h3>
+<p>Images can be generated with different color profiles which are defined by two parameters <code>image_palette</code> and <code>image_background</code> (command-line options <code>--image-palette</code> and <code>--image-background</code>). The following table explains possible profiles.</p>
+<table>
+<thead>
+<tr>
+<th align="center">image_palette</th>
+<th align="center">image_background</th>
+<th>Generated shapes</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">COLOR</td>
+<td align="center">WHITE</td>
+<td>Any color shape on white background</td>
+<td><img alt="example color on white" src="../images/color_on_white.png" /></td>
+</tr>
+<tr>
+<td align="center">RGB</td>
+<td align="center">WHITE</td>
+<td>Red/green/blue color shape on white background</td>
+<td><img alt="example RGB on white" src="../images/rgb_on_white.png" /></td>
+</tr>
+<tr>
+<td align="center">GRAY</td>
+<td align="center">WHITE</td>
+<td>Any gray-scale shape on white background</td>
+<td><img alt="example gray on white" src="../images/gray_on_white.png" /></td>
+</tr>
+<tr>
+<td align="center">BINARY</td>
+<td align="center">WHITE</td>
+<td>Any black shape on white background</td>
+<td><img alt="example binary on white" src="../images/binary_on_white.png" /></td>
+</tr>
+<tr>
+<td align="center">COLOR</td>
+<td align="center">BLACK</td>
+<td>Any color shape on black background</td>
+<td><img alt="example color on black" src="../images/color_on_black.png" /></td>
+</tr>
+<tr>
+<td align="center">RGB</td>
+<td align="center">BLACK</td>
+<td>Red/green/blue color shape on black background</td>
+<td><img alt="example RGB on black" src="../images/rgb_on_black.png" /></td>
+</tr>
+<tr>
+<td align="center">GRAY</td>
+<td align="center">BLACK</td>
+<td>Any gray-scale shape on black background</td>
+<td><img alt="example gray on black" src="../images/gray_on_black.png" /></td>
+</tr>
+<tr>
+<td align="center">BINARY</td>
+<td align="center">BLACK</td>
+<td>Any white shape on black background</td>
+<td><img alt="example binary on black" src="../images/binary_on_black.png" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="dataset-reproducibility">Dataset Reproducibility</h3>
+<p>It is important to reproduce exactly the same synthetic dataset for some machine learning experiments. To do that set the <code>random_state</code> (command-line option <code>--random-state</code>) to a particular integer value. But default the random state has been set to <code>None</code>. It means creating a new dataset every time the function or command line is called.</p>
+<h2 id="outcome">Outcome</h2>
+<p>Synthetic data can be generated in CSV and COCO formats. Both formats will lead to the same outcome during the <a href="../transformer/">transformation</a> of these data to <a href="https://www.tensorflow.org/tutorials/load_data/tfrecord">TFRecords</a>. You can choose which one suits you more.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">CSV</label><label for="__tabbed_2_2">COCO</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV</a>, probably, is the most intuitive format for handling structural data. It is also used in a lot of computer vision projects for manipulating synthetic and real data.</p>
+<p>The Python function or the correspondent command-line will generate the following files structure (under <code>dataset/synthetic</code>) in the current folder.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>dataset/synthetic/
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    images/
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    instances_test.csv
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    instances_val.csv
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    instances_train.csv
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    categories.json
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The current folder is the folder from which you launched your Python application.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Type</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>images</td>
+<td>Dir</td>
+<td>Contains all generated images</td>
+</tr>
+<tr>
+<td>instances_train.csv</td>
+<td>File</td>
+<td>Contains training records including image and annotations</td>
+</tr>
+<tr>
+<td>instances_val.csv</td>
+<td>File</td>
+<td>Contains validation records including image and annotations</td>
+</tr>
+<tr>
+<td>instances_test.csv</td>
+<td>File</td>
+<td>Contains test records including image and annotations</td>
+</tr>
+<tr>
+<td>categories.json</td>
+<td>File</td>
+<td>Contains information about annotated categories</td>
+</tr>
+</tbody>
+</table>
+<p>All CSV files have the same structure, shown below.</p>
+<table>
+<thead>
+<tr>
+<th>Column Name</th>
+<th>Column Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>image_id</td>
+<td>Defines an image ID which later will identifier this image in TFRecords</td>
+</tr>
+<tr>
+<td>file_name</td>
+<td>Defines an image file name (note the file will be automatically looked up in the images directory)</td>
+</tr>
+<tr>
+<td>bboxes</td>
+<td>Defines a list of bounding boxes, for all objects annotated in the corresponding image</td>
+</tr>
+<tr>
+<td>segmentations</td>
+<td>Defines a list of segmentations in the form of polygons, for all objects annotated in the corresponding image</td>
+</tr>
+<tr>
+<td>category_ids</td>
+<td>Defines a list of category IDs, for all objects annotated in the corresponding image</td>
+</tr>
+</tbody>
+</table>
+<p>This is a fragment of such a CSV file.</p>
+<table>
+<thead>
+<tr>
+<th>image_id</th>
+<th>file_name</th>
+<th>bboxes</th>
+<th>segmentations</th>
+<th>category_ids</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>image0.jpg</td>
+<td>[[73, 155, 122, 44], [141, 45, 98, 74], [3, 3,...</td>
+<td>[[98, 155, 195, 199, 73, 199], [141, 45, 239, ...</td>
+<td>[2, 3, 1]</td>
+</tr>
+<tr>
+<td>3</td>
+<td>image3.jpg</td>
+<td>[[44, 154, 82, 61], [114, 83, 32, 59]]</td>
+<td>[[126, 184, 125, 188, 124, 192, 123, 195, 120,...</td>
+<td>[1, 2]</td>
+</tr>
+<tr>
+<td>4</td>
+<td>image4.jpg</td>
+<td>[[31, 62, 55, 75], [146, 105, 36, 121]]</td>
+<td>[[86, 99, 85, 104, 85, 108, 84, 113, 82, 117, ...</td>
+<td>[1, 2]</td>
+</tr>
+<tr>
+<td>5</td>
+<td>image5.jpg</td>
+<td>[[69, 39, 86, 53], [166, 118, 47, 117]]</td>
+<td>[[155, 65, 154, 68, 153, 72, 151, 75, 149, 78,...</td>
+<td>[1, 3]</td>
+</tr>
+<tr>
+<td>7</td>
+<td>image7.jpg</td>
+<td>[[59, 69, 78, 65]]</td>
+<td>[[59, 69, 137, 69, 137, 134, 59, 134]]</td>
+<td>[3]</td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<td>993</td>
+<td>image993.jpg</td>
+<td>[[120, 40, 76, 107], [59, 30, 125, 85], [69, 1...</td>
+<td>[[120, 40, 196, 40, 196, 147, 120, 147], [166,...</td>
+<td>[3, 2, 3]</td>
+</tr>
+<tr>
+<td>994</td>
+<td>image994.jpg</td>
+<td>[[122, 7, 43, 123]]</td>
+<td>[[122, 7, 165, 7, 165, 130, 122, 130]]</td>
+<td>[3]</td>
+</tr>
+<tr>
+<td>995</td>
+<td>image995.jpg</td>
+<td>[[1, 159, 89, 25], [60, 51, 72, 38], [125, 33,...</td>
+<td>[[90, 171, 89, 173, 88, 174, 86, 176, 84, 177,...</td>
+<td>[1, 3, 3]</td>
+</tr>
+<tr>
+<td>997</td>
+<td>image997.jpg</td>
+<td>[[211, 152, 27, 79]]</td>
+<td>[[211, 152, 238, 152, 238, 231, 211, 231]]</td>
+<td>[3]</td>
+</tr>
+<tr>
+<td>999</td>
+<td>image999.jpg</td>
+<td>[[18, 84, 56, 93], [203, 72, 49, 70], [14, 132...</td>
+<td>[[18, 84, 74, 84, 74, 177, 18, 177], [252, 107...</td>
+<td>[3, 1, 1]</td>
+</tr>
+</tbody>
+</table>
+<p>Information about each category ID in the <code>category_ids</code> column is defined in the <code>categories.json</code> file.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">        </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ellipse&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">            </span><span class="nt">&quot;supercategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shape&quot;</span><span class="w"></span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">        </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">        </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;triangle&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">            </span><span class="nt">&quot;supercategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shape&quot;</span><span class="w"></span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">        </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">        </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rectangle&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">            </span><span class="nt">&quot;supercategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shape&quot;</span><span class="w"></span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span><span class="p">]</span><span class="w"></span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>For example, a CSV file record has the following category IDs <code>[3, 2]</code>. It means that the first annotated object is the <code>rectangle</code> (since its ID is <code>3</code>), and the second is the <code>triangle</code> (since its ID is <code>2</code> respectively).</p>
+</div>
+<div class="tabbed-block">
+<p><a href="https://cocodataset.org/#format-data">COCO</a>, probably, is the most popular format for handling synthetic and real computer vision data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following description of the COCO format focuses only on the key points necessary to understand how this data is transformed to the TFRecords. If you would like to learn more about the COCO format we recommend reading the following <a href="https://cocodataset.org/#format-data">documentation</a>.</p>
+</div>
+<p>The Python function or the correspondent command-line will generate the following files structure (under <code>dataset/synthetic</code>) in the current folder.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>dataset/synthetic/
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    annotations/
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        instances_test.json
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>        instances_train.json
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>        instances_val.json
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    instances_test/
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    instances_train/
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    instances_val/
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The current folder is the folder from which you launched your Python application.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>To generate data in COCO format you need to set function argument <code>coco=True</code> or use the flag <code>--coco</code> in the command line.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Type</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>annotations</td>
+<td>Dir</td>
+<td>Contains files describing annotations</td>
+</tr>
+<tr>
+<td>annotations/instances_train.json</td>
+<td>File</td>
+<td>Contains training records including image and annotations</td>
+</tr>
+<tr>
+<td>annotations/instances_val.json</td>
+<td>File</td>
+<td>Contains validation records including image and annotations</td>
+</tr>
+<tr>
+<td>annotations/instances_test.json</td>
+<td>File</td>
+<td>Contains test records including image and annotations</td>
+</tr>
+<tr>
+<td>instances_train</td>
+<td>Dir</td>
+<td>Contains all generated training images (annotated in instances_train.json)</td>
+</tr>
+<tr>
+<td>instances_val</td>
+<td>Dir</td>
+<td>Contains all generated validation images (annotated in instances_val.json)</td>
+</tr>
+<tr>
+<td>instances_test</td>
+<td>Dir</td>
+<td>Contains all generated test images (annotated in instances_test.json)</td>
+</tr>
+</tbody>
+</table>
+<p>All JSON files have the same structure, shown below.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="nt">&quot;info&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&quot;licenses&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">&quot;images&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="w"></span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>The top-level of the COCO JSON structure contains the five properties: <code>info</code>, <code>licenses</code>, <code>images</code>, <code>categories</code>, <code>annotations</code>. The following three: <code>images</code>, <code>annotations</code>, and <code>categories</code> are important for the current topic and are reviewed below.</p>
+<p><code>images</code> property contains a list of items with information about each annotated image. Its example is shown below.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">&quot;images&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="err">...</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">        </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;image1.jpg&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">        </span><span class="nt">&quot;coco_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;file:///dataset/synthetic/instances_train/image1.jpg&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">        </span><span class="nt">&quot;width&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="nt">&quot;height&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="nt">&quot;date_captured&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-01-13 15:00:33&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="err">...</span><span class="w"></span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>The most important properties are <code>file_name</code> and <code>id</code>. The transformer will read this image file from the folder derived from the stem name of the JSON file and <code>file_name</code>. For example, if the JSON  file is <code>instances_train.json</code> and  <code>file_name</code> is "image1.jpg", the image is expected to be in the <code>../instances_train/image1.jpg</code>. The property <code>id</code> is used by the transformer to define a record associated with this image.</p>
+<p><code>annotations</code> property contains a list of items with information about a specific annotation within an image such as bounding box, segmentation, and encapsulated object category. Its example is shown below.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="err">...</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">        </span><span class="nt">&quot;segmentation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">            </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">                </span><span class="mi">51</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">                </span><span class="mi">52</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">                </span><span class="mi">53</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">                </span><span class="mi">58</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">                </span><span class="mi">41</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">                </span><span class="mi">58</span><span class="w"></span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">            </span><span class="p">]</span><span class="w"></span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">        </span><span class="p">],</span><span class="w"></span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">        </span><span class="nt">&quot;area&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">36.0</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">        </span><span class="nt">&quot;iscrowd&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">        </span><span class="nt">&quot;image_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="w">        </span><span class="nt">&quot;bbox&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">            </span><span class="mi">41</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">            </span><span class="mi">52</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">            </span><span class="mi">12</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="w">            </span><span class="mi">6</span><span class="w"></span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="w">        </span><span class="p">],</span><span class="w"></span>
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">        </span><span class="nt">&quot;category_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="w">    </span><span class="err">...</span><span class="w"></span>
+<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>Each record contains information about an image it belongs to via the property <code>image_id</code>, bounding box coordinates <code>bbox</code>, segmentation polygon coordinates <code>segmentation</code>, and <code>category_id</code> to define what type of an object is segmented.</p>
+<p><code>categories</code> property contains a list of items with information about available object categories. Its example is shown below.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ellipse&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">        </span><span class="nt">&quot;supercategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shape&quot;</span><span class="w"></span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;triangle&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">        </span><span class="nt">&quot;supercategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shape&quot;</span><span class="w"></span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="p">},</span><span class="w"></span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rectangle&quot;</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">        </span><span class="nt">&quot;supercategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shape&quot;</span><span class="w"></span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">    </span><span class="p">}</span><span class="w"></span>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>The category <code>id</code> is related to the <code>category_id</code> property defined in annotation and tide together annotation and category information.</p>
+</div>
+</div>
+</div>
+<h2 id="pydoc">PyDoc</h2>
+<h3 id="maker">Maker</h3>
+
+
+  <div class="doc doc-object doc-module">
+
+<a id="squids.dataset.maker"></a>
+    <div class="doc doc-contents first">
+
+      <p>A module for creating synthetic datasets.</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h4 id="squids.dataset.maker.create_dataset" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_dataset</span><span class="p">(</span><span class="n">dataset_dir</span><span class="o">=</span><span class="s1">&#39;dataset/synthetic&#39;</span><span class="p">,</span> <span class="n">dataset_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">image_width</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">image_height</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">image_palette</span><span class="o">=&lt;</span><span class="n">Palette</span><span class="o">.</span><span class="n">COLOR</span><span class="p">:</span> <span class="s1">&#39;color&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">image_background</span><span class="o">=&lt;</span><span class="n">Background</span><span class="o">.</span><span class="n">WHITE</span><span class="p">:</span> <span class="s1">&#39;white&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">image_capacity</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">coco</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>This function generates dataset in CSV or COCO format.</p>
+<p>The input parameters for generating the dataset in CSV or COCO format
+are the same except for the <code>coco</code> flag. If the <code>coco</code> flag is <code>False</code>
+the dataset generating in CSV format, and if it is <code>True</code> the dataset
+generating in COCO format respectively.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>dataset_dir</code></td>
+        <td><code>str</code></td>
+        <td><p>The directory where to store the generated data.</p></td>
+        <td><code>&#39;dataset/synthetic&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>dataset_size</code></td>
+        <td><code>int</code></td>
+        <td><p>The number of generated samples.</p></td>
+        <td><code>1000</code></td>
+      </tr>
+      <tr>
+        <td><code>image_width</code></td>
+        <td><code>int</code></td>
+        <td><p>The image width in pixels.</p></td>
+        <td><code>64</code></td>
+      </tr>
+      <tr>
+        <td><code>image_height</code></td>
+        <td><code>int</code></td>
+        <td><p>The image height in pixels.</p></td>
+        <td><code>64</code></td>
+      </tr>
+      <tr>
+        <td><code>image_palette</code></td>
+        <td><code>Palette</code></td>
+        <td><p>The palette for generating images.</p></td>
+        <td><code>&lt;Palette.COLOR: &#39;color&#39;&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>image_background</code></td>
+        <td><code>Background</code></td>
+        <td><p>The background for generating images.</p></td>
+        <td><code>&lt;Background.WHITE: &#39;white&#39;&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>image_capacity</code></td>
+        <td><code>int</code></td>
+        <td><p>The number of geometrical shapes per image.</p></td>
+        <td><code>3</code></td>
+      </tr>
+      <tr>
+        <td><code>coco</code></td>
+        <td><code>bool</code></td>
+        <td><p>The flag defines a type of generating dataset. If <code>False</code>
+to generate the CSV dataset, if <code>True</code> the COCO dataset
+respectively.</p></td>
+        <td><code>False</code></td>
+      </tr>
+      <tr>
+        <td><code>random_state</code></td>
+        <td><code>int</code></td>
+        <td><p>The random state used for generating synthetic data. If it is
+<code>None</code>  then every time synthetic data will be generated with
+a new random value.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>verbose</code></td>
+        <td><code>bool</code></td>
+        <td><p>The flag to set verbose mode.</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+<h3 id="palette">Palette</h3>
+
+
+  <div class="doc doc-object doc-module">
+
+<a id="squids.dataset.palette"></a>
+    <div class="doc doc-contents first">
+
+      <p>A module for handling image palette.</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h4 id="squids.dataset.palette.Palette" class="doc doc-heading">
+        <code>
+Palette            (<span title="str">str</span>, <span title="enum.Enum">Enum</span>)
+        </code>
+
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>An enumeration.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h5 id="squids.dataset.palette.Palette.BINARY" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">BINARY</span></code>
+
+
+</h5>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the palette with just two colors black and white.</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h5 id="squids.dataset.palette.Palette.COLOR" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">COLOR</span></code>
+
+
+</h5>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the palette with all possible RGB colors.</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h5 id="squids.dataset.palette.Palette.GRAY" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">GRAY</span></code>
+
+
+</h5>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the palette with all grades between black and white.</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h5 id="squids.dataset.palette.Palette.RGB" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">RGB</span></code>
+
+
+</h5>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the palette with three contrasting red/green/blue colors.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+<h3 id="background">Background</h3>
+
+
+  <div class="doc doc-object doc-module">
+
+<a id="squids.dataset.background"></a>
+    <div class="doc doc-contents first">
+
+      <p>A module for handling image background.</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h4 id="squids.dataset.background.Background" class="doc doc-heading">
+        <code>
+Background            (<span title="str">str</span>, <span title="enum.Enum">Enum</span>)
+        </code>
+
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>An enumeration.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h5 id="squids.dataset.background.Background.BLACK" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">BLACK</span></code>
+
+
+</h5>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the black background.</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h5 id="squids.dataset.background.Background.WHITE" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">WHITE</span></code>
+
+
+</h5>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the white background.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Home
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../transformer/" class="md-footer__link md-footer__link--next" aria-label="Next: Transformer" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Transformer
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
+      
+    
+  </body>
+</html>
