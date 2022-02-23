@@ -24,6 +24,7 @@ To install SquiDS, run the following command from the command line:
 ```bash
 ~$ pip install squids
 ```
+For more information please read the [documentation](https://mmgalushka.github.io/squids/).
 
 ## Why use it?
 
@@ -136,8 +137,6 @@ model.fit(
     ...
 )
 ```
-
-For more information please read the [documentation](https://mmgalushka.github.io/squids/).
 
 ## Contributing
 
