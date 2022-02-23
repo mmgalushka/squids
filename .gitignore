@@ -37,6 +37,7 @@
 !main.py
 !setup.py
 !README.md
+!CONTRIBUTING.md
 !requirements.txt
 !.pre-commit-config.yaml
 !mkdocs.yml
