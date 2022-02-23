@@ -22,6 +22,7 @@ from squids import (
     create_tfrecords,
     explore_tfrecords,
     load_tfrecords,
+    preprocess_image,
     Palette,
     Background
 )
@@ -163,9 +164,11 @@ Tabs:
     Perform inference on selected test images.
 
     ```Python
-    preprocessed_images = np.array(
-        [np.array(image) for image in images]
-    ) / 255.0
+    preprocessed_images = preprocess_image(
+        np.array(
+            [np.array(image) for image in images]
+        ) / 255.0
+    )
 
     model.load_weights("best_weights.h5")
     predictions = model.predict(preprocessed_images)
@@ -304,9 +307,11 @@ Tabs:
     Perform inference on selected test images.
 
     ```Python
-    preprocessed_images = np.array(
-        [np.array(image) for image in images]
-    ) / 255.0
+    preprocessed_images = preprocess_image(
+        np.array(
+            [np.array(image) for image in images]
+        ) / 255.0
+    )
 
     model.load_weights("best_weights.h5")
     predictions = model.predict(preprocessed_images)
@@ -492,9 +497,11 @@ Tabs:
     Perform inference on selected test images.
 
     ```Python
-    preprocessed_images = np.array(
-        [np.array(image) for image in images]
-    ) / 255.0
+    preprocessed_images = preprocess_image(
+        np.array(
+            [np.array(image) for image in images]
+        ) / 255.0
+    )
 
     model.load_weights("best_weights.h5")
     predictions = model.predict(preprocessed_images)
@@ -694,9 +701,11 @@ Tabs:
     Perform inference on selected test images.
 
     ```Python
-    preprocessed_images = np.array(
-        [np.array(image) for image in images]
-    ) / 255.0
+    preprocessed_images = preprocess_image(
+        np.array(
+            [np.array(image) for image in images]
+        ) / 255.0
+    )
 
     model.load_weights("best_weights.h5")
     predictions = model.predict(preprocessed_images)
