@@ -29,6 +29,8 @@ theme:
   logo: images/logo.png
   favicon: images/logo.png
 
+repo_url: https://github.com/mmgalushka/squids
+
 markdown_extensions:
 # Code highlight extensions
 - pymdownx.highlight:
