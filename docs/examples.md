@@ -62,7 +62,7 @@ Tabs:
 -->
 
 === "Object Classification"
-    [Generates](generate.md) 10k synthetic images with annotations and [transforms](transform.md) them to the [TFRecords](https://www.tensorflow.org/tutorials/load_data/tfrecord). All generated images have the binary profile: "white geometrical shape on the black background".
+    [Generates](generator.md) 10k synthetic images with annotations and [transforms](transformer.md) them to the [TFRecords](https://www.tensorflow.org/tutorials/load_data/tfrecord). All generated images have the binary profile: "white geometrical shape on the black background".
 
     ```Python
     create_dataset(
@@ -204,7 +204,7 @@ Tabs:
     ![single object classification result](images/single_object_classification.png)
 
 === "Object Localisation"
-    [Generates](generate.md) 10k synthetic images with annotations and [transforms](transform.md) them to the [TFRecords](https://www.tensorflow.org/tutorials/load_data/tfrecord). All generated images have the binary profile: "white geometrical shape on the black background".
+    [Generates](generator.md) 10k synthetic images with annotations and [transforms](transformer.md) them to the [TFRecords](https://www.tensorflow.org/tutorials/load_data/tfrecord). All generated images have the binary profile: "white geometrical shape on the black background".
 
     ```Python
     create_dataset(
@@ -345,7 +345,7 @@ Tabs:
     ![single object localization result](images/single_object_localization.png)
 
 === "Object Detection"
-    [Generates](generate.md) 10k synthetic images with annotations and [transforms](transform.md) them to the [TFRecords](https://www.tensorflow.org/tutorials/load_data/tfrecord). All generated images have the binary profile: "white geometrical shape on the black background".
+    [Generates](generator.md) 10k synthetic images with annotations and [transforms](transformer.md) them to the [TFRecords](https://www.tensorflow.org/tutorials/load_data/tfrecord). All generated images have the binary profile: "white geometrical shape on the black background".
 
     ```Python
     create_dataset(
@@ -550,7 +550,7 @@ Tabs:
     ![single object detection result](images/single_object_detection.png)
 
 === "Multi-objects Detection"
-    [Generates](generate.md) 10k synthetic images with annotations and [transforms](transform.md) them to the [TFRecords](https://www.tensorflow.org/tutorials/load_data/tfrecord). All generated images have the binary profile: "white geometrical shape on the black background".
+    [Generates](generator.md) 10k synthetic images with annotations and [transforms](transformer.md) them to the [TFRecords](https://www.tensorflow.org/tutorials/load_data/tfrecord). All generated images have the binary profile: "white geometrical shape on the black background".
 
     ```Python
     create_dataset(

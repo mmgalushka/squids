@@ -26,6 +26,8 @@ plugins:
 
 theme:
   name: material
+  logo: images/logo.png
+  favicon: images/logo.png
 
 markdown_extensions:
 # Code highlight extensions
