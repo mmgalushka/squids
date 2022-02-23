@@ -1,6 +1,6 @@
 # SquiDS
 
-![Squids Logo](docs/images/logo.png)
+![Squids Title](docs/images/title.png)
 
 [![Continuous Integration Status](https://github.com/mmgalushka/squids/workflows/CI/badge.svg)](https://github.com/mmgalushka/squids/actions)
 [![Code Coverage Percentage](https://codecov.io/gh/mmgalushka/squids/branch/main/graph/badge.svg?token=XqrEqWyOM9)](https://codecov.io/gh/mmgalushka/squids)
@@ -8,6 +8,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Python Badge](https://img.shields.io/badge/Python-%3E%3D3.6-blue)
 ![Tensorflow Badge](https://img.shields.io/badge/tensorflow-%3E%3D2.5.0-blue)
+[![Project Documentation](https://img.shields.io/badge/docs-MkDocs-blue)](https://mmgalushka.github.io/squids/)
 [![Project License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/mmgalushka/squids/blob/main/LICENSE)
 
 The main goal of this project is to help data scientists working with Computer Vision (CV) domain better manage synthetic and real training data. This project will be useful in building machine learning (ML) models for:
@@ -24,8 +25,6 @@ To install SquiDS, run the following command from the command line:
 ~$ pip install squids
 ```
 
-Note that this PIP install is not yet available, since documentation is prepared ahead of time. When this PIP package gets deployed this note will be removed!
-
 ## Why use it?
 
 If you are working in the computer vision domain, you may encounter situations when you are spending more time preparing data rather than creating, training, and testing models. The developed SquiDS package is intended to minimize the data preparation process so you can focus on the task which is matter.
@@ -41,7 +40,7 @@ SquiDS delivers four key capabilities
 
 Also if the real data is stored in the compliant CSV or COCO format, it can be transformed, explored, and loaded using this SquiDS package.
 
-## Example
+## Usage
 
 Import SquiDS library.
 
@@ -49,19 +48,19 @@ Import SquiDS library.
 import squids as sds
 ```
 
-Generate synthetic dataset in CSV format (by default, data are be stored in `dataset/synthetic` directory).
+Generate synthetic dataset in CSV format (by default, data are stored in the `dataset/synthetic` directory).
 
 ```Python
 sds.create_dataset()
 ```
 
-Transform dataset in either format to TFRecords (by default, TFRecords are be stored in `dataset/synthetic-tfrecords` directory).
+Transform dataset to TFRecords (by default, TFRecords are stored in the `dataset/synthetic-tfrecords` directory).
 
 ```Python
 sds.create_tfrecords()
 ```
 
-Explore generated TFRecords for model training (located at `dataset/synthetic-tfrecords/instances_train`).
+Explore generated TFRecords for model training (located at the `dataset/synthetic-tfrecords/instances_train` directory).
 
 ```Python
 sds.explore_tfrecords("dataset/synthetic-tfrecords/instances_train")
@@ -79,12 +78,12 @@ dataset/synthetic-tfrecords/instances_train
 Total 712 records
 ```
 
-The output shows the total number of records, a list of images IDs combined with annotated categories. For example, the following line`922 {1,2,3}` means that the image with ID `922` has one or more objects of category `1`, one or more objects of category `2`, and one or more objects of category `3` respectively.
+The output shows the total number of records, a list of images IDs combined with annotated categories. For example, the following line `922 {1,2,3}` indicates that the image with ID `922` has one or more objects of the category `1`, one or more objects of the category `2`, and one or more objects of the category `3` respectively.
 
-Explore a content the individual TFRecord record with the image ID `922`.
+Explore a content of a TFRecord record with the image ID `922`.
 
 ```Python
-explore_tfrecords(
+sds.explore_tfrecords(
     "dataset/synthetic-tfrecords/instances_train",
     922,
     with_categories=True,
@@ -103,25 +102,27 @@ available_categories  {1, 2, 3}
 Image saved to ./922.png
 ```
 
-The output contains information about image ID, its size, number of annotated objects, and their categories. Also, all information about bounding boxes, segmentation, and categories are overlaid to an image (in this example `922.png`).
+The output contains information about image ID, its size, number of annotated objects, and their categories. Also, all information about bounding boxes, segmentation, and categories are overlaid to an image (stored in the `922.png` file).
 
 ![Example Image](docs/images/image_with_overlays.png)
 
-Load TFRecords for machine learning model training and testing.
+Load TFRecords for model training and validation.
 
 ```Python
-ds_train, train_steps_per_epoch = load_tfrecords(
+ds_train, train_steps_per_epoch = sds.load_tfrecords(
     "dataset/synthetic-tfrecords/instances_train", 
     output_schema = "C"
 )
 
-ds_val, val_steps_per_epoch = load_tfrecords(
+ds_val, val_steps_per_epoch = sds.load_tfrecords(
     "dataset/synthetic-tfrecords/instances_val", 
     output_schema = "C"
 )
 ```
 
-The `output_schema="C"` argument indicates to return one-hot categories encoding.
+Note, the `output_schema="C"` argument instructs the data generator to return one-hot categories encoding.
+
+Run the model training.
 
 ```Python
 model = ...
@@ -136,7 +137,7 @@ model.fit(
 )
 ```
 
-For more information please read the documentation.
+For more information please read the [documentation](https://mmgalushka.github.io/squids/).
 
 ## Contributing
 
@@ -146,4 +147,5 @@ For information on how to set up a development environment and how to make a con
 
 - PyPI Releases: [https://pypi.org/project/squids/](https://pypi.org/project/squids/)
 - Source Code: [https://github.com/mmgalushka/squids](https://github.com/mmgalushka/squids/)
+- Documentation: [https://mmgalushka.github.io/squids/](https://mmgalushka.github.io/squids/)
 - Issue Tracker: [https://github.com/mmgalushka/squids/issues](https://github.com/mmgalushka/squids/)
