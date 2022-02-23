@@ -35,6 +35,20 @@ FEATURE_KEYS_MAP = {
 """The mapping feature keys, for parsing a TFRecord."""
 
 
+def preprocess_image(image):
+    """Preprocesses an image into the form suitable for machine learning
+    model input.
+
+    Args:
+        image:
+            The image to preprocess.
+
+    Returns:
+        The preprocessed image.
+    """
+    return image / 255.0
+
+
 def items_to_features(
     image_id: int,
     image: Image,
@@ -163,7 +177,7 @@ def features_to_items(
     image = tf.io.decode_raw(features["image/data"], tf.uint8)
     image = tf.reshape(image, image_shape)
     image = tf.cast(image, tf.float32)
-    image = image / 255.0
+    image = preprocess_image(image)
 
     n = features["annotations/number"][0]
 
