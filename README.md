@@ -1,6 +1,6 @@
 # SquiDS
 
-![Squids Title](docs/images/title.png)
+![Squids Title](https://github.com/mmgalushka/squids/raw/main/docs/images/title.png)
 
 [![Continuous Integration Status](https://github.com/mmgalushka/squids/workflows/CI/badge.svg)](https://github.com/mmgalushka/squids/actions)
 [![Code Coverage Percentage](https://codecov.io/gh/mmgalushka/squids/branch/main/graph/badge.svg?token=XqrEqWyOM9)](https://codecov.io/gh/mmgalushka/squids)
@@ -31,7 +31,7 @@ If you are working in the computer vision domain, you may encounter situations w
 
 SquiDS delivers four key capabilities
 
-![architecture](docs/images/architecture.png)
+![architecture](https://github.com/mmgalushka/squids/raw/main/docs/images/architecture.png)
 
 - **Generate** synthetic dataset in CSV and COCO formats;
 - **Transform** dataset in either format to TFRecords;
@@ -104,7 +104,7 @@ Image saved to ./922.png
 
 The output contains information about image ID, its size, number of annotated objects, and their categories. Also, all information about bounding boxes, segmentation, and categories are overlaid to an image (stored in the `922.png` file).
 
-![Example Image](docs/images/image_with_overlays.png)
+![Example Image](https://github.com/mmgalushka/squids/raw/main/docs/images/image_with_overlays.png)
 
 Load TFRecords for model training and validation.
 
@@ -141,7 +141,7 @@ For more information please read the [documentation](https://mmgalushka.github.i
 
 ## Contributing
 
-For information on how to set up a development environment and how to make a contribution to SquiDS, see the [contributing guidelines](CONTRIBUTING.md).
+For information on how to set up a development environment and how to make a contribution to SquiDS, see the [contributing guidelines](https://github.com/mmgalushka/squids/blob/main/CONTRIBUTING.md).
 
 ## Links
 
