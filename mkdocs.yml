@@ -5,7 +5,7 @@ nav:
   - Transformer: transformer.md
   - Explorer: explorer.md
   - Loader: loader.md
-  - About: about.md
+  - Examples: examples.md
 
 plugins:
 - mkdocstrings:
