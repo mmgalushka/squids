@@ -18,6 +18,10 @@ from ..config import (
     IMAGE_WIDTH,
     IMAGE_HEIGHT,
     IMAGE_CAPACITY,
+    ADDING_SHAPES,
+    NOISE_LEVEL,
+    BLUR_LEVEL_X,
+    BLUR_LEVEL_Y,
     DATASET_DIR,
     DATASET_SIZE,
 )
@@ -50,6 +54,10 @@ def create_dataset(
     image_palette: Palette = Palette.default(),
     image_background: Background = Background.default(),
     image_capacity: int = IMAGE_CAPACITY,
+    adding_shapes: str = ADDING_SHAPES,
+    noise_level: float = NOISE_LEVEL,
+    blur_level_x: float = BLUR_LEVEL_X,
+    blur_level_y: float = BLUR_LEVEL_Y,
     coco: bool = False,
     random_state: int = None,
     verbose: bool = False,
@@ -77,6 +85,16 @@ def create_dataset(
             The background for generating images.
         image_capacity (int):
             The number of geometrical shapes per image.
+        adding_shapes (str):
+            The collection of adding shapes to the generated images, it can
+            include 'r' for rectangles, 't' for triangles, 'e' for ellipses
+            and also a combination of all these parameters ex. 'rt' for
+            generating rectangles and triangles.
+        noise_level (float):
+            The noise level defined in a range between 0 and 1. 0 - indicates
+            no noise, any value between 0 and 1 define level of generated
+            noise and value 1 - instruct randomly select noise level in range
+            [0,1].
         coco (bool):
             The flag defines a type of generating dataset. If `False`
             to generate the CSV dataset, if `True` the COCO dataset
@@ -97,6 +115,10 @@ def create_dataset(
             image_palette,
             image_background,
             image_capacity,
+            adding_shapes,
+            noise_level,
+            blur_level_x,
+            blur_level_y,
             random_state,
             verbose,
         )
@@ -109,6 +131,10 @@ def create_dataset(
             image_palette,
             image_background,
             image_capacity,
+            adding_shapes,
+            noise_level,
+            blur_level_x,
+            blur_level_y,
             random_state,
             verbose,
         )
@@ -122,6 +148,10 @@ def create_csv_dataset(
     image_palette: Palette,
     image_background: Background,
     image_capacity: int,
+    adding_shapes: str,
+    noise_level: float,
+    blur_level_x: float,
+    blur_level_y: float,
     random_state: int,
     verbose: bool,
 ):
@@ -142,6 +172,16 @@ def create_csv_dataset(
             The palette for generating images.
         image_capacity (int):
             The number of geometrical shapes per image.
+        adding_shapes (str):
+            The collection of adding shapes to the generated images, it can
+            include 'r' for rectangles, 't' for triangles, 'e' for ellipses
+            and also a combination of all these parameters ex. 'rt' for
+            generating rectangles and triangles.
+        noise_level (float):
+            The noise level defined in a range between 0 and 1. 0 - indicates
+            no noise, any value between 0 and 1 define level of generated
+            noise and value 1 - instruct randomly select noise level in range
+            [0,1].
         random_state (int):
             The random state used for generating synthetic data.
         verbose (bool):
@@ -192,6 +232,10 @@ def create_csv_dataset(
                 image_palette,
                 image_background,
                 image_capacity,
+                adding_shapes,
+                noise_level,
+                blur_level_x,
+                blur_level_y,
             )
             image.save(
                 images_dir / file_name, "JPEG", quality=100, subsampling=0
@@ -235,6 +279,10 @@ def create_coco_dataset(
     image_palette: Palette,
     image_background: Background,
     image_capacity: int,
+    adding_shapes: str,
+    noise_level: float,
+    blur_level_x: float,
+    blur_level_y: float,
     random_state: int,
     verbose: bool,
 ):
@@ -255,6 +303,26 @@ def create_coco_dataset(
             The palette for generating images.
         image_capacity (int):
             The number of geometrical shapes per image.
+        adding_shapes (str):
+            The collection of adding shapes to the generated images, it can
+            include 'r' for rectangles, 't' for triangles, 'e' for ellipses
+            and also a combination of all these parameters ex. 'rt' for
+            generating rectangles and triangles.
+        noise_level (float):
+            The noise level defined in a range between 0 and 1. 0 - indicates
+            no noise, any value between 0 and 1 define level of generated
+            noise and value 1 - instruct randomly select noise level in range
+            [0,1].
+        blur_level_x (float):
+            The level of blurring to add on X-axis in a range between 0 and 1.
+            0 - indicates no blurring (all shapes with maximum sharpness), any
+            value between 0 and 1 define level of added blurring and value
+            1 - instruct randomly select blurring level in range [0,1].
+        blur_level_y (float):
+            The level of blurring to add on Y-axis in a range between 0 and 1.
+            0 - indicates no blurring (all shapes with maximum sharpness), any
+            value between 0 and 1 define level of added blurring and value
+            1 - instruct randomly select blurring level in range [0,1].
         random_state (int):
             The random state used for generating synthetic data.
         verbose (bool):
@@ -315,6 +383,10 @@ def create_coco_dataset(
             image_palette,
             image_background,
             image_capacity,
+            adding_shapes,
+            noise_level,
+            blur_level_x,
+            blur_level_y,
         )
 
         partition = random.uniform(0, 1)

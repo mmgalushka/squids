@@ -12,6 +12,18 @@ IMAGE_CHANNELS = 3
 IMAGE_CAPACITY = 3
 """The maximum number of geometrical shapes per image (minimum is 1)."""
 
+ADDING_SHAPES = "rte"
+"""The shapes adding to generated images."""
+
+NOISE_LEVEL = 0.0
+"""The noise lebel."""
+
+BLUR_LEVEL_X = 0.0
+"""The blurring level on X-axis."""
+
+BLUR_LEVEL_Y = 0.0
+"""The blurring level on Y-axis."""
+
 DATASET_DIR = "dataset/synthetic"
 """The default location for generating synthetic dataset."""
 

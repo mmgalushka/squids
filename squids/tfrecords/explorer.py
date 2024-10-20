@@ -303,7 +303,10 @@ def view_tfrecord(
                         tx, ty = ax + 3, ay - 1
 
                     draw.rectangle(
-                        (ax, ay, bx, by),
+                        # min/max to make sure that top left conner has
+                        # smaller coordinates values then bottom right
+                        # to avoid exception
+                        (min(ax, bx), min(ay, by), max(ax, bx), max(ay, by)),
                         outline=str(category_color),
                         fill=str(category_color),
                     )
