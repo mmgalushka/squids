@@ -33,6 +33,10 @@ def generate(subparsers):
             image_palette=args.image_palette,
             image_background=args.image_background,
             image_capacity=args.image_capacity,
+            adding_shapes=args.adding_shapes,
+            noise_level=args.noise_level,
+            blur_level_x=args.blur_level_x,
+            blur_level_y=args.blur_level_y,
             coco=args.coco,
             random_state=args.random_state,
             verbose=args.verbose,
@@ -104,8 +108,34 @@ def generate(subparsers):
         default=IMAGE_CAPACITY,
         help=f"a number of shapes per image (default={IMAGE_CAPACITY})",
     )
-
-    # --- system options --------------
+    parser.add_argument(
+        "--adding-shapes",
+        metavar="{r,t,e}",
+        type=str,
+        default="rte",
+        help="a combination of shapes markers 'r', 't' and 'e'(default='rte')",
+    )
+    parser.add_argument(
+        "--noise-level",
+        metavar="NUMBER",
+        type=float,
+        default=0,
+        help="a noise level to add (default=0)",
+    )
+    parser.add_argument(
+        "--blur-level-x",
+        metavar="NUMBER",
+        type=float,
+        default=0,
+        help="a blurring level to add on X axis (default=0)",
+    )
+    parser.add_argument(
+        "--blur-level-y",
+        metavar="NUMBER",
+        type=float,
+        default=0,
+        help="a blurring level to add on Y axis (default=0)",
+    )
     parser.add_argument(
         "--random-state",
         metavar="NUMBER",
@@ -113,6 +143,8 @@ def generate(subparsers):
         default=None,
         help="a random state to use (default=None)",
     )
+    # --- system options --------------
+
     parser.add_argument(
         "-v",
         "--verbose",
