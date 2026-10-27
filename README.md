@@ -1,10 +1,10 @@
 # SquiDS
 
+> ⚠️ **This project is archived and no longer maintained.** SquiDS started as a small experiment in making synthetic computer-vision data easier to generate, explore and feed into TensorFlow, and it was a fun one to build. The code stays here for reference and inspiration, but it won't receive updates, bug fixes or new releases. You're welcome to fork it under the MIT license and take it further. Thanks for stopping by!
+
 ![Squids Title](https://github.com/mmgalushka/squids/raw/main/docs/images/title.png)
 
 [![Continuous Integration Status](https://github.com/mmgalushka/squids/workflows/CI/badge.svg)](https://github.com/mmgalushka/squids/actions)
-[![Code Coverage Percentage](https://codecov.io/gh/mmgalushka/squids/branch/main/graph/badge.svg?token=XqrEqWyOM9)](https://codecov.io/gh/mmgalushka/squids)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d5c7d76d75b1467b8274d6b436906616)](https://www.codacy.com/gh/mmgalushka/squids/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mmgalushka/squids&amp;utm_campaign=Badge_Grade)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Python Badge](https://img.shields.io/badge/Python-%3E%3D3.6-blue)
 ![Tensorflow Badge](https://img.shields.io/badge/tensorflow-%3E%3D2.5.0-blue)
@@ -16,15 +16,6 @@ The main goal of this project is to help data scientists working with Computer V
 - objects classification;
 - objects detection/localisation;
 - objects segmentation.
-
-## Installation
-
-To install SquiDS, run the following command from the command line:
-
-```bash
-~$ pip install squids
-```
-For more information please read the [documentation](https://mmgalushka.github.io/squids/).
 
 ## Why use it?
 
