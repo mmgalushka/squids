@@ -193,10 +193,10 @@ def list_tfrecords(tfrecords_dir: Path):
     if len(tfrecord_files) > 0:
         batch = get_tfrecords_dataset(tfrecords_dir)
         for record_id, _, _, _, onehots in batch:
-            record_ids.append(record_id.numpy()[0])
+            record_ids.append(int(record_id.numpy()[0]))
 
             category_ids = Counter(
-                [np.argmax(onehot) for onehot in onehots.numpy()[0]]
+                [int(np.argmax(onehot)) for onehot in onehots.numpy()[0]]
             )
 
             record_summaries.append(category_ids)
@@ -330,7 +330,7 @@ def view_tfrecord(
 
             number_of_objects = len(onehots)
             available_categories = set(
-                [np.argmax(onehot) for onehot in onehots]
+                [int(np.argmax(onehot)) for onehot in onehots]
             )
 
             record_summary = {
