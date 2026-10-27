@@ -1,0 +1,1020 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../explorer/">
+      
+      
+        <link rel="next" href="../examples/">
+      
+      
+      <link rel="icon" href="../images/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>Loader - SquiDS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#load-tfrecords" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SquiDS" class="md-header__button md-logo" aria-label="SquiDS" data-md-component="logo">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SquiDS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Loader
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mmgalushka/squids" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SquiDS" class="md-nav__button md-logo" aria-label="SquiDS" data-md-component="logo">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    SquiDS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mmgalushka/squids" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Generator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transformer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Transformer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../explorer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Explorer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Loader
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Loader
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#model-fitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Fitting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Fitting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#number-of-detecting-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of Detecting Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Schema
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Output Schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-of-c-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "C" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-bc-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "BC" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-bc-configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "B,C" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-m-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "M" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-ibc-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "I,BC" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pydoc" class="md-nav__link">
+    <span class="md-ellipsis">
+      PyDoc
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PyDoc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.tfrecords.loader" class="md-nav__link">
+    <span class="md-ellipsis">
+      loader
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.tfrecords.loader.load_tfrecords" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_tfrecords
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#model-fitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Fitting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Fitting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#number-of-detecting-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of Detecting Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Schema
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Output Schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-of-c-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "C" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-bc-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "BC" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-bc-configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "B,C" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-m-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "M" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-ibc-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example of "I,BC" Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pydoc" class="md-nav__link">
+    <span class="md-ellipsis">
+      PyDoc
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PyDoc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squids.tfrecords.loader" class="md-nav__link">
+    <span class="md-ellipsis">
+      loader
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squids.tfrecords.loader.load_tfrecords" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_tfrecords
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="load-tfrecords">Load TFRecords</h1>
+<p>The following instructions describe how to use the created TFRecords for model fitting and testing.</p>
+<h2 id="model-fitting">Model Fitting</h2>
+<p>The typical usage of preparing training and validation data generators is shown below.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">squids</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_tfrecords</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">train_generator</span><span class="p">,</span> <span class="n">train_steps_per_epoch</span> <span class="o">=</span> <span class="n">load_tfrecords</span><span class="p">(</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="s2">"dataset/synthetic-tfrecords/instances_train"</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">output_schema</span><span class="o">=...</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">num_detecting_objects</span><span class="o">=...</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">val_generator</span><span class="p">,</span> <span class="n">val_steps_per_epoch</span> <span class="o">=</span> <span class="n">load_tfrecords</span><span class="p">(</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="s2">"dataset/synthetic-tfrecords/instances_val"</span><span class="p">,</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">output_schema</span><span class="o">=...</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">num_detecting_objects</span><span class="o">=...</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="o">...</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">train_generator</span><span class="p">,</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="n">validation_data</span><span class="o">=</span><span class="n">val_generator</span><span class="p">,</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="n">steps_per_epoch</span><span class="o">=</span><span class="n">train_steps_per_epoch</span><span class="p">,</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="n">validation_steps</span><span class="o">=</span><span class="n">val_steps_per_epoch</span><span class="p">,</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="o">...</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="p">)</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="o">...</span>
+</code></pre></div>
+<p>The presented code creates two data generators one for the training cycle and another one for validation respectively. In addition <code>load_tfrecords</code> function (see <a href="#pydoc">PyDoc</a> for more information)  computes the number of steps required to go through the whole dataset.</p>
+<h3 id="number-of-detecting-objects">Number of Detecting Objects</h3>
+<p>The number of detecting objects <code>num_detecting_objects</code> is probably a self-explanatory concept. It defines the maximum number of objects which a machine learning algorithm can detect within an image. It must greater than 0.</p>
+<p>For instance, when fitting in a simple classification model predicting "Cat or Dog" in an image, set  <code>num_detecting_objects=1</code>. Assuming that the supplying data have just one object annotation per image.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The <code>num_detecting_objects==None</code> retrieves the exact number of annotated objects.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The <code>num_detecting_objects==1</code> is a special case. Effective it makes this task as simple image classification, single object localization, or mask detection. In this case, the 2D output is squeezed to 1D. For example, let assume the <code>num_detecting_objects==1</code> when we predict object category. It makes this task as image classification where one-hot encoding <code>[[0, 1, 0, 0]]</code> (2D tensor) should be transformed to <code>[0, 1, 0, 0]</code> (1D tensor).</p>
+</div>
+<h3 id="output-schema">Output Schema</h3>
+<p>The constructed data generator defines the model input data <code>X</code> as a 3D image array.  The model output data <code>y</code> are configurable via the function argument <code>output_schema</code>. The output schema is defined by a string that may contain a combination of the following characters:</p>
+<table>
+<thead>
+<tr>
+<th>Character</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I</td>
+<td>"input" image data</td>
+</tr>
+<tr>
+<td>C</td>
+<td>one-hot categories encoding</td>
+</tr>
+<tr>
+<td>B</td>
+<td>bounding boxes</td>
+</tr>
+<tr>
+<td>M</td>
+<td>boolean masks</td>
+</tr>
+<tr>
+<td>,</td>
+<td>the flag to create separate output</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Make sure that the output schema does not include any other symbols (including empty spaces) rather than the 5 characters listed in the above table.</p>
+</div>
+<h4 id="example-of-c-configuration">Example of "C" Configuration</h4>
+<p>This is an example where a model designed to predict categories of shapes within an image.  The output schema is <code>"C"</code>. The character <code>C</code> indicates that this model output contains just categories one-hot encoding  <code>(N, 4)</code>, where <code>4</code> stands for 3 possible categories ("ellipse", "triangle", and "rectangle") plus "no object" category. See the image below for more details.</p>
+<p><img alt="C_output_schema_example" src="../images/output_schema_c.png" /></p>
+<h4 id="example-of-bc-configuration">Example of "BC" Configuration</h4>
+<p>This is an example where a model designed to predict bounding boxes and categories of shapes within an image. The output schema is <code>"BC"</code>. The character <code>B</code> indicates that the model output contains bounding boxes and <code>C</code> - categories respectively. No comma between characters <code>B</code> and <code>C</code> indicates that bounding boxes and categories are concatenated for the one head <code>(N, 8)</code>. See the image below for more details.</p>
+<p><img alt="BC_output_schema_example" src="../images/output_schema_bc.png" /></p>
+<h4 id="example-of-bc-configuration_1">Example of "B,C" Configuration</h4>
+<p>This is an example where a model is designed to predict bounding boxes and categories of shapes within an image. The output schema is <code>"B,C"</code>. The character <code>B</code> indicates that the model output contains bounding boxes and <code>C</code> - categories respectively. The comma between characters <code>B</code> and <code>C</code> indicates that bounding boxes and categories are supplied into two separate heads <code>(N, 4) (N, 4)</code>. See the image below for more details.</p>
+<p><img alt="B_C_output_schema_example" src="../images/output_schema_b_c.png" /></p>
+<h4 id="example-of-m-configuration">Example of "M" Configuration</h4>
+<p>This is an example where a model is designed to predict masks of shapes within an image.  The output schema is <code>"M"</code>. The character <code>M</code> indicates that this model output contains just image boolean masks   <code>(N, 4096)</code>, where <code>4096</code> stands for flattened masks of size <code>64x64</code>.  See the image below for more details.</p>
+<p><img alt="M_output_schema_example" src="../images/output_schema_m.png" /></p>
+<h4 id="example-of-ibc-configuration">Example of "I,BC" Configuration</h4>
+<p>This is an example where a model (of autoencoder) is designed to reconstruct an image and predict bounding boxes and categories of shapes within an image. The output schema is <code>"I,BC"</code>. The character <code>I</code> indicates that one model output contains image (identical to the input one),  <code>B</code> - bounding boxes, and <code>C</code> - categories respectively. The comma between characters <code>I</code> and <code>BC</code> indicates that the image is supplied to the one head and bounding boxes together with categories are supplied to another heads <code>(N, 4) (N, 4)</code> accordingly. See the image below for more details.</p>
+<p><img alt="i_bc_output_schema_example" src="../images/output_schema_i_bc.png" /></p>
+<h2 id="pydoc">PyDoc</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="squids.tfrecords.loader"></a>
+    <div class="doc doc-contents first">
+
+        <p>A module for converting a data source to TFRecords.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="squids.tfrecords.loader.load_tfrecords" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">load_tfrecords</span><span class="p">(</span><span class="n">tfrecords_dir</span><span class="p">,</span> <span class="n">output_schema</span><span class="o">=</span><span class="n">OUTPUT_SCHEMA</span><span class="p">,</span> <span class="n">num_detecting_objects</span><span class="o">=</span><span class="n">NUM_DETECTING_OBJECTS</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">steps_per_epoch</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns TFRecord dataset and the number of steps per epoch.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>tfrecords_dir</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The path to directory with TFRecords.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_schema</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The output schema defines the format of output data (default is
+just categories for every object present on the input images).
+Read this function description to understand how to define the
+output schema.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="squids.config.OUTPUT_SCHEMA">OUTPUT_SCHEMA</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_detecting_objects</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The number of detecting objects per input image. It must greater
+than 0. To ignore the number of detecting objects and retrieve
+the exact number of  annotated objects, set this argument to
+<code>None</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="squids.config.NUM_DETECTING_OBJECTS">NUM_DETECTING_OBJECTS</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>batch_size</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The batch size. It must greater than 0.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="squids.config.BATCH_SIZE">BATCH_SIZE</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>steps_per_epoch</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The number of steps per epoch. If the number of steps is set to
+0, the internal process will define it by scanning all TFrecords.
+This process might take some time, so it is advisable to set the
+<code>verbose</code> flag to <code>True</code>, to monitor the progress.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>verbose</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The flag to set a verbose mode.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>(<span title="squids.dataset">dataset</span>, <span title="steps_per_epoch">steps_per_epoch</span>)</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <ul>
+<li><code>record_summaries</code> is the dataset to pass into tensorflow
+training function.</li>
+</ul>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <ul>
+<li><code>steps_per_epoch</code> The number of steps per epoch provided
+or computed (if it was not specified as the same as the
+function argument).</li>
+</ul>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the function argument values are incorrect.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>
