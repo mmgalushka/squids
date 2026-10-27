@@ -94,6 +94,6 @@ This is an example where a model (of autoencoder) is designed to reconstruct an 
 ## PyDoc
 
 ::: squids.tfrecords.loader
-    selection:
+    options:
       members:
         - load_tfrecords

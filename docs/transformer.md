@@ -82,6 +82,6 @@ Use the TFRecords [explorer](explorer.md) for visualizing this information.
 ## PyDoc
 
 ::: squids.tfrecords.maker
-    selection:
+    options:
       members:
         - create_tfrecords

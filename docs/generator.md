@@ -286,7 +286,7 @@ Synthetic data can be generated in CSV and COCO formats. Both formats will lead 
 ### Maker
 
 ::: squids.dataset.maker
-    selection:
+    options:
       members:
         - create_dataset
 

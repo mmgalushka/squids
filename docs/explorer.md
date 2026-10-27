@@ -169,6 +169,6 @@ This process helps to explore a collection of TFRecords as well as each record i
 ## PyDoc
 
 ::: squids.tfrecords.explorer
-    selection:
+    options:
       members:
         - explore_tfrecords
